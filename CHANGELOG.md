@@ -4,11 +4,18 @@ Todas as mudanças notáveis deste projeto são documentadas neste arquivo.
 
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+---
+
 ## [Não publicado]
+
+### 📝 Documentação
+
+- README padronizado com print da landing, badges, arquitetura, governança e licença.
+- Descrição e topics do repositório alinhados ao ecossistema DevStreak.
 
 ## [0.1.0] - 2026-10-29
 
-### Adicionado
+### 🚀 Adicionado
 
 - Landing page pública com direção visual “terminal arcade”, preview real do produto, modos de verificação e FAQ.
 - Autenticação completa: cadastro, login, recuperação e redefinição de senha, com política de senha espelhando o backend.
@@ -32,7 +39,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o 
 - Testes unitários para datas/fuso, política de senha e validação do wizard (20 testes).
 - Governança: CI, templates de PR/issues, código de conduta, política de segurança, licença, changelog, editorconfig e labels.
 
-### Corrigido
+### 🐛 Corrigido
 
 - Overflow horizontal em filtros e layouts de duas colunas em telas pequenas.
 - Tabs do desafio e navegação inferior sobrepondo conteúdo em mobile.
@@ -42,7 +49,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o 
 - Data de expiração do convite exibida em UTC em vez do fuso local.
 - Preview público de convite bloqueado por regra de segurança no backend.
 
-### Segurança
+### 🔐 Segurança
 
 - Nenhum token é persistido no navegador.
 - Segredos permanecem exclusivamente no backend; variáveis `VITE_*` são tratadas como públicas.

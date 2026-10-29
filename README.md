@@ -1,18 +1,42 @@
-# DevStreak — Web
+<div align="center">
+
+# DevStreak Web 🎯
+
+**Frontend React do DevStreak — desafios privados de constância para desenvolvedores, com verificação automática de commits no GitHub, ranking, sequência e calendário de dias válidos.**
 
 [![CI](https://github.com/felipevenas/webapp-devstreak/actions/workflows/ci.yml/badge.svg)](https://github.com/felipevenas/webapp-devstreak/actions/workflows/ci.yml)
-![React](https://img.shields.io/badge/React-19.3-61DAFB?logo=react&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-7.0-3178C6?logo=typescript&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-8.3-646CFF?logo=vite&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-v4-06B6D4?logo=tailwindcss&logoColor=white)
-![Vitest](https://img.shields.io/badge/Vitest-5-6E9F18?logo=vitest&logoColor=white)
-![Oxlint](https://img.shields.io/badge/Oxlint-1.90-f97316)
-![Workflow](https://img.shields.io/badge/Workflow-Trunk--Based-2ea44f)
-![License](https://img.shields.io/badge/license-Propriet%C3%A1ria-red)
+[![React](https://img.shields.io/badge/React-19.3-61DAFB?style=for-the-badge&logo=react&logoColor=white)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-7.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-8.3-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vite.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4.3-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Vitest](https://img.shields.io/badge/Vitest-5-6E9F18?style=for-the-badge&logo=vitest&logoColor=white)](https://vitest.dev/)
+[![Oxlint](https://img.shields.io/badge/Oxlint-1.90-f97316?style=for-the-badge&logo=oxc&logoColor=white)](https://oxc.rs/)
+[![Workflow](https://img.shields.io/badge/Workflow-Trunk--Based-2ea44f?style=for-the-badge&logo=git&logoColor=white)](#-governança-e-comunidade)
+[![License](https://img.shields.io/badge/License-Propriet%C3%A1ria-red?style=for-the-badge)](LICENSE)
 
-Frontend do DevStreak, a plataforma de constância para desenvolvedores: desafios privados, verificação automática de commits no GitHub, ranking, sequência e calendário de dias válidos.
+<br />
 
-Este repositório entrega o **MVP navegável** descrito em [`docs/PRD-MVD.md`](docs/PRD-MVD.md), integrado à API Spring Boot em `../api-dev-rats`.
+<p align="center">
+  <a href="#stack"><b>Stack</b></a> •
+  <a href="#como-rodar"><b>Executar Local</b></a> •
+  <a href="#scripts"><b>Scripts</b></a> •
+  <a href="#arquitetura"><b>Arquitetura</b></a> •
+  <a href="#rotas"><b>Rotas</b></a> •
+  <a href="#testes"><b>Testes</b></a> •
+  <a href="#-governança-e-comunidade"><b>Governança</b></a>
+</p>
+
+</div>
+
+---
+
+Frontend do **DevStreak**, a plataforma de constância para desenvolvedores: desafios privados, verificação automática de commits no GitHub, ranking, sequência e calendário de dias válidos.
+
+Este repositório entrega o **MVP navegável** descrito em [`docs/PRD-MVD.md`](docs/PRD-MVD.md), integrado à API Spring Boot em [`../api-dev-rats`](../api-dev-rats).
+
+![Landing page do DevStreak](docs/landing.png)
+
+> Landing pública em tema escuro. O painel autenticado depende da API em execução; os fluxos completos estão descritos em [Rotas](#rotas).
 
 ## Stack
 
@@ -25,9 +49,13 @@ Este repositório entrega o **MVP navegável** descrito em [`docs/PRD-MVD.md`](d
 - Lucide + marca própria
 - Vitest para regras puras
 
-## Como rodar
+## Requisitos
 
-Pré-requisitos: Node 20+, API e PostgreSQL do `api-dev-rats` em execução.
+- **Node.js >= 22** (validado com Node 24.11).
+- **npm >= 10**.
+- API Spring Boot (`../api-dev-rats`) e PostgreSQL em execução para os fluxos autenticados.
+
+## Como rodar
 
 ```powershell
 npm install
@@ -67,12 +95,13 @@ O backend precisa de `APP_FRONTEND_URL` apontando para a origem do frontend por 
 | `npm run preview` | Preview do build |
 | `npm test` | Testes unitários (Vitest) |
 | `npm run lint` | oxlint |
+| `npm run typecheck` | Verificação de tipos |
 
 ## Arquitetura
 
 Organização **feature-based** com separação de responsabilidades por feature:
 
-```
+```text
 src/
 ├── app/              providers, router, layout raiz, query client
 ├── components/
@@ -100,7 +129,8 @@ src/
 │   ├── profile/       perfil, preferências, exportação e exclusão
 │   ├── legal/         termos e privacidade
 │   └── errors/        404, 403 e error boundary
-└── styles/            tokens, base e utilitários
+├── styles/            tokens, base e utilitários
+└── tests/             suporte e testes transversais
 ```
 
 Cada feature usa `domain` (regras e tipos), `data` (API + hooks) e `ui` (apresentação). O objetivo é manter dependências em uma direção só, sem camadas cerimoniais: `ui → data → domain`, com o design system e o core compartilhados.
@@ -165,16 +195,6 @@ npm test
 
 Cobrem regras puras críticas: grade de calendário e fuso horário, contagem de dias, política de senha espelhada do backend, validação do wizard (meta, datas, repositórios) e limites de contrato.
 
-## Governança
-
-- [`CONTRIBUTING.md`](CONTRIBUTING.md) — setup, branches, commits convencionais, arquitetura, gates de qualidade e processo de PR.
-- [`SECURITY.md`](SECURITY.md) — escopo de segurança, divulgação responsável e versões suportadas.
-- [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) — padrões de convivência da comunidade.
-- [`CHANGELOG.md`](CHANGELOG.md) — histórico de versões no formato Keep a Changelog.
-- [`LICENSE`](LICENSE) — licença proprietária.
-- [`.github/`](.github/) — CI, sincronização de labels, template de PR e formulários de issue.
-- [`docs/RESPONSIVE-QA.md`](docs/RESPONSIVE-QA.md) — auditoria de responsividade com Playwright.
-
 O CI roda em Node 22 e 24 com `npm ci`, lint, typecheck, testes e build. Pull Requests devem manter todos os gates verdes e atualizar o changelog quando a mudança for relevante ao usuário.
 
 ## Limitações conhecidas
@@ -185,3 +205,37 @@ O CI roda em Node 22 e 24 com `npm ci`, lint, typecheck, testes e build. Pull Re
 - A API não possui caixa de convites recebidos; a entrada acontece exclusivamente por link.
 - O avatar é o do GitHub ou iniciais; não há upload no MVP.
 - O build emite aviso de tamanho do chunk principal (vendor). Rotas já são lazy; um split manual de vendor pode ser adicionado quando o app crescer.
+
+---
+
+## 🤝 Governança e Comunidade
+
+Este repositório segue uma governança formal, espelhando a dos demais projetos do autor:
+
+| Documento | Finalidade |
+|---|---|
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | Fluxo de branches/commits, diretrizes arquiteturais e como rodar os gates. |
+| [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) | Código de conduta da comunidade. |
+| [`SECURITY.md`](SECURITY.md) | Política de divulgação responsável e escopo de segurança do frontend. |
+| [`CHANGELOG.md`](CHANGELOG.md) | Histórico de versões ([Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) + SemVer). |
+| [`LICENSE`](LICENSE) | Licença proprietária. |
+| [`.github/`](.github) | Templates de Issue/PR e workflows de **CI** (lint, tipos, Vitest e build) e **labels**. |
+| [`.editorconfig`](.editorconfig) · [`.gitattributes`](.gitattributes) | Padronização de estilo, finais de linha LF e normalização de binários. |
+
+---
+
+## Documentação relacionada
+
+- [`docs/PRD-MVD.md`](docs/PRD-MVD.md) — PRD do MVP e regras de produto.
+- [`docs/RESPONSIVE-QA.md`](docs/RESPONSIVE-QA.md) — auditoria de responsividade com Playwright.
+- [`../api-dev-rats`](../api-dev-rats) — API Spring Boot que serve este frontend.
+
+---
+
+## 📄 Licença
+
+Software **proprietário** — todos os direitos reservados. Consulte o arquivo [`LICENSE`](LICENSE) para os termos completos.
+
+<div align="center">
+Desenvolvido com excelência por <b><a href="https://github.com/felipevenas">Felipe Venas</a></b>
+</div>
