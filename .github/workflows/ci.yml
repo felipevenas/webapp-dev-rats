@@ -1,0 +1,49 @@
+name: Integração Contínua (CI)
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Qualidade (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ['22.x', '24.x']
+
+    steps:
+      - name: Baixar Código do Repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Ambiente Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Instalar Dependências
+        run: npm ci
+
+      - name: Executar Lint (Oxlint)
+        run: npm run lint
+
+      - name: Verificar Tipos
+        run: npm run typecheck
+
+      - name: Executar Testes Unitários (Vitest)
+        run: npm test
+
+      - name: Validar Build de Produção
+        run: npm run build
