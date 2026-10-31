@@ -1,5 +1,5 @@
 import { Github } from '@/components/brand/github-icon';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   AlertCircle,
   Check,
@@ -35,6 +35,7 @@ interface RepositoryPickerProps {
 export function RepositoryPicker({ selected, onChange, status, max = 3 }: RepositoryPickerProps) {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(0);
+  const listRef = useRef<HTMLUListElement>(null);
   const debouncedSearch = useDebouncedValue(search, 350);
   const sync = useSyncRepositories();
 
@@ -47,6 +48,12 @@ export function RepositoryPicker({ selected, onChange, status, max = 3 }: Reposi
 
   const repositories = query.data?.content ?? [];
   const totalPages = query.data?.totalPages ?? 0;
+
+  useEffect(() => {
+    if (totalPages > 0 && page > totalPages - 1) {
+      setPage(totalPages - 1);
+    }
+  }, [page, totalPages]);
   const selectedSet = useMemo(() => new Set(selected.map((repository) => repository.id)), [selected]);
 
   const toggle = (repository: GitHubRepository) => {
@@ -190,7 +197,11 @@ export function RepositoryPicker({ selected, onChange, status, max = 3 }: Reposi
         />
       ) : (
         <>
-          <ul className="max-h-72 space-y-1.5 overflow-y-auto pr-1" aria-label="Repositórios disponíveis">
+          <ul
+            ref={listRef}
+            className="max-h-72 space-y-1.5 overflow-y-auto pr-1"
+            aria-label="Repositórios disponíveis"
+          >
             {repositories.map((repository) => {
               const isSelected = selectedSet.has(repository.id);
               const disabled = (!isSelected && selected.length >= max) || repository.accessStatus !== 'ACCESSIBLE';
@@ -254,7 +265,10 @@ export function RepositoryPicker({ selected, onChange, status, max = 3 }: Reposi
             totalPages={totalPages}
             totalElements={query.data?.totalElements}
             pageSize={query.data?.size}
-            onPageChange={setPage}
+            onPageChange={(next) => {
+              setPage(next);
+              listRef.current?.scrollTo({ top: 0 });
+            }}
           />
 
           {query.isFetching ? (

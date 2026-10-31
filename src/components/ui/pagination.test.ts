@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildPageItems } from './pagination';
+import { buildPageItems } from './pagination-utils';
 
 describe('pagination helpers', () => {
   it('lists every page when there are few pages', () => {

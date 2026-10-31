@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/core/config/query-keys';
 import { githubApi } from './github-api';
 
@@ -15,6 +15,7 @@ export function useRepositories(params: { query?: string; page?: number; size?: 
     queryKey: queryKeys.repositories(params.query ?? '', params.page ?? 0),
     queryFn: () => githubApi.repositories(params),
     enabled,
+    placeholderData: keepPreviousData,
     staleTime: 60_000,
   });
 }

@@ -1,5 +1,5 @@
 import { BellOff, CheckCheck } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { api } from '@/core/http/api-client';
@@ -18,7 +18,6 @@ import {
   useMarkAllNotificationsRead,
   useMarkNotificationRead,
   useNotifications,
-  useUnreadNotifications,
 } from '@/features/notifications/data/use-notifications';
 import { cn } from '@/core/lib/cn';
 
@@ -28,9 +27,13 @@ export default function NotificationsPage() {
   const { data, isLoading, isError, error, refetch } = useNotifications(page);
   const markRead = useMarkNotificationRead();
   const markAllRead = useMarkAllNotificationsRead();
-  const unread = useUnreadNotifications();
 
   const notifications = data?.content ?? [];
+
+  useEffect(() => {
+    const total = data?.totalPages ?? 0;
+    if (total > 0 && page > total - 1) setPage(total - 1);
+  }, [data?.totalPages, page]);
 
   const openNotification = async (notification: AppNotification) => {
     if (!notification.readAt) markRead.mutate(notification.id);
@@ -65,7 +68,6 @@ export default function NotificationsPage() {
             size="sm"
             onClick={handleMarkAll}
             loading={markAllRead.isPending}
-            disabled={unread === 0}
           >
             <CheckCheck aria-hidden />
             Marcar todas como lidas
@@ -148,7 +150,10 @@ export default function NotificationsPage() {
             totalPages={data?.totalPages ?? 0}
             totalElements={data?.totalElements}
             pageSize={data?.size}
-            onPageChange={setPage}
+            onPageChange={(next) => {
+              setPage(next);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
           />
         </div>
       )}

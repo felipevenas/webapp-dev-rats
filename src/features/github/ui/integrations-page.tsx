@@ -56,6 +56,12 @@ export default function IntegrationsPage() {
     setPage(0);
   }, [debouncedSearch]);
 
+  const totalPages = repos.data?.totalPages ?? 0;
+
+  useEffect(() => {
+    if (totalPages > 0 && page > totalPages - 1) setPage(totalPages - 1);
+  }, [page, totalPages]);
+
   const handleConnect = async () => {
     setConnecting(true);
     await startGitHubFlow('authorize', '/app/settings/integrations');
@@ -310,7 +316,10 @@ export default function IntegrationsPage() {
                           totalPages={repos.data?.totalPages ?? 0}
                           totalElements={repos.data?.totalElements}
                           pageSize={repos.data?.size}
-                          onPageChange={setPage}
+                          onPageChange={(next) => {
+                            setPage(next);
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }}
                         />
                       </>
                     )}
