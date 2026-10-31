@@ -1,17 +1,38 @@
 import { describe, expect, it } from 'vitest';
 import {
+  DEFAULT_TIME_ZONE,
   addDays,
   diffInDays,
   eachDay,
   formatCountdown,
   formatMonthLabel,
+  endOfDayInZone,
   localDateInZone,
   monthGrid,
   shiftMonth,
+  startOfDayInZone,
   toIsoDate,
+  toZonedDateTimeInput,
+  zonedDateTimeToInstant,
 } from './date';
 
 describe('date helpers', () => {
+  it('fixes the default timezone to Brasília', () => {
+    expect(DEFAULT_TIME_ZONE).toBe('America/Sao_Paulo');
+    expect(localDateInZone('2026-10-29T02:00:00Z', DEFAULT_TIME_ZONE)).toBe('2026-10-28');
+  });
+
+  it('converts datetime-local values in the challenge timezone', () => {
+    expect(zonedDateTimeToInstant('2026-11-01T23:30', 'America/Sao_Paulo')).toBe('2026-11-02T02:30:00.000Z');
+    expect(zonedDateTimeToInstant('2026-11-01T00:00', 'America/Sao_Paulo')).toBe('2026-11-01T03:00:00.000Z');
+    expect(endOfDayInZone('2026-11-01', 'America/Sao_Paulo')).toBe('2026-11-02T02:59:59.000Z');
+    expect(startOfDayInZone('2026-11-01', 'America/Sao_Paulo')).toBe('2026-11-01T03:00:00.000Z');
+  });
+
+  it('formats an instant back into the challenge timezone input', () => {
+    expect(toZonedDateTimeInput('2026-11-02T02:30:00.000Z', 'America/Sao_Paulo')).toBe('2026-11-01T23:30');
+  });
+
   it('builds a six-week Sunday-first grid for a month', () => {
     const cells = monthGrid('2026-10');
     expect(cells).toHaveLength(42);

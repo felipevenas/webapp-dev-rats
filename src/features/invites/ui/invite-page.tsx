@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/core/auth/auth-provider';
 import { queryKeys } from '@/core/config/query-keys';
 import { toAppError } from '@/core/http/problem';
-import { formatFullDate, localDateInZone, userTimeZone } from '@/core/lib/date';
+import { DEFAULT_TIME_ZONE, formatFullDate, localDateInZone } from '@/core/lib/date';
 import { invitesApi } from '@/features/invites/data/invites-api';
 import { Logo } from '@/components/brand/logo';
 import { Badge } from '@/components/ui/badge';
@@ -119,7 +119,7 @@ export default function InvitePage() {
                   </Badge>
                   <Badge variant="outline" size="sm">
                     <CalendarClock className="size-3" aria-hidden />
-                    expira {formatFullDate(localDateInZone(preview.data.expiresAt, userTimeZone()))}
+                    expira {formatFullDate(localDateInZone(preview.data.expiresAt, DEFAULT_TIME_ZONE))}
                   </Badge>
                 </div>
               </div>

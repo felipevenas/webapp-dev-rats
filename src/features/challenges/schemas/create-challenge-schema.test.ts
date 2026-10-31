@@ -4,7 +4,6 @@ import { createChallengeSchema, endOfDayLocal, type CreateChallengeValues } from
 const base: CreateChallengeValues = {
   name: 'Rats Dev Challenge',
   description: 'Constância',
-  timezone: 'America/Sao_Paulo',
   maxMembers: 10,
   verificationMode: 'OWN_REPOSITORIES',
   targetValidDays: 30,
@@ -73,14 +72,18 @@ describe('create challenge schema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('rejects an invalid timezone and out-of-range target', () => {
-    expect(createChallengeSchema.safeParse({ ...base, timezone: 'Mars/Olympus' }).success).toBe(false);
+  it('does not require a timezone anymore', () => {
+    const result = createChallengeSchema.safeParse(base);
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data).not.toHaveProperty('timezone');
+  });
+
+  it('rejects an out-of-range target', () => {
     expect(createChallengeSchema.safeParse({ ...base, targetValidDays: 0 }).success).toBe(false);
     expect(createChallengeSchema.safeParse({ ...base, targetValidDays: 366 }).success).toBe(false);
   });
 
-  it('converts a date input to the end of the local day', () => {
-    const iso = endOfDayLocal('2026-10-28');
-    expect(new Date(iso).getTime()).toBeGreaterThan(new Date('2026-10-28T00:00:00').getTime());
+  it('converts a date input to the end of the day in Brasília', () => {
+    expect(endOfDayLocal('2026-10-28')).toBe('2026-10-29T02:59:59.000Z');
   });
 });

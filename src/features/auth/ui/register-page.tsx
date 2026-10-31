@@ -1,22 +1,20 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, CalendarDays } from 'lucide-react';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useAuth } from '@/core/auth/auth-provider';
 import { toAppError } from '@/core/http/problem';
-import { listTimeZones, userTimeZone } from '@/core/lib/date';
+import { DEFAULT_TIME_ZONE } from '@/core/lib/date';
 import { termsVersion } from '@/core/config/env';
 import { Button } from '@/components/ui/button';
-import { Checkbox, Select } from '@/components/ui/controls';
+import { Checkbox } from '@/components/ui/controls';
 import { Field, Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
 import { AuthLayout } from '@/features/auth/ui/auth-layout';
 import { PasswordStrength } from '@/features/auth/ui/password-strength';
 import { registerSchema, type RegisterValues } from '@/features/auth/schemas/auth-schemas';
-
-const timeZones = listTimeZones();
 
 export default function RegisterPage() {
   const { register: registerUser } = useAuth();
@@ -31,7 +29,6 @@ export default function RegisterPage() {
       username: '',
       email: '',
       password: '',
-      timezone: userTimeZone(),
       acceptTerms: false,
     },
   });
@@ -48,7 +45,8 @@ export default function RegisterPage() {
         password: values.password,
         displayName: values.displayName,
         username: values.username,
-        timezone: values.timezone,
+        //---- The backend still expects the field; every account is fixed to Brasília time.
+        timezone: DEFAULT_TIME_ZONE,
         acceptedTermsVersion: termsVersion,
       });
       toast.success('Conta criada. Vamos conectar seu GitHub?');
@@ -134,26 +132,12 @@ export default function RegisterPage() {
         </Field>
         <PasswordStrength value={password} />
 
-        <Field
-          label="Fuso horário"
-          htmlFor="timezone"
-          hint="define quando seu dia começa"
-          error={form.formState.errors.timezone?.message}
-        >
-          <Controller
-            control={form.control}
-            name="timezone"
-            render={({ field }) => (
-              <Select id="timezone" value={field.value} onChange={field.onChange} aria-invalid={Boolean(form.formState.errors.timezone)}>
-                {timeZones.map((zone) => (
-                  <option key={zone} value={zone}>
-                    {zone.replace(/_/g, ' ')}
-                  </option>
-                ))}
-              </Select>
-            )}
-          />
-        </Field>
+        <div className="flex items-start gap-2 rounded-xl border border-line bg-card-2 p-3">
+          <CalendarDays className="mt-0.5 size-4 shrink-0 text-cyan" aria-hidden />
+          <p className="text-[11px] leading-relaxed text-muted">
+            Seus dias válidos seguem sempre o <strong className="text-fg">horário de Brasília (GMT-3)</strong>.
+          </p>
+        </div>
 
         <div className="rounded-xl border border-line bg-card/60 p-3.5">
           <Controller

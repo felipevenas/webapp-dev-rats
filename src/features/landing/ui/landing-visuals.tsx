@@ -1,11 +1,11 @@
 import { Check, Flame, GitCommitHorizontal, Loader2, Trophy, WifiOff } from 'lucide-react';
-import { currentMonthKey, monthGrid, todayInZone, userTimeZone, WEEKDAY_LABELS } from '@/core/lib/date';
+import { DEFAULT_TIME_ZONE, currentMonthKey, monthGrid, todayInZone, WEEKDAY_LABELS } from '@/core/lib/date';
 import { cn } from '@/core/lib/cn';
 
 export function MiniCalendar() {
-  const month = currentMonthKey(userTimeZone());
+  const month = currentMonthKey(DEFAULT_TIME_ZONE);
   const cells = monthGrid(month);
-  const today = todayInZone(userTimeZone());
+  const today = todayInZone(DEFAULT_TIME_ZONE);
 
   return (
     <div className="rounded-xl border border-line bg-bg/50 p-3">

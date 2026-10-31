@@ -15,13 +15,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useAuth } from '@/core/auth/auth-provider';
 import { toAppError } from '@/core/http/problem';
-import { formatFullDate, listTimeZones, timeZoneLabel, localDateInZone } from '@/core/lib/date';
+import { DEFAULT_TIME_ZONE, formatFullDate, localDateInZone, timeZoneLabel } from '@/core/lib/date';
 import { Page, PageHeader } from '@/components/layout/page-header';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, Switch } from '@/components/ui/controls';
+import { Switch } from '@/components/ui/controls';
 import { Field, Input } from '@/components/ui/input';
 import { Modal } from '@/components/ui/modal';
 import { useDashboard } from '@/features/dashboard/data/use-dashboard';
@@ -31,7 +31,7 @@ import {
   useUpdateProfile,
 } from '@/features/profile/data/use-profile';
 
-const timeZones = listTimeZones();
+const BRASILIA_LABEL = 'Horário de Brasília (GMT-3)';
 
 export default function ProfilePage() {
   const { user, setUser, logout } = useAuth();
@@ -42,7 +42,6 @@ export default function ProfilePage() {
   const deleteAccount = useDeleteAccount();
 
   const [displayName, setDisplayName] = useState(user?.displayName ?? '');
-  const [timezone, setTimezone] = useState(user?.timezone ?? 'America/Sao_Paulo');
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [password, setPassword] = useState('');
   const [confirmation, setConfirmation] = useState('');
@@ -58,7 +57,10 @@ export default function ProfilePage() {
 
   if (!user) return null;
 
-  const dirty = displayName.trim() !== user.displayName || timezone !== user.timezone;
+  const displayTimezone =
+    user.timezone === DEFAULT_TIME_ZONE ? BRASILIA_LABEL : `${timeZoneLabel(user.timezone)} (conta antiga)`;
+
+  const dirty = displayName.trim() !== user.displayName;
 
   const handleSave = async () => {
     if (displayName.trim().length < 2) {
@@ -66,7 +68,7 @@ export default function ProfilePage() {
       return;
     }
     try {
-      await updateProfile.mutateAsync({ displayName: displayName.trim(), timezone });
+      await updateProfile.mutateAsync({ displayName: displayName.trim() });
       toast.success('Perfil atualizado.');
     } catch (error) {
       toast.error(toAppError(error).detail);
@@ -127,7 +129,7 @@ export default function ProfilePage() {
       <PageHeader
         eyebrow="Sua conta"
         title="Perfil"
-        description="Ajuste como você aparece, seu fuso e o que quer receber de alerta."
+        description="Ajuste como você aparece e o que quer receber de alerta."
         actions={
           <Button variant="secondary" onClick={() => void logout()}>
             <LogOut aria-hidden />
@@ -211,20 +213,14 @@ export default function ProfilePage() {
                 <Field label="E-mail" htmlFor="email" hint="usado para login">
                   <Input id="email" value={user.email} readOnly disabled />
                 </Field>
-                <Field label="Fuso horário" htmlFor="timezone" hint="preferência pessoal">
-                  <Select id="timezone" value={timezone} onChange={(event) => setTimezone(event.target.value)}>
-                    {timeZones.map((zone) => (
-                      <option key={zone} value={zone}>
-                        {zone.replace(/_/g, ' ')}
-                      </option>
-                    ))}
-                  </Select>
+                <Field label="Fuso horário" htmlFor="timezone" hint="novos desafios usam Brasília">
+                  <Input id="timezone" value={displayTimezone} readOnly disabled />
                 </Field>
               </div>
 
               <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line pt-3">
                 <p className="text-[11px] text-faint">
-                  {dirty ? 'Há alterações não salvas.' : `Preferência atual: ${timeZoneLabel(user.timezone)}`}
+                  {dirty ? 'Há alterações não salvas.' : `Fuso exibido: ${displayTimezone}`}
                 </p>
                 <Button onClick={() => void handleSave()} loading={updateProfile.isPending} disabled={!dirty}>
                   <Save aria-hidden />
@@ -234,7 +230,7 @@ export default function ProfilePage() {
 
               <div className="rounded-xl border border-line bg-card-2 p-3 text-[11px] leading-relaxed text-muted">
                 O avatar e o nome de usuário do GitHub vêm da conta conectada. O e-mail não pode ser alterado no
-                MVP. O fuso pessoal é usado no dashboard; o fuso do desafio é definido no grupo e permanece fixo.
+                MVP. Todo o app e os novos desafios usam o horário de Brasília (GMT-3), que não pode ser alterado.
               </div>
             </CardContent>
           </Card>

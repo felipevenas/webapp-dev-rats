@@ -31,8 +31,8 @@ export default function TermsPage() {
                 data e identificador do commit. Nenhum código-fonte é copiado ou exibido.
               </p>
               <p>
-                Um dia é válido quando existe pelo menos um commit elegível no fuso do desafio. Vários commits no
-                mesmo dia contam uma vez. Commits de bots, vazios ou de merge não contam.
+                Um dia é válido quando existe pelo menos um commit elegível no horário de Brasília (GMT-3). Vários
+                commits no mesmo dia contam uma vez. Commits de bots, vazios ou de merge não contam.
               </p>
             </>
           ),
@@ -43,7 +43,7 @@ export default function TermsPage() {
             <>
               <p>
                 Cada grupo define uma meta individual de dias válidos, uma modalidade de verificação e um fuso
-                fixo. O primeiro participante a atingir a meta é declarado vencedor.
+                fixo (Brasília nos novos desafios). O primeiro participante a atingir a meta é declarado vencedor.
               </p>
               <p>
                 A modalidade e a lista de repositórios não podem ser alteradas após o início. O criador pode

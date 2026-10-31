@@ -28,7 +28,6 @@ export const registerSchema = z.object({
     .regex(/^[a-z0-9_]+$/, 'Use apenas letras minúsculas, números e _'),
   email: z.email('Informe um e-mail válido'),
   password: passwordSchema,
-  timezone: z.string().min(1, 'Selecione seu fuso horário'),
   acceptTerms: z.boolean().refine((value) => value, 'Aceite os termos para continuar'),
 });
 

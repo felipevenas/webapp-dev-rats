@@ -1,5 +1,10 @@
 import { z } from 'zod';
-import { isValidTimeZone } from '@/core/lib/date';
+import {
+  DEFAULT_TIME_ZONE,
+  endOfDayInZone,
+  toZonedDateTimeInput,
+  zonedDateTimeToInstant,
+} from '@/core/lib/date';
 
 export const createChallengeSchema = z
   .object({
@@ -9,7 +14,6 @@ export const createChallengeSchema = z
       .min(2, 'Dê um nome ao grupo')
       .max(120, 'Use no máximo 120 caracteres'),
     description: z.string().trim().max(500, 'Use no máximo 500 caracteres').optional(),
-    timezone: z.string().min(1, 'Selecione o fuso do desafio'),
     maxMembers: z
       .number({ message: 'Informe um número' })
       .min(2, 'O grupo precisa de pelo menos 2 vagas')
@@ -26,16 +30,12 @@ export const createChallengeSchema = z
     repositoryIds: z.array(z.string()).max(3, 'Selecione no máximo 3 repositórios'),
   })
   .superRefine((values, ctx) => {
-    if (!isValidTimeZone(values.timezone)) {
-      ctx.addIssue({ code: 'custom', path: ['timezone'], message: 'Fuso horário inválido' });
-    }
-
     let startInstant = Date.now();
     if (values.startMode === 'schedule') {
       if (!values.startAtLocal) {
         ctx.addIssue({ code: 'custom', path: ['startAtLocal'], message: 'Escolha a data e hora de início' });
       } else {
-        const parsed = new Date(values.startAtLocal).getTime();
+        const parsed = new Date(zonedDateTimeToInstant(values.startAtLocal, DEFAULT_TIME_ZONE)).getTime();
         if (Number.isNaN(parsed)) {
           ctx.addIssue({ code: 'custom', path: ['startAtLocal'], message: 'Data inválida' });
         } else if (parsed < Date.now() - 60_000) {
@@ -47,14 +47,14 @@ export const createChallengeSchema = z
     }
 
     if (values.endsAtDate) {
-      const end = new Date(`${values.endsAtDate}T23:59:59`).getTime();
+      const end = new Date(endOfDayInZone(values.endsAtDate, DEFAULT_TIME_ZONE)).getTime();
       if (!Number.isNaN(end) && end <= startInstant) {
         ctx.addIssue({ code: 'custom', path: ['endsAtDate'], message: 'O encerramento deve ser depois do início' });
       }
     }
 
     if (values.admissionEndsAtDate) {
-      const admission = new Date(`${values.admissionEndsAtDate}T23:59:59`).getTime();
+      const admission = new Date(endOfDayInZone(values.admissionEndsAtDate, DEFAULT_TIME_ZONE)).getTime();
       if (!Number.isNaN(admission) && admission < startInstant) {
         ctx.addIssue({
           code: 'custom',
@@ -76,11 +76,9 @@ export const createChallengeSchema = z
 export type CreateChallengeValues = z.infer<typeof createChallengeSchema>;
 
 export function endOfDayLocal(date: string): string {
-  return new Date(`${date}T23:59:59`).toISOString();
+  return endOfDayInZone(date, DEFAULT_TIME_ZONE);
 }
 
 export function defaultStartLocal(): string {
-  const date = new Date(Date.now() + 5 * 60_000);
-  const pad = (value: number) => String(value).padStart(2, '0');
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  return toZonedDateTimeInput(new Date(Date.now() + 5 * 60_000), DEFAULT_TIME_ZONE);
 }
