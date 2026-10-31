@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import { Logo } from '@/components/brand/logo';
-import { StreakVisual } from '@/components/brand/streak-visual';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 interface AuthLayoutProps {
@@ -13,15 +12,14 @@ interface AuthLayoutProps {
 export function AuthLayout({ title, subtitle, children, footer }: AuthLayoutProps) {
   return (
     <div className="min-h-dvh bg-bg lg:grid lg:grid-cols-[1.05fr_1fr]">
-      <aside className="relative hidden overflow-hidden border-r border-line bg-surface lg:flex lg:h-dvh lg:flex-col lg:justify-between lg:overflow-y-auto lg:p-10">
-        <div className="ds-grid-bg ds-radial pointer-events-none absolute inset-0 opacity-90" aria-hidden />
+      <aside className="relative hidden border-r border-line bg-surface lg:flex lg:h-dvh lg:flex-col lg:justify-between lg:p-10">
         <div className="relative">
           <Link to="/" aria-label="DevRats - página inicial">
             <Logo />
           </Link>
-          <div className="mt-16 max-w-md">
+          <div className="mt-14 max-w-sm">
             <p className="ds-label mb-3">Constância verificável</p>
-            <h1 className="text-[40px] font-semibold leading-[1.05] tracking-[-0.045em]">
+            <h1 className="text-[38px] font-semibold leading-[1.06] tracking-[-0.045em]">
               Constância
               <br />
               que compila<span className="text-accent">.</span>
@@ -31,9 +29,6 @@ export function AuthLayout({ title, subtitle, children, footer }: AuthLayoutProp
               sem autoengano.
             </p>
           </div>
-        </div>
-        <div className="relative my-10">
-          <StreakVisual />
         </div>
         <div className="relative flex items-center justify-between text-[11px] text-faint">
           <span>GitHub verificado · dados privados protegidos</span>
