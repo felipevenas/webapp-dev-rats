@@ -2,6 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { api, onUnauthorized, refreshSession, tokenStore } from '@/core/http/api-client';
 import type { AuthResponse, User } from '@/core/types/api';
+import { buildLoginPayload } from '@/features/auth/domain/login-payload';
 
 type AuthStatus = 'booting' | 'authenticated' | 'anonymous';
 
@@ -86,7 +87,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(
     async (identifier: string, password: string) => {
-      const response = await api.post<AuthResponse>('/auth/login', { identifier, password });
+      //---- Deploy transitório: a API antiga só aceita e-mail. O helper mantém os dois contratos.
+      const payload = buildLoginPayload(identifier, password);
+      const response = await api.post<AuthResponse>('/auth/login', payload);
       return applySession(response.data);
     },
     [applySession],
