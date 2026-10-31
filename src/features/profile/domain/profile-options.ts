@@ -58,10 +58,16 @@ export function techStackLabel(code: TechStack): string {
 export function isValidWebsiteUrl(value: string): boolean {
   const trimmed = value.trim();
   if (!trimmed) return true;
+  return safeExternalUrl(trimmed) !== null;
+}
+
+/** Returns a navigable http(s) URL or null, so stored legacy values cannot inject a scheme. */
+export function safeExternalUrl(value?: string | null): string | null {
+  if (!value) return null;
   try {
-    const url = new URL(trimmed);
-    return url.protocol === 'http:' || url.protocol === 'https:';
+    const url = new URL(value.trim());
+    return url.protocol === 'http:' || url.protocol === 'https:' ? url.toString() : null;
   } catch {
-    return false;
+    return null;
   }
 }

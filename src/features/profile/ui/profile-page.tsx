@@ -81,6 +81,8 @@ export default function ProfilePage() {
   const displayTimezone =
     user.timezone === DEFAULT_TIME_ZONE ? BRASILIA_LABEL : `${timeZoneLabel(user.timezone)} (conta antiga)`;
 
+  const safeWebsite = safeExternalUrl(user.websiteUrl);
+
   const dirty =
     displayName.trim() !== user.displayName ||
     bio.trim() !== (user.bio ?? '') ||
@@ -216,7 +218,7 @@ export default function ProfilePage() {
             {user.bio ? (
               <p className="mt-2 max-w-xl text-[12px] leading-relaxed text-muted">{user.bio}</p>
             ) : null}
-            {user.location || user.websiteUrl ? (
+            {user.location || safeWebsite ? (
               <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted">
                 {user.location ? (
                   <span className="inline-flex items-center gap-1">
@@ -224,15 +226,15 @@ export default function ProfilePage() {
                     {user.location}
                   </span>
                 ) : null}
-                {user.websiteUrl ? (
+                {safeWebsite ? (
                   <a
-                    href={user.websiteUrl}
+                    href={safeWebsite}
                     target="_blank"
                     rel="noreferrer noopener"
                     className="inline-flex items-center gap-1 text-accent hover:underline"
                   >
                     <Globe className="size-3 shrink-0" aria-hidden />
-                    {websiteLabel(user.websiteUrl)}
+                    {websiteLabel(safeWebsite)}
                   </a>
                 ) : null}
               </div>
