@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { api, onUnauthorized, refreshSession, tokenStore } from '@/core/http/api-client';
-import type { AuthResponse, ExperienceLevel, TechStack, User } from '@/core/types/api';
+import type { AuthResponse, User } from '@/core/types/api';
 
 type AuthStatus = 'booting' | 'authenticated' | 'anonymous';
 
@@ -12,11 +12,6 @@ interface RegisterPayload {
   username: string;
   timezone: string;
   acceptedTermsVersion: string;
-  bio?: string | null;
-  location?: string | null;
-  websiteUrl?: string | null;
-  experienceLevel?: ExperienceLevel | null;
-  primaryStack?: TechStack[];
 }
 
 interface AuthContextValue {

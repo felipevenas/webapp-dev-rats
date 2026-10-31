@@ -9,19 +9,12 @@ import { toAppError } from '@/core/http/problem';
 import { DEFAULT_TIME_ZONE } from '@/core/lib/date';
 import { termsVersion } from '@/core/config/env';
 import { Button } from '@/components/ui/button';
-import { Checkbox, Select } from '@/components/ui/controls';
-import { Field, Input, Textarea } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/controls';
+import { Field, Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
-import { SelectableChips } from '@/components/ui/selectable-chips';
 import { AuthLayout } from '@/features/auth/ui/auth-layout';
 import { PasswordStrength } from '@/features/auth/ui/password-strength';
 import { registerSchema, type RegisterValues } from '@/features/auth/schemas/auth-schemas';
-import {
-  MAX_PRIMARY_STACK,
-  experienceLevelOptions,
-  safeExternalUrl,
-  techStackOptions,
-} from '@/features/profile/domain/profile-options';
 
 export default function RegisterPage() {
   const { register: registerUser } = useAuth();
@@ -41,8 +34,6 @@ export default function RegisterPage() {
   });
 
   const password = form.watch('password');
-  const bio = form.watch('bio') ?? '';
-  const primaryStack = form.watch('primaryStack') ?? [];
   const nextParam = searchParams.get('next');
   const next = nextParam && nextParam.startsWith('/') && !nextParam.startsWith('//') ? nextParam : '/onboarding';
 
@@ -57,11 +48,6 @@ export default function RegisterPage() {
         //---- The backend still expects the field; every account is fixed to Brasília time.
         timezone: DEFAULT_TIME_ZONE,
         acceptedTermsVersion: termsVersion,
-        bio: values.bio?.trim() || null,
-        location: values.location?.trim() || null,
-        websiteUrl: values.websiteUrl ? safeExternalUrl(values.websiteUrl) : null,
-        experienceLevel: values.experienceLevel ?? null,
-        primaryStack: values.primaryStack ?? [],
       });
       toast.success('Conta criada. Vamos conectar seu GitHub?');
       navigate(next, { replace: true });
@@ -152,121 +138,6 @@ export default function RegisterPage() {
             Seus dias válidos seguem sempre o <strong className="text-fg">horário de Brasília (GMT-3)</strong>.
           </p>
         </div>
-
-        <section className="space-y-4 border-t border-line pt-4" aria-labelledby="about-you-title">
-          <div>
-            <h2 id="about-you-title" className="text-[13px] font-semibold">
-              Sobre você <span className="font-normal text-faint">(opcional)</span>
-            </h2>
-            <p className="mt-0.5 text-[11px] leading-relaxed text-muted">
-              Ajuda o grupo a te conhecer. Você pode preencher ou editar depois.
-            </p>
-          </div>
-
-          <Field
-            label="Bio"
-            htmlFor="bio"
-            optional
-            hint={`${bio.length}/280`}
-            error={form.formState.errors.bio?.message}
-          >
-            <Textarea
-              id="bio"
-              rows={3}
-              maxLength={280}
-              placeholder="Conte em uma linha o que você constrói."
-              aria-invalid={Boolean(form.formState.errors.bio)}
-              {...form.register('bio')}
-            />
-          </Field>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field
-              label="Localização"
-              htmlFor="location"
-              optional
-              error={form.formState.errors.location?.message}
-            >
-              <Input
-                id="location"
-                autoComplete="address-level2"
-                placeholder="São Paulo, Brasil"
-                maxLength={120}
-                aria-invalid={Boolean(form.formState.errors.location)}
-                {...form.register('location')}
-              />
-            </Field>
-            <Field
-              label="Site ou portfólio"
-              htmlFor="website-url"
-              optional
-              error={form.formState.errors.websiteUrl?.message}
-            >
-              <Input
-                id="website-url"
-                type="url"
-                inputMode="url"
-                placeholder="https://seusite.dev"
-                maxLength={300}
-                aria-invalid={Boolean(form.formState.errors.websiteUrl)}
-                {...form.register('websiteUrl')}
-              />
-            </Field>
-          </div>
-
-          <Field
-            label="Nível de experiência"
-            htmlFor="experience-level"
-            optional
-            error={form.formState.errors.experienceLevel?.message}
-          >
-            <Controller
-              control={form.control}
-              name="experienceLevel"
-              render={({ field }) => (
-                <Select
-                  id="experience-level"
-                  value={field.value ?? ''}
-                  onChange={(event) =>
-                    field.onChange((event.target.value || undefined) as RegisterValues['experienceLevel'])
-                  }
-                  aria-invalid={Boolean(form.formState.errors.experienceLevel)}
-                >
-                  <option value="">Não informar</option>
-                  {experienceLevelOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </Select>
-              )}
-            />
-          </Field>
-
-          <Field
-            label="Stack principal"
-            optional
-            hint={`${primaryStack.length}/${MAX_PRIMARY_STACK}`}
-            error={form.formState.errors.primaryStack?.message}
-          >
-            <Controller
-              control={form.control}
-              name="primaryStack"
-              render={({ field }) => (
-                <SelectableChips
-                  ariaLabel="Stack principal"
-                  options={techStackOptions}
-                  selected={field.value ?? []}
-                  onChange={field.onChange}
-                  max={MAX_PRIMARY_STACK}
-                />
-              )}
-            />
-            <p className="text-[11px] text-faint">
-              Selecione até {MAX_PRIMARY_STACK} tecnologias que você usa no dia a dia.
-            </p>
-          </Field>
-        </section>
 
         <div className="rounded-xl border border-line bg-card/60 p-3.5">
           <Controller

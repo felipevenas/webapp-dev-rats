@@ -1,10 +1,4 @@
 import { z } from 'zod';
-import {
-  MAX_PRIMARY_STACK,
-  experienceLevelCodes,
-  isValidWebsiteUrl,
-  techStackCodes,
-} from '@/features/profile/domain/profile-options';
 
 export const passwordSchema = z
   .string()
@@ -68,19 +62,6 @@ export const registerSchema = z.object({
     .regex(/^[a-z0-9_]+$/, 'Use apenas letras minúsculas, números e _'),
   email: z.email('Informe um e-mail válido'),
   password: passwordSchema,
-  bio: z.string().trim().max(280, 'Use no máximo 280 caracteres').optional(),
-  location: z.string().trim().max(120, 'Use no máximo 120 caracteres').optional(),
-  websiteUrl: z
-    .string()
-    .trim()
-    .max(300, 'Use no máximo 300 caracteres')
-    .refine(isValidWebsiteUrl, 'Informe uma URL http(s) válida')
-    .optional(),
-  experienceLevel: z.enum(experienceLevelCodes).optional(),
-  primaryStack: z
-    .array(z.enum(techStackCodes))
-    .max(MAX_PRIMARY_STACK, `Selecione no máximo ${MAX_PRIMARY_STACK} tecnologias`)
-    .optional(),
   acceptTerms: z.boolean().refine((value) => value, 'Aceite os termos para continuar'),
 });
 
