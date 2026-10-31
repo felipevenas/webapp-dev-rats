@@ -186,7 +186,7 @@ export default function LandingPage() {
             <div className="relative mx-auto w-full max-w-md lg:max-w-none">
               <div className="absolute -inset-6 rounded-[32px] bg-volt/5 blur-2xl" aria-hidden />
               <StreakVisual className="relative mx-auto w-full max-w-md" />
-              <div className="relative mx-auto mt-3 w-full max-w-md rounded-2xl border border-line bg-card/90 p-4 shadow-2xl backdrop-blur-sm sm:-mt-2 sm:ml-auto sm:mr-0 sm:w-72">
+              <div className="relative mx-auto mt-3 w-full max-w-md rounded-2xl border border-line bg-card/90 p-4 shadow-float backdrop-blur-sm sm:-mt-2 sm:ml-auto sm:mr-0 sm:w-72">
                 <div className="mb-2.5 flex items-center justify-between">
                   <span className="ds-label">Ranking do grupo</span>
                   <Trophy className="size-3.5 text-gold" aria-hidden />

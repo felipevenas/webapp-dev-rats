@@ -8,6 +8,10 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o 
 
 ## [Não publicado]
 
+### 🎨 Alterado
+
+- Sombras mais suaves em cards, modais e superfícies flutuantes.
+
 ### 📝 Documentação
 
 - README padronizado com print da landing, badges, arquitetura, governança e licença.

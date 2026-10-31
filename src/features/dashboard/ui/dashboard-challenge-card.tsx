@@ -26,7 +26,7 @@ export function DashboardChallengeCard({
       to={`/app/groups/${group.groupId}`}
       className={cn(
         'ds-card ds-focus-ring group relative flex flex-col overflow-hidden p-5 transition-all duration-200',
-        'hover:-translate-y-0.5 hover:border-line-strong hover:shadow-[0_30px_70px_-40px_rgba(0,0,0,0.9)]',
+        'hover:-translate-y-0.5 hover:border-line-strong hover:shadow-card',
         'animate-fade-up',
       )}
       style={{ animationDelay: `${Math.min(index, 5) * 45}ms` }}

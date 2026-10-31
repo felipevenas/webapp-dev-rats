@@ -36,7 +36,7 @@ export function Modal({
         <DialogPrimitive.Overlay className="ds-overlay fixed inset-0 z-50 bg-[var(--ds-overlay)] backdrop-blur-sm" />
         <DialogPrimitive.Content
           className={cn(
-            'ds-sheet-content fixed inset-x-0 bottom-0 z-50 flex max-h-[92dvh] flex-col overflow-hidden rounded-t-2xl border border-line bg-surface shadow-2xl',
+            'ds-sheet-content fixed inset-x-0 bottom-0 z-50 flex max-h-[92dvh] flex-col overflow-hidden rounded-t-2xl border border-line bg-surface shadow-float',
             'sm:left-1/2 sm:top-1/2 sm:bottom-auto sm:right-auto sm:w-[calc(100vw-2rem)] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-2xl',
             sizeClass[size],
             className,

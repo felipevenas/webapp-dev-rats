@@ -13,7 +13,7 @@ export function Toaster() {
       toastOptions={{
         classNames: {
           toast:
-            'group !rounded-xl !border !border-line !bg-elevated !text-fg !shadow-2xl !font-sans !text-sm',
+            'group !rounded-xl !border !border-line !bg-elevated !text-fg !shadow-float !font-sans !text-sm',
           title: '!font-medium',
           description: '!text-muted !text-xs',
           actionButton: '!bg-volt !text-volt-ink !font-medium',

@@ -19,7 +19,7 @@ export function Dropdown({ trigger, children, align = 'end', className }: Dropdo
           align={align}
           sideOffset={8}
           className={cn(
-            'z-50 min-w-48 overflow-hidden rounded-xl border border-line bg-surface p-1 shadow-2xl',
+            'z-50 min-w-48 overflow-hidden rounded-xl border border-line bg-surface p-1 shadow-float',
             'data-[state=open]:animate-fade-in',
             className,
           )}
