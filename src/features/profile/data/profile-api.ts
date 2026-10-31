@@ -8,6 +8,7 @@ export interface UpdateMePayload {
   location?: string | null;
   websiteUrl?: string | null;
   experienceLevel?: ExperienceLevel | null;
+  clearExperienceLevel?: boolean;
   primaryStack?: TechStack[];
   notifyDailyGoal?: boolean;
   notifyMilestones?: boolean;
