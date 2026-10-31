@@ -16,6 +16,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o 
 
 - Paginação padronizada nas listas de repositórios e notificações.
 - Fuso horário fixo em Brasília nos novos cadastros e desafios.
+- Login com e-mail ou nome de usuário.
 
 ### 📝 Documentação
 

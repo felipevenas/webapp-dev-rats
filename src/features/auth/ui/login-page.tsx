@@ -21,7 +21,7 @@ export default function LoginPage() {
 
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: '', password: '' },
+    defaultValues: { identifier: '', password: '' },
   });
 
   const nextParam = searchParams.get('next');
@@ -30,19 +30,19 @@ export default function LoginPage() {
   const onSubmit = async (values: LoginValues) => {
     setSubmitting(true);
     try {
-      const user = await login(values.email, values.password);
+      const user = await login(values.identifier, values.password);
       toast.success(`Bem-vindo de volta, ${user.displayName.split(' ')[0]}`);
       navigate(next, { replace: true });
     } catch (error) {
       const appError = toAppError(error);
       if (appError.fieldErrors.length > 0) {
         appError.fieldErrors.forEach((field) => {
-          if (field.field === 'email' || field.field === 'password') {
+          if (field.field === 'identifier' || field.field === 'password') {
             form.setError(field.field, { message: field.message });
           }
         });
       } else if (appError.code === 'INVALID_CREDENTIALS' || appError.status === 401) {
-        form.setError('password', { message: 'E-mail ou senha incorretos' });
+        form.setError('password', { message: 'E-mail, usuário ou senha incorretos' });
       } else {
         toast.error(appError.detail);
       }
@@ -57,15 +57,16 @@ export default function LoginPage() {
       subtitle="Acesse seus desafios, acompanhe o ranking e não perca o dia de hoje."
     >
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" noValidate>
-        <Field label="E-mail" htmlFor="email" error={form.formState.errors.email?.message}>
+        <Field label="E-mail ou usuário" htmlFor="identifier" error={form.formState.errors.identifier?.message}>
           <Input
-            id="email"
-            type="email"
-            autoComplete="email"
-            inputMode="email"
-            placeholder="voce@exemplo.com"
-            aria-invalid={Boolean(form.formState.errors.email)}
-            {...form.register('email')}
+            id="identifier"
+            type="text"
+            autoComplete="username"
+            autoCapitalize="none"
+            spellCheck={false}
+            placeholder="voce@exemplo.com ou seu_usuario"
+            aria-invalid={Boolean(form.formState.errors.identifier)}
+            {...form.register('identifier')}
           />
         </Field>
 
