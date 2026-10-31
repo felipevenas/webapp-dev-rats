@@ -2,6 +2,8 @@ import { useMutation } from '@tanstack/react-query';
 import { useAuth } from '@/core/auth/auth-provider';
 import { profileApi, type UpdateMePayload } from './profile-api';
 
+export type { UpdateMePayload } from './profile-api';
+
 export function useUpdateProfile() {
   const { setUser } = useAuth();
   return useMutation({

@@ -10,6 +10,26 @@ export type MemberStatus = 'ACTIVE' | 'LEFT' | 'REMOVED';
 export type ActivityDayStatus = 'VALID' | 'EMPTY' | 'FUTURE' | 'BEFORE_START' | 'AFTER_END';
 export type ResultStatus = 'PROVISIONAL' | 'FINAL';
 export type RepositoryAccessStatus = 'ACCESSIBLE' | 'UNKNOWN' | 'LOST';
+export type ExperienceLevel = 'JUNIOR' | 'PLENO' | 'SENIOR' | 'ESPECIALISTA';
+export type TechStack =
+  | 'JAVA'
+  | 'KOTLIN'
+  | 'JAVASCRIPT'
+  | 'TYPESCRIPT'
+  | 'PYTHON'
+  | 'GO'
+  | 'CSHARP'
+  | 'PHP'
+  | 'RUBY'
+  | 'RUST'
+  | 'SWIFT'
+  | 'REACT'
+  | 'NODE'
+  | 'SPRING'
+  | 'DOTNET'
+  | 'SQL'
+  | 'DOCKER'
+  | 'AWS';
 
 export interface ProblemDetail {
   type?: string;
@@ -38,6 +58,11 @@ export interface User {
   email: string;
   avatarUrl?: string | null;
   timezone: string;
+  bio?: string | null;
+  location?: string | null;
+  websiteUrl?: string | null;
+  experienceLevel?: ExperienceLevel | null;
+  primaryStack?: TechStack[];
   notifyDailyGoal: boolean;
   notifyMilestones: boolean;
   notifyChallengeUpdates: boolean;
