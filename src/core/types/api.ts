@@ -184,6 +184,14 @@ export interface ActivityCalendar {
   days: ActivityDay[];
 }
 
+export interface ActivityCommit {
+  sha: string;
+  repositoryFullName: string;
+  commitUrl: string;
+  committedAt: IsoInstant;
+  authorLogin?: string | null;
+}
+
 export interface FeedItem {
   id: UUID;
   type: string;

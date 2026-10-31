@@ -1,13 +1,14 @@
 import { useMemo, useRef, useState } from 'react';
-import { ChevronLeft, ChevronRight, CircleHelp, WifiOff } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CircleHelp, ExternalLink, WifiOff } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
-import type { ActivityDayStatus, ProgressEntry } from '@/core/types/api';
+import type { ActivityCommit, ActivityDayStatus, ProgressEntry } from '@/core/types/api';
 import {
   addDays,
   currentMonthKey,
   firstDayOfMonth,
   formatFullDate,
   formatMonthLabel,
+  formatTime,
   formatWeekdayLong,
   lastDayOfMonth,
   monthGrid,
@@ -21,7 +22,7 @@ import { Button } from '@/components/ui/button';
 import { Select } from '@/components/ui/controls';
 import { ErrorState } from '@/components/ui/error-state';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useActivity } from '@/features/progress/data/use-progress';
+import { useActivity, useActivityCommits } from '@/features/progress/data/use-progress';
 
 const statusCopy: Record<ActivityDayStatus, { label: string; description: string }> = {
   VALID: { label: 'Dia válido', description: 'Pelo menos um commit elegível foi verificado neste dia.' },
@@ -113,6 +114,12 @@ export function ActivityCalendar({
   };
 
   const selectedStatus = selectedDate ? (dayMap.get(selectedDate) ?? 'EMPTY') : null;
+  const commitsQuery = useActivityCommits(
+    challengeId,
+    { userId: memberId, date: selectedDate },
+    !compact && selectedStatus === 'VALID',
+  );
+  const commits = commitsQuery.data ?? [];
 
   if (compact) {
     return (
@@ -227,7 +234,7 @@ export function ActivityCalendar({
         </div>
       ) : null}
 
-      <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_200px] xl:grid-cols-[minmax(0,620px)_220px] xl:justify-center">
+      <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_220px] xl:grid-cols-[minmax(0,600px)_240px] xl:justify-center">
         <div>
           <div
             className="grid grid-cols-7 gap-1.5"
@@ -329,22 +336,33 @@ export function ActivityCalendar({
               {selectedDate ? formatFullDate(selectedDate) : 'Selecione um dia'}
             </p>
             {selectedDate && selectedStatus ? (
-              <div className="mt-2 space-y-1.5">
-                <Badge
-                  variant={
-                    selectedStatus === 'VALID'
-                      ? 'volt'
-                      : selectedStatus === 'EMPTY'
-                        ? 'neutral'
-                        : selectedStatus === 'FUTURE'
-                          ? 'outline'
-                          : 'amber'
-                  }
-                >
-                  {statusCopy[selectedStatus].label}
-                </Badge>
-                <p className="text-[11px] leading-relaxed text-muted">{statusCopy[selectedStatus].description}</p>
-                <p className="font-mono text-[10px] text-faint">{formatWeekdayLong(selectedDate)}</p>
+              <div className="mt-2">
+                <div className="space-y-1.5">
+                  <Badge
+                    variant={
+                      selectedStatus === 'VALID'
+                        ? 'volt'
+                        : selectedStatus === 'EMPTY'
+                          ? 'neutral'
+                          : selectedStatus === 'FUTURE'
+                            ? 'outline'
+                            : 'amber'
+                    }
+                  >
+                    {statusCopy[selectedStatus].label}
+                  </Badge>
+                  <p className="text-[11px] leading-relaxed text-muted">{statusCopy[selectedStatus].description}</p>
+                  <p className="font-mono text-[10px] text-faint">{formatWeekdayLong(selectedDate)}</p>
+                </div>
+                {selectedStatus === 'VALID' ? (
+                  <ActivityCommitList
+                    commits={commits}
+                    timezone={timezone}
+                    isLoading={commitsQuery.isLoading}
+                    error={commitsQuery.isError ? commitsQuery.error : null}
+                    onRetry={() => void commitsQuery.refetch()}
+                  />
+                ) : null}
               </div>
             ) : (
               <p className="mt-2 text-[11px] leading-relaxed text-muted">
@@ -364,5 +382,82 @@ function Legend({ className, label }: { className: string; label: string }) {
       <span className={cn('size-3 rounded-[3px] border', className)} aria-hidden />
       {label}
     </span>
+  );
+}
+
+function shortSha(sha: string) {
+  return sha.slice(0, 7);
+}
+
+interface ActivityCommitListProps {
+  commits: ActivityCommit[];
+  timezone: string;
+  isLoading: boolean;
+  error: unknown;
+  onRetry: () => void;
+}
+
+function ActivityCommitList({ commits, timezone, isLoading, error, onRetry }: ActivityCommitListProps) {
+  return (
+    <div className="mt-3 border-t border-line pt-3" aria-live="polite">
+      <p className="ds-label">Commits do dia</p>
+
+      {isLoading ? (
+        <div className="mt-2 space-y-1.5">
+          <Skeleton className="h-14 rounded-lg" />
+          <Skeleton className="h-14 rounded-lg" />
+          <span className="sr-only">Carregando commits do dia</span>
+        </div>
+      ) : error ? (
+        <ErrorState error={error} compact onRetry={onRetry} className="mt-2 gap-2 rounded-lg px-3 py-4" />
+      ) : commits.length === 0 ? (
+        <p className="mt-2 text-[11px] leading-relaxed text-muted">Dia registrado sem commit associado</p>
+      ) : (
+        <ol className="mt-2 space-y-1.5" aria-label="Commits que validaram o dia">
+          {commits.map((commit, index) => (
+            <li key={commit.sha}>
+              <a
+                href={commit.commitUrl}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={`Abrir commit ${shortSha(commit.sha)} de ${commit.repositoryFullName} no GitHub (nova aba)`}
+                className={cn(
+                  'ds-focus-ring group block min-w-0 rounded-lg border px-2.5 py-2 transition-colors',
+                  index === 0
+                    ? 'border-volt-line bg-volt-soft hover:brightness-105'
+                    : 'border-line bg-card hover:border-line-strong',
+                )}
+              >
+                <span className="flex items-center justify-between gap-2">
+                  <span className="truncate font-mono text-[11px] font-medium text-accent">
+                    {shortSha(commit.sha)}
+                  </span>
+                  <ExternalLink
+                    className="size-3 shrink-0 text-faint transition-colors group-hover:text-accent"
+                    aria-hidden
+                  />
+                </span>
+                <span
+                  className="mt-0.5 block truncate font-mono text-[10px] text-muted"
+                  title={commit.repositoryFullName}
+                >
+                  {commit.repositoryFullName}
+                </span>
+                <span className="mt-1.5 flex flex-wrap items-center justify-between gap-1.5">
+                  <time dateTime={commit.committedAt} className="font-mono text-[10px] text-faint">
+                    {formatTime(commit.committedAt, timezone)}
+                  </time>
+                  {index === 0 ? (
+                    <Badge variant="volt" size="sm" className="whitespace-normal text-left">
+                      Commit que validou o dia
+                    </Badge>
+                  ) : null}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      )}
+    </div>
   );
 }
