@@ -1,9 +1,15 @@
 import { api } from '@/core/http/api-client';
-import type { User } from '@/core/types/api';
+import type { ExperienceLevel, TechStack, User } from '@/core/types/api';
 
 export interface UpdateMePayload {
   displayName?: string;
   timezone?: string;
+  bio?: string | null;
+  location?: string | null;
+  websiteUrl?: string | null;
+  experienceLevel?: ExperienceLevel | null;
+  clearExperienceLevel?: boolean;
+  primaryStack?: TechStack[];
   notifyDailyGoal?: boolean;
   notifyMilestones?: boolean;
   notifyChallengeUpdates?: boolean;

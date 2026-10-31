@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { loginSchema } from './auth-schemas';
+import { loginSchema, registerSchema } from './auth-schemas';
 
 function identifierError(identifier: string) {
   const result = loginSchema.safeParse({ identifier, password: 'Senha@12345' });
@@ -58,5 +58,84 @@ describe('login schema', () => {
     if (!result.success) {
       expect(result.error.issues.some((issue) => issue.path.includes('password'))).toBe(true);
     }
+  });
+});
+
+const base = {
+  displayName: 'Felipe Ferreira',
+  username: 'felipe_dev',
+  email: 'felipe@exemplo.com',
+  password: 'Senha@12345',
+  acceptTerms: true,
+};
+
+describe('register schema — perfil profissional', () => {
+  it('accepts a registration without the optional fields', () => {
+    expect(registerSchema.safeParse(base).success).toBe(true);
+  });
+
+  it('accepts the professional fields when valid', () => {
+    const result = registerSchema.safeParse({
+      ...base,
+      bio: 'Backend em Java e Kotlin, constância todo dia.',
+      location: 'São Paulo, Brasil',
+      websiteUrl: 'https://devrats.dev',
+      experienceLevel: 'PLENO',
+      primaryStack: ['JAVA', 'KOTLIN', 'SPRING', 'SQL', 'AWS'],
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('accepts empty optional text fields', () => {
+    const result = registerSchema.safeParse({
+      ...base,
+      bio: '',
+      location: '',
+      websiteUrl: '',
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects a bio longer than 280 characters', () => {
+    const result = registerSchema.safeParse({ ...base, bio: 'a'.repeat(281) });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues.some((issue) => issue.path.includes('bio'))).toBe(true);
+    }
+  });
+
+  it('rejects a location longer than 120 characters', () => {
+    expect(registerSchema.safeParse({ ...base, location: 'a'.repeat(121) }).success).toBe(false);
+  });
+
+  it('rejects a website that is not http(s)', () => {
+    for (const websiteUrl of ['devrats.dev', 'ftp://devrats.dev', 'javascript:alert(1)']) {
+      const result = registerSchema.safeParse({ ...base, websiteUrl });
+      expect(result.success, websiteUrl).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues.some((issue) => issue.path.includes('websiteUrl'))).toBe(true);
+      }
+    }
+  });
+
+  it('rejects a website longer than 300 characters', () => {
+    const websiteUrl = `https://devrats.dev/${'a'.repeat(300)}`;
+    expect(registerSchema.safeParse({ ...base, websiteUrl }).success).toBe(false);
+  });
+
+  it('rejects more than five technologies', () => {
+    const result = registerSchema.safeParse({
+      ...base,
+      primaryStack: ['JAVA', 'KOTLIN', 'SPRING', 'SQL', 'AWS', 'DOCKER'],
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues.some((issue) => issue.path.includes('primaryStack'))).toBe(true);
+    }
+  });
+
+  it('rejects unknown experience levels and stacks', () => {
+    expect(registerSchema.safeParse({ ...base, experienceLevel: 'STAFF' }).success).toBe(false);
+    expect(registerSchema.safeParse({ ...base, primaryStack: ['COBOL'] }).success).toBe(false);
   });
 });

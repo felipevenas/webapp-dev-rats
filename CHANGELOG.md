@@ -18,6 +18,10 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o 
 - Fuso horário fixo em Brasília nos novos cadastros e desafios.
 - Login com e-mail ou nome de usuário.
 
+### 🚀 Adicionado
+
+- Novos campos de perfil: bio, localização, site, nível e stack.
+
 ### 📝 Documentação
 
 - README padronizado com print da landing, badges, arquitetura, governança e licença.

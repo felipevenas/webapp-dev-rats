@@ -3,9 +3,12 @@ import { useMemo, useState } from 'react';
 import {
   AlertTriangle,
   Bell,
+  Briefcase,
   CalendarDays,
   Download,
+  Globe,
   LogOut,
+  MapPin,
   Save,
   ShieldCheck,
   Trash2,
@@ -16,15 +19,26 @@ import { toast } from 'sonner';
 import { useAuth } from '@/core/auth/auth-provider';
 import { toAppError } from '@/core/http/problem';
 import { DEFAULT_TIME_ZONE, formatFullDate, localDateInZone, timeZoneLabel } from '@/core/lib/date';
+import type { ExperienceLevel, TechStack } from '@/core/types/api';
 import { Page, PageHeader } from '@/components/layout/page-header';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Switch } from '@/components/ui/controls';
-import { Field, Input } from '@/components/ui/input';
+import { Select, Switch } from '@/components/ui/controls';
+import { Field, Input, Textarea } from '@/components/ui/input';
 import { Modal } from '@/components/ui/modal';
+import { SelectableChips } from '@/components/ui/selectable-chips';
 import { useDashboard } from '@/features/dashboard/data/use-dashboard';
+import {
+  MAX_PRIMARY_STACK,
+  experienceLevelLabel,
+  experienceLevelOptions,
+  isValidWebsiteUrl,
+  safeExternalUrl,
+  techStackLabel,
+  techStackOptions,
+} from '@/features/profile/domain/profile-options';
 import {
   useDeleteAccount,
   useExportData,
@@ -42,6 +56,13 @@ export default function ProfilePage() {
   const deleteAccount = useDeleteAccount();
 
   const [displayName, setDisplayName] = useState(user?.displayName ?? '');
+  const [bio, setBio] = useState(user?.bio ?? '');
+  const [location, setLocation] = useState(user?.location ?? '');
+  const [websiteUrl, setWebsiteUrl] = useState(user?.websiteUrl ?? '');
+  const [experienceLevel, setExperienceLevel] = useState<ExperienceLevel | undefined>(
+    user?.experienceLevel ?? undefined,
+  );
+  const [primaryStack, setPrimaryStack] = useState<TechStack[]>(user?.primaryStack ?? []);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [password, setPassword] = useState('');
   const [confirmation, setConfirmation] = useState('');
@@ -60,15 +81,43 @@ export default function ProfilePage() {
   const displayTimezone =
     user.timezone === DEFAULT_TIME_ZONE ? BRASILIA_LABEL : `${timeZoneLabel(user.timezone)} (conta antiga)`;
 
-  const dirty = displayName.trim() !== user.displayName;
+  const safeWebsite = safeExternalUrl(user.websiteUrl);
+
+  const dirty =
+    displayName.trim() !== user.displayName ||
+    bio.trim() !== (user.bio ?? '') ||
+    location.trim() !== (user.location ?? '') ||
+    websiteUrl.trim() !== (user.websiteUrl ?? '') ||
+    (experienceLevel ?? null) !== (user.experienceLevel ?? null) ||
+    [...primaryStack].sort().join('|') !== [...(user.primaryStack ?? [])].sort().join('|');
 
   const handleSave = async () => {
     if (displayName.trim().length < 2) {
       toast.error('O nome precisa ter pelo menos 2 caracteres.');
       return;
     }
+    if (bio.trim().length > 280) {
+      toast.error('A bio pode ter no máximo 280 caracteres.');
+      return;
+    }
+    if (location.trim().length > 120) {
+      toast.error('A localização pode ter no máximo 120 caracteres.');
+      return;
+    }
+    if (!isValidWebsiteUrl(websiteUrl)) {
+      toast.error('Informe uma URL http(s) válida para o site.');
+      return;
+    }
     try {
-      await updateProfile.mutateAsync({ displayName: displayName.trim() });
+      await updateProfile.mutateAsync({
+        displayName: displayName.trim(),
+        bio: bio.trim(),
+        location: location.trim(),
+        websiteUrl: safeExternalUrl(websiteUrl) ?? '',
+        experienceLevel: experienceLevel ?? null,
+        clearExperienceLevel: experienceLevel === undefined,
+        primaryStack,
+      });
       toast.success('Perfil atualizado.');
     } catch (error) {
       toast.error(toAppError(error).detail);
@@ -166,7 +215,37 @@ export default function ProfilePage() {
             <h2 className="text-2xl font-semibold tracking-[-0.03em]">{user.displayName}</h2>
             <p className="font-mono text-[12px] text-muted">@{user.username}</p>
             <p className="mt-1 text-[11px] text-faint">{user.email}</p>
+            {user.bio ? (
+              <p className="mt-2 max-w-xl text-[12px] leading-relaxed text-muted">{user.bio}</p>
+            ) : null}
+            {user.location || safeWebsite ? (
+              <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted">
+                {user.location ? (
+                  <span className="inline-flex items-center gap-1">
+                    <MapPin className="size-3 shrink-0" aria-hidden />
+                    {user.location}
+                  </span>
+                ) : null}
+                {safeWebsite ? (
+                  <a
+                    href={safeWebsite}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="inline-flex items-center gap-1 text-accent hover:underline"
+                  >
+                    <Globe className="size-3 shrink-0" aria-hidden />
+                    {websiteLabel(safeWebsite)}
+                  </a>
+                ) : null}
+              </div>
+            ) : null}
             <div className="mt-3 flex flex-wrap items-center gap-2">
+              {user.experienceLevel ? (
+                <Badge variant="violet" size="sm">
+                  <Briefcase className="size-3" aria-hidden />
+                  {experienceLevelLabel(user.experienceLevel)}
+                </Badge>
+              ) : null}
               <Badge variant={user.githubConnected ? 'volt' : 'amber'} size="sm">
                 <Github className="size-3" aria-hidden />
                 {user.githubConnected ? `@${user.githubUsername ?? 'github'}` : 'GitHub desconectado'}
@@ -176,6 +255,15 @@ export default function ProfilePage() {
                 desde {formatFullDate(localDateInZone(user.createdAt, user.timezone))}
               </Badge>
             </div>
+            {user.primaryStack && user.primaryStack.length > 0 ? (
+              <div className="mt-2 flex flex-wrap items-center gap-1.5" aria-label="Stack principal">
+                {user.primaryStack.map((code) => (
+                  <Badge key={code} variant="outline" size="sm">
+                    {techStackLabel(code)}
+                  </Badge>
+                ))}
+              </div>
+            ) : null}
           </div>
           <div className="grid grid-cols-3 gap-3 sm:w-64">
             <HeroStat label="grupos" value={String(stats.groups)} />
@@ -215,6 +303,72 @@ export default function ProfilePage() {
                 </Field>
                 <Field label="Fuso horário" htmlFor="timezone" hint="novos desafios usam Brasília">
                   <Input id="timezone" value={displayTimezone} readOnly disabled />
+                </Field>
+              </div>
+
+              <Field label="Bio" htmlFor="profile-bio" optional hint={`${bio.length}/280`}>
+                <Textarea
+                  id="profile-bio"
+                  rows={3}
+                  maxLength={280}
+                  value={bio}
+                  placeholder="Conte em uma linha o que você constrói."
+                  onChange={(event) => setBio(event.target.value)}
+                />
+              </Field>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="Localização" htmlFor="profile-location" optional>
+                  <Input
+                    id="profile-location"
+                    value={location}
+                    maxLength={120}
+                    placeholder="São Paulo, Brasil"
+                    onChange={(event) => setLocation(event.target.value)}
+                  />
+                </Field>
+                <Field label="Site ou portfólio" htmlFor="profile-website" optional>
+                  <Input
+                    id="profile-website"
+                    type="url"
+                    inputMode="url"
+                    value={websiteUrl}
+                    maxLength={300}
+                    placeholder="https://seusite.dev"
+                    onChange={(event) => setWebsiteUrl(event.target.value)}
+                  />
+                </Field>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="Nível de experiência" htmlFor="profile-experience" optional>
+                  <Select
+                    id="profile-experience"
+                    value={experienceLevel ?? ''}
+                    onChange={(event) =>
+                      setExperienceLevel((event.target.value || undefined) as ExperienceLevel | undefined)
+                    }
+                  >
+                    <option value="">Não informar</option>
+                    {experienceLevelOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </Select>
+                </Field>
+                <Field
+                  label="Stack principal"
+                  optional
+                  hint={`${primaryStack.length}/${MAX_PRIMARY_STACK}`}
+                >
+                  <SelectableChips
+                    ariaLabel="Stack principal"
+                    options={techStackOptions}
+                    selected={primaryStack}
+                    onChange={setPrimaryStack}
+                    max={MAX_PRIMARY_STACK}
+                  />
                 </Field>
               </div>
 
@@ -396,6 +550,14 @@ export default function ProfilePage() {
       </Modal>
     </Page>
   );
+}
+
+function websiteLabel(url: string) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '');
+  } catch {
+    return url;
+  }
 }
 
 function HeroStat({ label, value }: { label: string; value: string }) {
