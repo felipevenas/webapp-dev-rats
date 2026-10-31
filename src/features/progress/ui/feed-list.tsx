@@ -21,7 +21,7 @@ import { cn } from '@/core/lib/cn';
 const feedCopy: Record<string, { label: string; icon: LucideIcon; tone: string }> = {
   CHALLENGE_CREATED: { label: 'Desafio criado', icon: Flag, tone: 'text-cyan' },
   CHALLENGE_STARTED: { label: 'Desafio iniciado', icon: Sparkles, tone: 'text-accent' },
-  CHALLENGE_COMPLETED: { label: 'Meta alcançada — desafio concluído', icon: Trophy, tone: 'text-gold' },
+  CHALLENGE_COMPLETED: { label: 'Meta alcançada - desafio concluído', icon: Trophy, tone: 'text-gold' },
   CHALLENGE_CANCELLED: { label: 'Desafio cancelado', icon: XCircle, tone: 'text-rose' },
   CHALLENGE_EXPIRED: { label: 'Desafio encerrado sem vencedor', icon: XCircle, tone: 'text-amber' },
   CHALLENGE_UPDATED: { label: 'Regras do desafio atualizadas', icon: ShieldAlert, tone: 'text-amber' },

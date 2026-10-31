@@ -116,7 +116,7 @@ export function VerificationCard() {
       </div>
       <div className="flex items-center gap-2 rounded-lg border border-amber/30 bg-amber-soft px-2.5 py-2">
         <WifiOff className="size-3.5 text-amber" aria-hidden />
-        <span className="text-amber">GitHub indisponível — você não é penalizado</span>
+        <span className="text-amber">GitHub indisponível - você não é penalizado</span>
       </div>
       <div className="flex items-center gap-2 text-faint">
         <GitCommitHorizontal className="size-3.5" aria-hidden />

@@ -381,7 +381,7 @@ export default function CreateChallengePage() {
               <div className="flex items-center justify-between gap-2">
                 <dt className="text-muted">Início</dt>
                 <dd className="text-right font-mono text-fg">
-                  {startMode === 'now' ? 'imediato' : startAtLocal ? startAtLocal.replace('T', ' ') : '—'}
+                  {startMode === 'now' ? 'imediato' : startAtLocal ? startAtLocal.replace('T', ' ') : '-'}
                 </dd>
               </div>
               <div className="flex items-center justify-between gap-2">
@@ -825,7 +825,7 @@ function ReviewStep({
       ? 'Imediatamente ao iniciar'
       : values.startAtLocal
         ? formatDateTime(zonedDateTimeToInstant(values.startAtLocal, DEFAULT_TIME_ZONE), DEFAULT_TIME_ZONE)
-        : '—';
+        : '-';
 
   return (
     <div className="space-y-4">

@@ -192,11 +192,11 @@ export default function IntegrationsPage() {
                   <Metric label="Instalações" value={String(status.installationCount)} />
                   <Metric
                     label="Conectado"
-                    value={status.connectedAt ? formatRelativeTime(status.connectedAt) : '—'}
+                    value={status.connectedAt ? formatRelativeTime(status.connectedAt) : '-'}
                   />
                   <Metric
                     label="Última sync"
-                    value={status.lastSyncedAt ? formatRelativeTime(status.lastSyncedAt) : '—'}
+                    value={status.lastSyncedAt ? formatRelativeTime(status.lastSyncedAt) : '-'}
                   />
                 </dl>
 
@@ -369,7 +369,7 @@ export default function IntegrationsPage() {
                   aos repositórios do grupo.
                 </p>
                 <p>
-                  <strong className="text-fg">Sem conexão:</strong> nenhum dia é tratado como descumprido — a
+                  <strong className="text-fg">Sem conexão:</strong> nenhum dia é tratado como descumprido - a
                   verificação apenas fica pausada.
                 </p>
               </CardContent>

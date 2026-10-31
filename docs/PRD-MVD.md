@@ -1,4 +1,4 @@
-# PRD — DevRats
+# PRD - DevRats
 ## Plataforma social de constância para desenvolvedores
 
 **Versão:** 1.0  
@@ -108,7 +108,7 @@ O produto comprova atividade elegível segundo regras definidas, não o aprendiz
 
 # 3. Público-alvo e personas
 
-## 3.1. Persona A — Estudante de programação
+## 3.1. Persona A - Estudante de programação
 
 Quer aprender uma linguagem, praticar algoritmos e construir projetos de portfólio.
 
@@ -118,7 +118,7 @@ Quer aprender uma linguagem, praticar algoritmos e construir projetos de portfó
 - Compartilhar metas com amigos.
 - Receber incentivo quando estiver perdendo a sequência.
 
-## 3.2. Persona B — Desenvolvedor em início de carreira
+## 3.2. Persona B - Desenvolvedor em início de carreira
 
 Deseja evoluir tecnicamente fora do trabalho e manter projetos pessoais ativos.
 
@@ -127,7 +127,7 @@ Deseja evoluir tecnicamente fora do trabalho e manter projetos pessoais ativos.
 - Definir metas alcançáveis.
 - Acompanhar o progresso ao longo de semanas e meses.
 
-## 3.3. Persona C — Desenvolvedor que deseja estudar em grupo
+## 3.3. Persona C - Desenvolvedor que deseja estudar em grupo
 
 Já possui amigos que estudam ou desenvolvem projetos em conjunto.
 
@@ -138,7 +138,7 @@ Já possui amigos que estudam ou desenvolvem projetos em conjunto.
 - Estabelecer metas coletivas ou individuais.
 - Competir de forma transparente.
 
-## 3.4. Persona D — Criador do desafio
+## 3.4. Persona D - Criador do desafio
 
 É responsável por configurar e administrar um grupo.
 
@@ -356,7 +356,7 @@ A transferência de propriedade do grupo poderá ser postergada para uma versão
 
 # 8. Modos de verificação
 
-## 8.1. Modo A — Repositórios selecionados
+## 8.1. Modo A - Repositórios selecionados
 
 O criador seleciona até três repositórios que serão a base de verificação do grupo.
 
@@ -376,7 +376,7 @@ Os repositórios podem pertencer a usuários ou organizações diferentes, desde
 
 Todos os participantes deverão conseguir contribuir nos repositórios selecionados para que esse modo seja adequado ao grupo. A aplicação não deverá exigir acesso de escrita para realizar a verificação, embora a participação efetiva dependa das permissões de contribuição de cada repositório.
 
-## 8.2. Modo B — Repositórios próprios
+## 8.2. Modo B - Repositórios próprios
 
 Cada participante utilizará seus próprios repositórios elegíveis, sem que o criador precise selecionar repositórios para o grupo.
 
@@ -622,7 +622,7 @@ Armazena os usuários da plataforma.
 
 Campos principais:
 
-- id — UUID, chave primária.
+- id - UUID, chave primária.
 - display_name.
 - username.
 - avatar_url.
@@ -637,9 +637,9 @@ Armazena as contas GitHub vinculadas.
 
 Campos principais:
 
-- id — UUID.
-- user_id — referência a users.
-- github_user_id — identificador externo imutável.
+- id - UUID.
+- user_id - referência a users.
+- github_user_id - identificador externo imutável.
 - github_username.
 - avatar_url.
 - connection_status.
@@ -660,7 +660,7 @@ Armazena os grupos.
 
 Campos principais:
 
-- id — UUID.
+- id - UUID.
 - name.
 - description.
 - creator_user_id.
@@ -1234,7 +1234,7 @@ O projeto deverá possuir:
 
 # 19. Plano de implementação
 
-## Fase 1 — Fundação
+## Fase 1 - Fundação
 
 - Configurar repositório e estrutura do projeto.
 - Configurar React, TypeScript e Spring Boot.
@@ -1245,7 +1245,7 @@ O projeto deverá possuir:
 
 **Entrega:** aplicação executável com estrutura de backend, frontend e banco.
 
-## Fase 2 — Autenticação e GitHub
+## Fase 2 - Autenticação e GitHub
 
 - Implementar cadastro e login.
 - Implementar conexão com GitHub.
@@ -1256,7 +1256,7 @@ O projeto deverá possuir:
 
 **Entrega:** usuário autenticado com integração GitHub funcional.
 
-## Fase 3 — Grupos e desafios
+## Fase 3 - Grupos e desafios
 
 - Implementar criação de grupos.
 - Implementar convites.
@@ -1268,7 +1268,7 @@ O projeto deverá possuir:
 
 **Entrega:** grupos funcionais com regras configuráveis.
 
-## Fase 4 — Validação e progresso
+## Fase 4 - Validação e progresso
 
 - Implementar elegibilidade dos commits.
 - Implementar idempotência.
@@ -1281,7 +1281,7 @@ O projeto deverá possuir:
 
 **Entrega:** núcleo funcional do produto.
 
-## Fase 5 — Interface social
+## Fase 5 - Interface social
 
 - Implementar dashboard.
 - Implementar página do grupo.
@@ -1293,7 +1293,7 @@ O projeto deverá possuir:
 
 **Entrega:** experiência utilizável do início ao fim.
 
-## Fase 6 — Estabilização e piloto
+## Fase 6 - Estabilização e piloto
 
 - Executar testes unitários e de integração.
 - Testar duplicidade de webhooks.

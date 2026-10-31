@@ -39,7 +39,7 @@ export default function DashboardPage() {
           }).format(new Date()),
         )}
         title={`${greeting(DEFAULT_TIME_ZONE)}, ${firstName(user.displayName)}`}
-        description="Um commit por dia. O painel mostra o que já foi validado — sem planilha, sem autoengano."
+        description="Um commit por dia. O painel mostra o que já foi validado - sem planilha, sem autoengano."
         actions={
           <>
             <Button
@@ -73,7 +73,7 @@ export default function DashboardPage() {
             <div className="grid grid-cols-2 divide-x divide-y divide-line sm:grid-cols-4 sm:divide-y-0">
               <SummaryTile
                 label="Hoje"
-                value={active.length > 0 ? `${validatedToday}/${active.length}` : '—'}
+                value={active.length > 0 ? `${validatedToday}/${active.length}` : '-'}
                 caption="desafios com o dia válido"
                 tone={validatedToday > 0 ? 'volt' : 'neutral'}
                 icon={CalendarCheck}
@@ -94,7 +94,7 @@ export default function DashboardPage() {
               />
               <SummaryTile
                 label="Melhor posição"
-                value={bestRank > 0 ? `#${bestRank}` : '—'}
+                value={bestRank > 0 ? `#${bestRank}` : '-'}
                 caption="ranking entre os grupos"
                 tone="gold"
                 icon={Trophy}
@@ -108,7 +108,7 @@ export default function DashboardPage() {
                 <h2 className="text-lg font-semibold tracking-[-0.02em]">Seus desafios</h2>
                 <p className="mt-0.5 text-[12px] text-muted">
                   {groups.length === 0
-                    ? 'Nenhum grupo ainda — crie o primeiro.'
+                    ? 'Nenhum grupo ainda - crie o primeiro.'
                     : `${groups.length} ${groups.length === 1 ? 'grupo' : 'grupos'} · atualizado automaticamente`}
                 </p>
               </div>

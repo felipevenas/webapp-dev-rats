@@ -16,7 +16,7 @@ export function LegalPage({ title, updatedAt, intro, sections }: LegalPageProps)
     <div className="min-h-dvh bg-bg">
       <header className="border-b border-line">
         <div className="ds-container flex h-16 items-center justify-between">
-          <Link to="/" aria-label="DevRats — início">
+          <Link to="/" aria-label="DevRats - início">
             <Logo />
           </Link>
           <div className="flex items-center gap-2">
