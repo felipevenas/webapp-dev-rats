@@ -57,6 +57,7 @@ export interface User {
   username: string;
   email: string;
   avatarUrl?: string | null;
+  avatarSource?: 'NONE' | 'GITHUB' | 'CUSTOM';
   timezone: string;
   bio?: string | null;
   location?: string | null;

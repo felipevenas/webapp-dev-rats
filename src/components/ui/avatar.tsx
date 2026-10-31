@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { cn } from '@/core/lib/cn';
 import { initials } from '@/core/lib/format';
 
@@ -21,6 +21,7 @@ interface AvatarProps {
 
 export function Avatar({ src, name, size = 'md', className, ring = false }: AvatarProps) {
   const [broken, setBroken] = useState(false);
+  useEffect(() => setBroken(false), [src]);
   const showImage = Boolean(src) && !broken;
 
   return (
@@ -38,6 +39,7 @@ export function Avatar({ src, name, size = 'md', className, ring = false }: Avat
           src={src ?? undefined}
           alt=""
           loading="lazy"
+          referrerPolicy="no-referrer"
           className="size-full object-cover"
           onError={() => setBroken(true)}
         />

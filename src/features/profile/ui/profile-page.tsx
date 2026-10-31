@@ -21,7 +21,6 @@ import { toAppError } from '@/core/http/problem';
 import { DEFAULT_TIME_ZONE, formatFullDate, localDateInZone, timeZoneLabel } from '@/core/lib/date';
 import type { ExperienceLevel, TechStack } from '@/core/types/api';
 import { Page, PageHeader } from '@/components/layout/page-header';
-import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -44,6 +43,7 @@ import {
   useExportData,
   useUpdateProfile,
 } from '@/features/profile/data/use-profile';
+import { AvatarUploader } from '@/features/profile/ui/avatar-uploader';
 
 const BRASILIA_LABEL = 'Horário de Brasília (GMT-3)';
 
@@ -210,7 +210,7 @@ export default function ProfilePage() {
       <section className="ds-card relative overflow-hidden p-5 sm:p-6">
         <div className="ds-grid-bg-sm pointer-events-none absolute inset-0 opacity-50" aria-hidden />
         <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center">
-          <Avatar src={user.avatarUrl} name={user.displayName} size="2xl" ring />
+          <AvatarUploader user={user} />
           <div className="min-w-0 flex-1">
             <h2 className="text-2xl font-semibold tracking-[-0.03em]">{user.displayName}</h2>
             <p className="font-mono text-[12px] text-muted">@{user.username}</p>
@@ -383,8 +383,8 @@ export default function ProfilePage() {
               </div>
 
               <div className="rounded-xl border border-line bg-card-2 p-3 text-[11px] leading-relaxed text-muted">
-                O avatar e o nome de usuário do GitHub vêm da conta conectada. O e-mail não pode ser alterado no
-                MVP. Todo o app e os novos desafios usam o horário de Brasília (GMT-3), que não pode ser alterado.
+                Envie sua foto aqui; sem ela, usamos o avatar do GitHub ou as iniciais. O e-mail n?o pode
+                ser alterado no MVP. Todo o app e os novos desafios usam o hor?rio de Bras?lia (GMT-3).
               </div>
             </CardContent>
           </Card>

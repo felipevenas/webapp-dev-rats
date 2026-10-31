@@ -12,6 +12,22 @@ export function useUpdateProfile() {
   });
 }
 
+export function useUploadAvatar() {
+  const { setUser } = useAuth();
+  return useMutation({
+    mutationFn: (file: File) => profileApi.uploadAvatar(file),
+    onSuccess: (user) => setUser(user),
+  });
+}
+
+export function useDeleteAvatar() {
+  const { setUser } = useAuth();
+  return useMutation({
+    mutationFn: profileApi.deleteAvatar,
+    onSuccess: (user) => setUser(user),
+  });
+}
+
 export function useExportData() {
   return useMutation({ mutationFn: profileApi.exportData });
 }
