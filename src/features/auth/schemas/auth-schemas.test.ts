@@ -69,73 +69,21 @@ const base = {
   acceptTerms: true,
 };
 
-describe('register schema — perfil profissional', () => {
-  it('accepts a registration without the optional fields', () => {
+describe('register schema', () => {
+  it('accepts a compact registration payload', () => {
     expect(registerSchema.safeParse(base).success).toBe(true);
   });
 
-  it('accepts the professional fields when valid', () => {
-    const result = registerSchema.safeParse({
-      ...base,
-      bio: 'Backend em Java e Kotlin, constância todo dia.',
-      location: 'São Paulo, Brasil',
-      websiteUrl: 'https://devrats.dev',
-      experienceLevel: 'PLENO',
-      primaryStack: ['JAVA', 'KOTLIN', 'SPRING', 'SQL', 'AWS'],
-    });
+  it('requires the terms acceptance', () => {
+    expect(registerSchema.safeParse({ ...base, acceptTerms: false }).success).toBe(false);
+  });
+
+  it('keeps profile fields out of the registration payload', () => {
+    const result = registerSchema.safeParse({ ...base, bio: 'Backend em Java', primaryStack: ['JAVA'] });
     expect(result.success).toBe(true);
-  });
-
-  it('accepts empty optional text fields', () => {
-    const result = registerSchema.safeParse({
-      ...base,
-      bio: '',
-      location: '',
-      websiteUrl: '',
-    });
-    expect(result.success).toBe(true);
-  });
-
-  it('rejects a bio longer than 280 characters', () => {
-    const result = registerSchema.safeParse({ ...base, bio: 'a'.repeat(281) });
-    expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.error.issues.some((issue) => issue.path.includes('bio'))).toBe(true);
+    if (result.success) {
+      expect(result.data).not.toHaveProperty('bio');
+      expect(result.data).not.toHaveProperty('primaryStack');
     }
-  });
-
-  it('rejects a location longer than 120 characters', () => {
-    expect(registerSchema.safeParse({ ...base, location: 'a'.repeat(121) }).success).toBe(false);
-  });
-
-  it('rejects a website that is not http(s)', () => {
-    for (const websiteUrl of ['devrats.dev', 'ftp://devrats.dev', 'javascript:alert(1)']) {
-      const result = registerSchema.safeParse({ ...base, websiteUrl });
-      expect(result.success, websiteUrl).toBe(false);
-      if (!result.success) {
-        expect(result.error.issues.some((issue) => issue.path.includes('websiteUrl'))).toBe(true);
-      }
-    }
-  });
-
-  it('rejects a website longer than 300 characters', () => {
-    const websiteUrl = `https://devrats.dev/${'a'.repeat(300)}`;
-    expect(registerSchema.safeParse({ ...base, websiteUrl }).success).toBe(false);
-  });
-
-  it('rejects more than five technologies', () => {
-    const result = registerSchema.safeParse({
-      ...base,
-      primaryStack: ['JAVA', 'KOTLIN', 'SPRING', 'SQL', 'AWS', 'DOCKER'],
-    });
-    expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.error.issues.some((issue) => issue.path.includes('primaryStack'))).toBe(true);
-    }
-  });
-
-  it('rejects unknown experience levels and stacks', () => {
-    expect(registerSchema.safeParse({ ...base, experienceLevel: 'STAFF' }).success).toBe(false);
-    expect(registerSchema.safeParse({ ...base, primaryStack: ['COBOL'] }).success).toBe(false);
   });
 });

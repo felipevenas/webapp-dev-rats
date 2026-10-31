@@ -14,6 +14,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o 
 
 ### 🚀 Adicionado
 
+- Onboarding interativo pós-cadastro com perfil, GitHub, desafio e convite.
 - Paginação padronizada nas listas de repositórios e notificações.
 - Fuso horário fixo em Brasília nos novos cadastros e desafios.
 - Login com e-mail ou nome de usuário.
