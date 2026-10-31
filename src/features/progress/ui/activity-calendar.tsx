@@ -399,19 +399,27 @@ interface ActivityCommitListProps {
 
 function ActivityCommitList({ commits, timezone, isLoading, error, onRetry }: ActivityCommitListProps) {
   return (
-    <div className="mt-3 border-t border-line pt-3" aria-live="polite">
+    <div className="mt-3 border-t border-line pt-3">
       <p className="ds-label">Commits do dia</p>
+      <p className="sr-only" aria-live="polite">
+        {isLoading
+          ? 'Carregando commits do dia'
+          : commits.length === 0
+            ? 'Nenhum commit encontrado para este dia'
+            : `${commits.length} commits encontrados para este dia`}
+      </p>
 
       {isLoading ? (
         <div className="mt-2 space-y-1.5">
           <Skeleton className="h-14 rounded-lg" />
           <Skeleton className="h-14 rounded-lg" />
-          <span className="sr-only">Carregando commits do dia</span>
         </div>
       ) : error ? (
         <ErrorState error={error} compact onRetry={onRetry} className="mt-2 gap-2 rounded-lg px-3 py-4" />
       ) : commits.length === 0 ? (
-        <p className="mt-2 text-[11px] leading-relaxed text-muted">Dia registrado sem commit associado</p>
+        <p className="mt-2 text-[11px] leading-relaxed text-muted">
+          Nenhum commit elegível encontrado para este dia. O repositório pode ter sido arquivado ou removido.
+        </p>
       ) : (
         <ol className="mt-2 space-y-1.5" aria-label="Commits que validaram o dia">
           {commits.map((commit, index) => (
@@ -419,8 +427,8 @@ function ActivityCommitList({ commits, timezone, isLoading, error, onRetry }: Ac
               <a
                 href={commit.commitUrl}
                 target="_blank"
-                rel="noreferrer"
-                aria-label={`Abrir commit ${shortSha(commit.sha)} de ${commit.repositoryFullName} no GitHub (nova aba)`}
+                rel="noreferrer noopener"
+                aria-label={`Abrir commit ${shortSha(commit.sha)} de ${commit.repositoryFullName} no GitHub (nova aba)${index === 0 ? ', commit que validou o dia' : ''}`}
                 className={cn(
                   'ds-focus-ring group block min-w-0 rounded-lg border px-2.5 py-2 transition-colors',
                   index === 0

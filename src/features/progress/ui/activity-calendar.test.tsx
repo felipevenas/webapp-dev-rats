@@ -123,7 +123,7 @@ describe('ActivityCalendar commit list', () => {
     const link = screen.getByRole('link', { name: /Abrir commit a1b2c3d/ });
     expect(link.getAttribute('href')).toBe(commits[0]?.commitUrl);
     expect(link.getAttribute('target')).toBe('_blank');
-    expect(link.getAttribute('rel')).toBe('noreferrer');
+    expect(link.getAttribute('rel')).toBe('noreferrer noopener');
     expect(within(link).getByText('a1b2c3d')).toBeTruthy();
     expect(within(link).getByText('devrats/api')).toBeTruthy();
     expect(within(link).getByText('14:32')).toBeTruthy();
@@ -144,7 +144,7 @@ describe('ActivityCalendar commit list', () => {
     renderCalendar();
     await selectValidDay();
 
-    expect(screen.getByText('Dia registrado sem commit associado')).toBeTruthy();
+    expect(screen.getByText(/Nenhum commit elegível encontrado para este dia/)).toBeTruthy();
     expect(screen.queryByText('Commit que validou o dia')).toBeNull();
   });
 });
