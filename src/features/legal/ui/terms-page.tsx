@@ -31,8 +31,8 @@ export default function TermsPage() {
                 data e identificador do commit. Nenhum código-fonte é copiado ou exibido.
               </p>
               <p>
-                Um dia é válido quando existe pelo menos um commit elegível no fuso do desafio. Vários commits no
-                mesmo dia contam uma vez. Commits de bots, vazios ou de merge não contam.
+                Um dia é válido quando existe pelo menos um commit elegível no horário de Brasília (GMT-3). Vários
+                commits no mesmo dia contam uma vez. Commits de bots, vazios ou de merge não contam.
               </p>
             </>
           ),

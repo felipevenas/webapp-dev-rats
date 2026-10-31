@@ -45,7 +45,7 @@ const steps = [
     number: '02',
     title: 'Monte o grupo',
     description:
-      'Defina a meta individual de dias válidos, o fuso fixo do desafio e o modo de verificação. Convide amigos por link privado.',
+      'Defina a meta individual de dias válidos e o modo de verificação. O fuso é fixo em Brasília. Convide amigos por link privado.',
     icon: Users,
   },
   {
@@ -417,7 +417,7 @@ export default function LandingPage() {
               </p>
               <div className="mt-6 inline-flex items-center gap-2 rounded-xl border border-line bg-card px-3 py-2 text-[11px] text-muted">
                 <Sparkles className="size-3.5 text-accent" aria-hidden />
-                Fuso do desafio é fixo e armazenado em UTC
+                Horário de Brasília (GMT-3) fixo; instantes armazenados em UTC
               </div>
             </div>
 
@@ -425,7 +425,7 @@ export default function LandingPage() {
               {[
                 {
                   title: 'Dia válido',
-                  text: 'Pelo menos um commit elegível no fuso do desafio. Vários commits no mesmo dia contam uma vez.',
+                  text: 'Pelo menos um commit elegível no horário de Brasília (GMT-3). Vários commits no mesmo dia contam uma vez.',
                 },
                 {
                   title: 'Elegibilidade',

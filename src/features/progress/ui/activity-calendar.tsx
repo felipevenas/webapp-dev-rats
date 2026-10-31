@@ -26,7 +26,7 @@ import { useActivity } from '@/features/progress/data/use-progress';
 const statusCopy: Record<ActivityDayStatus, { label: string; description: string }> = {
   VALID: { label: 'Dia válido', description: 'Pelo menos um commit elegível foi verificado neste dia.' },
   EMPTY: { label: 'Sem atividade', description: 'Nenhum commit elegível foi encontrado neste dia.' },
-  FUTURE: { label: 'Dia futuro', description: 'Este dia ainda não aconteceu no fuso do desafio.' },
+  FUTURE: { label: 'Dia futuro', description: 'Este dia ainda não aconteceu no horário de Brasília (GMT-3).' },
   BEFORE_START: { label: 'Antes do início', description: 'Este dia é anterior ao início do desafio.' },
   AFTER_END: { label: 'Depois do encerramento', description: 'Este dia é posterior ao fim do desafio.' },
 };

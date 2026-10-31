@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  DEFAULT_TIME_ZONE,
   addDays,
   diffInDays,
   eachDay,
@@ -12,6 +13,11 @@ import {
 } from './date';
 
 describe('date helpers', () => {
+  it('fixes the default timezone to Brasília', () => {
+    expect(DEFAULT_TIME_ZONE).toBe('America/Sao_Paulo');
+    expect(localDateInZone('2026-10-29T02:00:00Z', DEFAULT_TIME_ZONE)).toBe('2026-10-28');
+  });
+
   it('builds a six-week Sunday-first grid for a month', () => {
     const cells = monthGrid('2026-10');
     expect(cells).toHaveLength(42);

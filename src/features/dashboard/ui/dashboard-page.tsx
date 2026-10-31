@@ -179,7 +179,7 @@ export default function DashboardPage() {
                 ))}
               </ul>
               <p className="mt-3 border-t border-line pt-2.5 font-mono text-[10px] uppercase tracking-[0.12em] text-faint">
-                Fuso do desafio: {user.timezone.replace('_', ' ')}
+                Fuso dos desafios: Brasília (GMT-3)
               </p>
             </div>
           </div>

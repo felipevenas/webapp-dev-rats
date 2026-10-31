@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { isValidTimeZone } from '@/core/lib/date';
 
 export const createChallengeSchema = z
   .object({
@@ -9,7 +8,6 @@ export const createChallengeSchema = z
       .min(2, 'Dê um nome ao grupo')
       .max(120, 'Use no máximo 120 caracteres'),
     description: z.string().trim().max(500, 'Use no máximo 500 caracteres').optional(),
-    timezone: z.string().min(1, 'Selecione o fuso do desafio'),
     maxMembers: z
       .number({ message: 'Informe um número' })
       .min(2, 'O grupo precisa de pelo menos 2 vagas')
@@ -26,10 +24,6 @@ export const createChallengeSchema = z
     repositoryIds: z.array(z.string()).max(3, 'Selecione no máximo 3 repositórios'),
   })
   .superRefine((values, ctx) => {
-    if (!isValidTimeZone(values.timezone)) {
-      ctx.addIssue({ code: 'custom', path: ['timezone'], message: 'Fuso horário inválido' });
-    }
-
     let startInstant = Date.now();
     if (values.startMode === 'schedule') {
       if (!values.startAtLocal) {

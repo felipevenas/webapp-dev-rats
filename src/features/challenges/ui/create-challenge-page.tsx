@@ -19,25 +19,17 @@ import {
   Users,
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { useAuth } from '@/core/auth/auth-provider';
 import { toAppError } from '@/core/http/problem';
-import {
-  capitalize,
-  formatDateTime,
-  formatFullDate,
-  listTimeZones,
-  timeZoneLabel,
-} from '@/core/lib/date';
+import { DEFAULT_TIME_ZONE, capitalize, formatDateTime, formatFullDate } from '@/core/lib/date';
 import { cn } from '@/core/lib/cn';
 import type { GitHubRepository } from '@/core/types/api';
 import type { IconComponent } from '@/core/types/ui';
 import { Page, PageHeader } from '@/components/layout/page-header';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Select } from '@/components/ui/controls';
 import { Field, Input, Textarea } from '@/components/ui/input';
 import { ProgressRing } from '@/components/ui/progress-ring';
 import { Segmented } from '@/components/ui/segmented';
@@ -53,7 +45,7 @@ import {
   type CreateChallengeValues,
 } from '@/features/challenges/schemas/create-challenge-schema';
 
-const timeZones = listTimeZones();
+const BRASILIA_LABEL = 'Brasília (GMT-3)';
 const targetPresets = [7, 14, 21, 30, 60, 90];
 
 type StepId = 'group' | 'rules' | 'window' | 'repos' | 'review';
@@ -81,7 +73,6 @@ function admissionDefault(): string {
 }
 
 export default function CreateChallengePage() {
-  const { user } = useAuth();
   const navigate = useNavigate();
   const createGroup = useCreateGroup();
   const github = useGitHubStatus();
@@ -94,7 +85,6 @@ export default function CreateChallengePage() {
     defaultValues: {
       name: '',
       description: '',
-      timezone: user?.timezone ?? 'America/Sao_Paulo',
       maxMembers: 10,
       verificationMode: 'OWN_REPOSITORIES',
       targetValidDays: 30,
@@ -113,7 +103,6 @@ export default function CreateChallengePage() {
   const name = form.watch('name');
   const endsAtDate = form.watch('endsAtDate');
   const admissionEndsAtDate = form.watch('admissionEndsAtDate');
-  const timezone = form.watch('timezone');
 
   const steps = useMemo<Step[]>(() => {
     const base: Step[] = [
@@ -157,7 +146,7 @@ export default function CreateChallengePage() {
   const goNext = async () => {
     setServerError(null);
     const fieldsByStep: Record<StepId, Array<keyof CreateChallengeValues>> = {
-      group: ['name', 'description', 'timezone', 'maxMembers'],
+      group: ['name', 'description', 'maxMembers'],
       rules: ['verificationMode', 'targetValidDays'],
       window: ['startMode', 'startAtLocal', 'endsAtDate', 'admissionEndsAtDate'],
       repos: ['repositoryIds'],
@@ -197,7 +186,7 @@ export default function CreateChallengePage() {
       const group = await createGroup.mutateAsync({
         name: values.name,
         description: values.description?.trim() ? values.description.trim() : undefined,
-        timezone: values.timezone,
+        timezone: DEFAULT_TIME_ZONE,
         maxMembers: values.maxMembers,
         challenge: {
           verificationMode: values.verificationMode,
@@ -406,7 +395,7 @@ export default function CreateChallengePage() {
               </div>
               <div className="flex items-center justify-between gap-2">
                 <dt className="text-muted">Fuso</dt>
-                <dd className="truncate text-right font-mono text-fg">{timezone.replace('_', ' ')}</dd>
+                <dd className="truncate text-right font-mono text-fg">{BRASILIA_LABEL}</dd>
               </div>
               {verificationMode === 'SELECTED_REPOSITORIES' ? (
                 <div className="flex items-center justify-between gap-2">
@@ -463,7 +452,7 @@ function GroupStep({ form }: { form: StepForm }) {
       <StepIntro
         icon={Users}
         title="Identidade do grupo"
-        description="O nome aparece no ranking e nos convites. O fuso do desafio define quando cada dia começa e termina."
+        description="O nome aparece no ranking e nos convites. Os dias válidos sempre seguem o horário de Brasília."
       />
 
       <Field label="Nome do grupo" htmlFor="name" error={form.formState.errors.name?.message}>
@@ -494,25 +483,8 @@ function GroupStep({ form }: { form: StepForm }) {
       </Field>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field
-          label="Fuso do desafio"
-          htmlFor="timezone"
-          hint="fixo após criar"
-          error={form.formState.errors.timezone?.message}
-        >
-          <Controller
-            control={form.control}
-            name="timezone"
-            render={({ field }) => (
-              <Select id="timezone" value={field.value} onChange={field.onChange}>
-                {timeZones.map((zone) => (
-                  <option key={zone} value={zone}>
-                    {zone.replace(/_/g, ' ')}
-                  </option>
-                ))}
-              </Select>
-            )}
-          />
+        <Field label="Fuso do desafio" htmlFor="timezone" hint="fixo em Brasília">
+          <Input id="timezone" value={BRASILIA_LABEL} readOnly disabled />
         </Field>
 
         <Field
@@ -536,8 +508,8 @@ function GroupStep({ form }: { form: StepForm }) {
       <div className="flex items-start gap-2.5 rounded-xl border border-line bg-card-2 p-3">
         <Globe2 className="mt-0.5 size-4 shrink-0 text-cyan" aria-hidden />
         <p className="text-[11px] leading-relaxed text-muted">
-          Todos os participantes usam <strong className="text-fg">{timeZoneLabel(form.watch('timezone'))}</strong> para
-          definir um dia válido. Não é possível alterar depois que o desafio iniciar.
+          Todos os participantes usam o <strong className="text-fg">horário de Brasília (GMT-3)</strong> para definir um
+          dia válido. O fuso é fixo e não pode ser alterado.
         </p>
       </div>
     </div>
@@ -863,7 +835,7 @@ function ReviewStep({
       <SummaryBlock title="Grupo" onEdit={() => onEdit('group')}>
         <SummaryRow label="Nome" value={values.name} />
         {values.description ? <SummaryRow label="Descrição" value={values.description} /> : null}
-        <SummaryRow label="Fuso" value={timeZoneLabel(values.timezone)} />
+        <SummaryRow label="Fuso" value={BRASILIA_LABEL} />
         <SummaryRow label="Limite" value={`${values.maxMembers} participantes`} />
       </SummaryBlock>
 
@@ -919,13 +891,13 @@ function ReviewStep({
           {values.startMode === 'now' ? (
             <>
               O desafio começa <strong className="text-fg">assim que você criar o grupo</strong>. Modalidade, meta, fuso
-              e lista de repositórios ficam travados imediatamente. Para mudar depois, será necessário cancelar e criar
-              outro.
+              fixo (Brasília) e lista de repositórios ficam travados imediatamente. Para mudar depois, será necessário
+              cancelar e criar outro.
             </>
           ) : (
             <>
               O desafio será criado como <strong className="text-fg">rascunho</strong> e inicia automaticamente na data
-              agendada. Modalidade, meta, fuso e lista de repositórios ficam travados depois do início.
+              agendada. Modalidade, meta, fuso fixo (Brasília) e lista de repositórios ficam travados depois do início.
             </>
           )}
         </p>

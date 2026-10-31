@@ -9,6 +9,9 @@ export const WEEKDAY_LABELS_LONG = [
   'sábado',
 ] as const;
 
+/** Every new challenge and account uses Brasília time, regardless of the browser zone. */
+export const DEFAULT_TIME_ZONE = 'America/Sao_Paulo';
+
 const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
 
 /** Parses an ISO date (`2026-10-28`) as a civil date, never shifting the day. */
