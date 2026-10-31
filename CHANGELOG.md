@@ -11,7 +11,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o 
 ### 📝 Documentação
 
 - README padronizado com print da landing, badges, arquitetura, governança e licença.
-- Descrição e topics do repositório alinhados ao ecossistema DevStreak.
+- Descrição e topics do repositório alinhados ao ecossistema DevRats.
 
 ## [0.1.0] - 2026-10-29
 

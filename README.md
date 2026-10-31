@@ -1,10 +1,10 @@
 <div align="center">
 
-# DevStreak Web 🎯
+# DevRats Web 🎯
 
-**Frontend React do DevStreak — desafios privados de constância para desenvolvedores, com verificação automática de commits no GitHub, ranking, sequência e calendário de dias válidos.**
+**Frontend React do DevRats — desafios privados de constância para desenvolvedores, com verificação automática de commits no GitHub, ranking, sequência e calendário de dias válidos.**
 
-[![CI](https://github.com/felipevenas/webapp-devstreak/actions/workflows/ci.yml/badge.svg)](https://github.com/felipevenas/webapp-devstreak/actions/workflows/ci.yml)
+[![CI](https://github.com/felipevenas/webapp-dev-rats/actions/workflows/ci.yml/badge.svg)](https://github.com/felipevenas/webapp-dev-rats/actions/workflows/ci.yml)
 [![React](https://img.shields.io/badge/React-19.3-61DAFB?style=for-the-badge&logo=react&logoColor=white)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-7.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-8.3-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vite.dev/)
@@ -30,11 +30,11 @@
 
 ---
 
-Frontend do **DevStreak**, a plataforma de constância para desenvolvedores: desafios privados, verificação automática de commits no GitHub, ranking, sequência e calendário de dias válidos.
+Frontend do **DevRats**, a plataforma de constância para desenvolvedores: desafios privados, verificação automática de commits no GitHub, ranking, sequência e calendário de dias válidos.
 
 Este repositório entrega o **MVP navegável** descrito em [`docs/PRD-MVD.md`](docs/PRD-MVD.md), integrado à API Spring Boot em [`../api-dev-rats`](../api-dev-rats).
 
-![Landing page do DevStreak](docs/landing.png)
+![Landing page do DevRats](docs/landing.png)
 
 > Landing pública em tema escuro. O painel autenticado depende da API em execução; os fluxos completos estão descritos em [Rotas](#rotas).
 

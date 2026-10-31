@@ -1,4 +1,4 @@
-# Relatório de responsividade — DevStreak Web
+# Relatório de responsividade — DevRats Web
 
 Auditoria conduzida com o MCP do Playwright no frontend em execução (`http://localhost:5174`), com a API local (`http://localhost:8080`) e dados de um grupo ativo.
 

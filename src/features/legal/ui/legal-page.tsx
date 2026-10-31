@@ -16,7 +16,7 @@ export function LegalPage({ title, updatedAt, intro, sections }: LegalPageProps)
     <div className="min-h-dvh bg-bg">
       <header className="border-b border-line">
         <div className="ds-container flex h-16 items-center justify-between">
-          <Link to="/" aria-label="DevStreak — início">
+          <Link to="/" aria-label="DevRats — início">
             <Logo />
           </Link>
           <div className="flex items-center gap-2">
@@ -50,10 +50,10 @@ export function LegalPage({ title, updatedAt, intro, sections }: LegalPageProps)
         </div>
 
         <div className="mt-12 rounded-xl border border-line bg-card p-4 text-[12px] leading-relaxed text-muted">
-          Este documento descreve o MVP em piloto do DevStreak e pode ser atualizado antes do lançamento
+          Este documento descreve o MVP em piloto do DevRats e pode ser atualizado antes do lançamento
           comercial. Dúvidas sobre dados pessoais podem ser enviadas para{' '}
-          <a href="mailto:contato@devstreak.app" className="text-accent hover:underline">
-            contato@devstreak.app
+          <a href="mailto:contato@devrats.app" className="text-accent hover:underline">
+            contato@devrats.app
           </a>
           .
         </div>

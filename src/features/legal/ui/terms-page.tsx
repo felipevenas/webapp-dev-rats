@@ -5,7 +5,7 @@ export default function TermsPage() {
     <LegalPage
       title="Termos de uso"
       updatedAt="28 de outubro de 2026"
-      intro="O DevStreak é uma plataforma de desafios de constância para desenvolvedores. Ao criar uma conta, você concorda com as regras abaixo, que existem para manter a competição justa e a privacidade de todos."
+      intro="O DevRats é uma plataforma de desafios de constância para desenvolvedores. Ao criar uma conta, você concorda com as regras abaixo, que existem para manter a competição justa e a privacidade de todos."
       sections={[
         {
           title: '1. Conta e elegibilidade',
@@ -61,7 +61,7 @@ export default function TermsPage() {
                 ou usar a plataforma para atividades ilícitas.
               </p>
               <p>
-                O DevStreak verifica atividade elegível, não a qualidade do código nem o aprendizado efetivo. Não
+                O DevRats verifica atividade elegível, não a qualidade do código nem o aprendizado efetivo. Não
                 há garantia de que um commit represente trabalho intelectual original.
               </p>
             </>

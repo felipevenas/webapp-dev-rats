@@ -78,7 +78,7 @@ export function notificationCopy(type: NotificationType): NotificationCopy {
     default:
       return {
         title: 'Atualização',
-        description: 'Há uma novidade no seu DevStreak.',
+        description: 'Há uma novidade no seu DevRats.',
         icon: Bell,
         tone: 'neutral',
       };

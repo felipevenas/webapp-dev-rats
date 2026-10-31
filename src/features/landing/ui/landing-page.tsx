@@ -81,7 +81,7 @@ const faqs = [
   {
     question: 'Meu código fica exposto para o grupo?',
     answer:
-      'Não. O DevStreak lê apenas metadados necessários para validar o commit: repositório, autoria, data e SHA. Nenhum código-fonte ou mensagem de commit privada é exibida.',
+      'Não. O DevRats lê apenas metadados necessários para validar o commit: repositório, autoria, data e SHA. Nenhum código-fonte ou mensagem de commit privada é exibida.',
   },
   {
     question: 'Posso mudar a modalidade depois de começar?',
@@ -97,7 +97,7 @@ export default function LandingPage() {
     <div className="min-h-dvh bg-bg">
       <header className="ds-glass sticky top-0 z-40">
         <div className="ds-container flex h-16 items-center justify-between gap-4">
-          <Link to="/" aria-label="DevStreak — início" className="inline-flex items-center gap-2.5">
+          <Link to="/" aria-label="DevRats — início" className="inline-flex items-center gap-2.5">
             <Logo />
             <Badge variant="outline" size="sm" className="hidden sm:inline-flex">
               MVP
@@ -550,7 +550,7 @@ export default function LandingPage() {
         </div>
         <div className="border-t border-line">
           <div className="ds-container flex flex-col gap-2 py-5 text-[11px] text-faint sm:flex-row sm:items-center sm:justify-between">
-            <span>DevStreak não é afiliado ao GitHub. Dados tratados conforme a LGPD.</span>
+            <span>DevRats não é afiliado ao GitHub. Dados tratados conforme a LGPD.</span>
             <span className="font-mono">constancy &gt; intensity</span>
           </div>
         </div>

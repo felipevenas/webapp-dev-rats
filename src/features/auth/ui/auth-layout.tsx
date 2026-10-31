@@ -16,7 +16,7 @@ export function AuthLayout({ title, subtitle, children, footer }: AuthLayoutProp
       <aside className="relative hidden overflow-hidden border-r border-line bg-surface lg:flex lg:flex-col lg:justify-between lg:p-10">
         <div className="ds-grid-bg ds-radial pointer-events-none absolute inset-0 opacity-90" aria-hidden />
         <div className="relative">
-          <Link to="/" aria-label="DevStreak — página inicial">
+          <Link to="/" aria-label="DevRats — página inicial">
             <Logo />
           </Link>
           <div className="mt-16 max-w-md">
@@ -45,7 +45,7 @@ export function AuthLayout({ title, subtitle, children, footer }: AuthLayoutProp
 
       <main className="relative flex min-h-dvh flex-col px-5 py-6 sm:px-8">
         <div className="flex items-center justify-between lg:hidden">
-          <Link to="/" aria-label="DevStreak — página inicial">
+          <Link to="/" aria-label="DevRats — página inicial">
             <Logo />
           </Link>
           <ThemeToggle />

@@ -15,7 +15,7 @@ function initialTheme(): Theme {
   if (typeof window === 'undefined') return 'dark';
   const stored = window.localStorage.getItem(STORAGE_KEY);
   if (stored === 'light' || stored === 'dark') return stored;
-  //---- DevStreak is dark-first; light is opt-in and persists once chosen.
+  //---- DevRats is dark-first; light is opt-in and persists once chosen.
   return 'dark';
 }
 

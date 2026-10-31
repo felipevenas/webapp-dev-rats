@@ -60,7 +60,7 @@ export function InviteDialog({ groupId, groupName, open, onOpenChange }: InviteD
 
   const share = async () => {
     if (!inviteUrl) return;
-    const text = `Entre no grupo "${groupName}" no DevStreak: ${inviteUrl}`;
+    const text = `Entre no grupo "${groupName}" no DevRats: ${inviteUrl}`;
     try {
       if (navigator.share) await navigator.share({ title: groupName, text, url: inviteUrl });
       else {

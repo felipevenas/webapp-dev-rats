@@ -96,7 +96,7 @@ export default function ProfilePage() {
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement('a');
       anchor.href = url;
-      anchor.download = `devstreak-dados-${new Date().toISOString().slice(0, 10)}.json`;
+      anchor.download = `devrats-dados-${new Date().toISOString().slice(0, 10)}.json`;
       document.body.appendChild(anchor);
       anchor.click();
       anchor.remove();

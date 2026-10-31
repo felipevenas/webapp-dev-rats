@@ -1,8 +1,8 @@
 # Guia de Contribuição 🤝
 
-Obrigado pelo interesse em contribuir com o **DevStreak Web**! Este documento orienta o processo de desenvolvimento para manter a interface consistente, acessível e sustentável.
+Obrigado pelo interesse em contribuir com o **DevRats Web**! Este documento orienta o processo de desenvolvimento para manter a interface consistente, acessível e sustentável.
 
-> **Regra de ouro:** o DevStreak comprova atividade elegível, não aprendizado. Nenhuma contribuição pode expor código-fonte, mensagens privadas de commit, tokens ou dados de repositórios de terceiros. A API é a fonte de verdade para autorização e progresso.
+> **Regra de ouro:** o DevRats comprova atividade elegível, não aprendizado. Nenhuma contribuição pode expor código-fonte, mensagens privadas de commit, tokens ou dados de repositórios de terceiros. A API é a fonte de verdade para autorização e progresso.
 
 ---
 
@@ -17,8 +17,8 @@ Obrigado pelo interesse em contribuir com o **DevStreak Web**! Este documento or
 ### Instalação
 
 ```bash
-git clone https://github.com/felipevenas/webapp-devstreak.git
-cd webapp-devstreak
+git clone https://github.com/felipevenas/webapp-dev-rats.git
+cd webapp-dev-rats
 npm install
 cp .env.example .env.local
 npm run dev

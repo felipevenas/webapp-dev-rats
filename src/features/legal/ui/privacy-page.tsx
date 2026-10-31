@@ -5,7 +5,7 @@ export default function PrivacyPage() {
     <LegalPage
       title="Política de privacidade"
       updatedAt="28 de outubro de 2026"
-      intro="Esta política explica quais dados o DevStreak trata, para quê e por quanto tempo. O princípio é simples: coletar o mínimo necessário para comprovar atividade elegível e manter o desafio funcionando."
+      intro="Esta política explica quais dados o DevRats trata, para quê e por quanto tempo. O princípio é simples: coletar o mínimo necessário para comprovar atividade elegível e manter o desafio funcionando."
       sections={[
         {
           title: '1. Dados que tratamos',
@@ -72,7 +72,7 @@ export default function PrivacyPage() {
                 exclusão de conta com confirmação de senha.
               </p>
               <p>
-                Para solicitações adicionais, escreva para contato@devstreak.app. Responderemos dentro dos prazos
+                Para solicitações adicionais, escreva para contato@devrats.app. Responderemos dentro dos prazos
                 previstos na LGPD.
               </p>
             </>

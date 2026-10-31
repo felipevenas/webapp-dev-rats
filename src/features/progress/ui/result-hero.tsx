@@ -26,10 +26,10 @@ export function WinnerHero({
   const isMe = result.winnerUserId === currentUserId;
 
   const share = async () => {
-    const text = `${result.winnerDisplayName} (@${result.winnerUsername}) venceu o desafio no DevStreak com ${daysLabel(result.validDaysAtWin)} válidos.`;
+    const text = `${result.winnerDisplayName} (@${result.winnerUsername}) venceu o desafio no DevRats com ${daysLabel(result.validDaysAtWin)} válidos.`;
     try {
       if (navigator.share) {
-        await navigator.share({ title: 'Resultado do DevStreak', text });
+        await navigator.share({ title: 'Resultado do DevRats', text });
       } else {
         await navigator.clipboard.writeText(text);
         toast.success('Resultado copiado para a área de transferência.');

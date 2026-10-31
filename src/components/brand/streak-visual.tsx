@@ -18,7 +18,7 @@ export function StreakVisual({ className, compact = false }: { className?: strin
           <span className="inline-flex size-5 items-center justify-center rounded-md border border-line bg-card-2">
             <GitCommitHorizontal className="size-3 text-accent" aria-hidden />
           </span>
-          devstreak · live
+          devrats · live
         </span>
         <span className="flex items-center gap-1 rounded-full border border-volt-line bg-volt-soft px-2 py-0.5 font-mono text-[10px] text-accent">
           <Flame className="size-3" aria-hidden /> 12 dias

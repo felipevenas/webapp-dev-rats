@@ -44,7 +44,7 @@ export default function OnboardingPage() {
 
       <header className="relative z-10">
         <div className="ds-container flex h-16 items-center justify-between">
-          <Link to="/" aria-label="DevStreak — início">
+          <Link to="/" aria-label="DevRats — início">
             <Logo />
           </Link>
           <div className="flex items-center gap-1">

@@ -53,7 +53,7 @@ export default function InvitePage() {
 
       <header className="relative z-10">
         <div className="ds-container flex h-16 items-center justify-between">
-          <Link to="/" aria-label="DevStreak — início">
+          <Link to="/" aria-label="DevRats — início">
             <Logo />
           </Link>
           <div className="flex items-center gap-2">
@@ -204,7 +204,7 @@ export default function InvitePage() {
           ) : null}
 
           <p className="mt-5 text-center text-[10px] leading-relaxed text-faint">
-            O DevStreak nunca exibe o código dos repositórios. A verificação usa apenas metadados de commits.
+            O DevRats nunca exibe o código dos repositórios. A verificação usa apenas metadados de commits.
           </p>
         </div>
       </main>
