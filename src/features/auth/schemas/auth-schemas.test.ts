@@ -59,6 +59,7 @@ describe('login schema', () => {
       expect(result.error.issues.some((issue) => issue.path.includes('password'))).toBe(true);
     }
   });
+});
 
 const base = {
   displayName: 'Felipe Ferreira',
