@@ -34,6 +34,22 @@ export function useActivity(
   });
 }
 
+export function useActivityCommits(
+  challengeId: string | undefined,
+  params: { userId?: string; date?: string | null },
+  enabled = true,
+) {
+  return useQuery({
+    queryKey: queryKeys.activityCommits(challengeId ?? '', params.userId ?? 'me', params.date ?? ''),
+    queryFn: () =>
+      progressApi.activityCommits(challengeId as string, {
+        userId: params.userId as string,
+        date: params.date as string,
+      }),
+    enabled: Boolean(challengeId) && Boolean(params.userId) && Boolean(params.date) && enabled,
+  });
+}
+
 export function useChallengeResult(challengeId: string | undefined, enabled = true) {
   return useQuery({
     queryKey: queryKeys.result(challengeId ?? ''),

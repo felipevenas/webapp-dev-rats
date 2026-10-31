@@ -11,6 +11,8 @@ export const queryKeys = {
   leaderboard: (challengeId: string) => ['challenges', challengeId, 'leaderboard'] as const,
   activity: (challengeId: string, userId: string, from: string, to: string) =>
     ['challenges', challengeId, 'activity', userId, from, to] as const,
+  activityCommits: (challengeId: string, userId: string, date: string) =>
+    ['challenges', challengeId, 'activity', userId, date, 'commits'] as const,
   result: (challengeId: string) => ['challenges', challengeId, 'result'] as const,
   feed: (challengeId: string) => ['challenges', challengeId, 'feed'] as const,
   notifications: (page: number) => ['notifications', page] as const,

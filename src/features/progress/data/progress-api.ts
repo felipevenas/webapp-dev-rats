@@ -1,6 +1,7 @@
 import { api } from '@/core/http/api-client';
 import type {
   ActivityCalendar,
+  ActivityCommit,
   ChallengeResult,
   Dashboard,
   FeedItem,
@@ -22,6 +23,13 @@ export const progressApi = {
   },
   async activity(challengeId: string, params: { userId?: string; from?: string; to?: string }) {
     const response = await api.get<ActivityCalendar>(`/challenges/${challengeId}/activity`, { params });
+    return response.data;
+  },
+  async activityCommits(challengeId: string, params: { userId: string; date: string }) {
+    const response = await api.get<ActivityCommit[]>(
+      `/challenges/${challengeId}/activity/${params.date}/commits`,
+      { params: { userId: params.userId } },
+    );
     return response.data;
   },
   async result(challengeId: string) {
