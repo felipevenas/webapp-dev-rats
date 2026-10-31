@@ -25,6 +25,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { Input } from '@/components/ui/input';
 import { Modal } from '@/components/ui/modal';
+import { Pagination } from '@/components/ui/pagination';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   useDisconnectGitHub,
@@ -54,6 +55,12 @@ export default function IntegrationsPage() {
   useEffect(() => {
     setPage(0);
   }, [debouncedSearch]);
+
+  const totalPages = repos.data?.totalPages ?? 0;
+
+  useEffect(() => {
+    if (totalPages > 0 && page > totalPages - 1) setPage(totalPages - 1);
+  }, [page, totalPages]);
 
   const handleConnect = async () => {
     setConnecting(true);
@@ -304,24 +311,16 @@ export default function IntegrationsPage() {
                             </li>
                           ))}
                         </ul>
-                        {(repos.data?.totalPages ?? 0) > 1 ? (
-                          <div className="flex items-center justify-between">
-                            <Button variant="ghost" size="sm" disabled={page === 0} onClick={() => setPage((p) => p - 1)}>
-                              Anterior
-                            </Button>
-                            <span className="font-mono text-[10px] text-faint">
-                              {page + 1} / {repos.data?.totalPages}
-                            </span>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              disabled={page + 1 >= (repos.data?.totalPages ?? 1)}
-                              onClick={() => setPage((p) => p + 1)}
-                            >
-                              Próxima
-                            </Button>
-                          </div>
-                        ) : null}
+                        <Pagination
+                          page={page}
+                          totalPages={repos.data?.totalPages ?? 0}
+                          totalElements={repos.data?.totalElements}
+                          pageSize={repos.data?.size}
+                          onPageChange={(next) => {
+                            setPage(next);
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }}
+                        />
                       </>
                     )}
                   </>

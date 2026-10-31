@@ -12,6 +12,10 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o 
 
 - Sombras mais suaves em cards, modais e superfícies flutuantes.
 
+### 🚀 Adicionado
+
+- Paginação padronizada nas listas de repositórios e notificações.
+
 ### 📝 Documentação
 
 - README padronizado com print da landing, badges, arquitetura, governança e licença.

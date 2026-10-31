@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/core/config/query-keys';
 import { notificationsApi } from './notifications-api';
 
@@ -6,6 +6,7 @@ export function useNotifications(page = 0) {
   return useQuery({
     queryKey: queryKeys.notifications(page),
     queryFn: () => notificationsApi.list(page),
+    placeholderData: keepPreviousData,
     refetchInterval: 60_000,
   });
 }

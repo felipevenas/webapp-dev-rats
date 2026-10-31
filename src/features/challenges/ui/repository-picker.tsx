@@ -1,9 +1,7 @@
 import { Github } from '@/components/brand/github-icon';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   AlertCircle,
-  ArrowLeft,
-  ArrowRight,
   Check,
   GitFork,
   Loader2,
@@ -23,6 +21,7 @@ import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { Input } from '@/components/ui/input';
+import { Pagination } from '@/components/ui/pagination';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRepositories, useSyncRepositories } from '@/features/github/data/use-github';
 
@@ -36,6 +35,7 @@ interface RepositoryPickerProps {
 export function RepositoryPicker({ selected, onChange, status, max = 3 }: RepositoryPickerProps) {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(0);
+  const listRef = useRef<HTMLUListElement>(null);
   const debouncedSearch = useDebouncedValue(search, 350);
   const sync = useSyncRepositories();
 
@@ -48,6 +48,12 @@ export function RepositoryPicker({ selected, onChange, status, max = 3 }: Reposi
 
   const repositories = query.data?.content ?? [];
   const totalPages = query.data?.totalPages ?? 0;
+
+  useEffect(() => {
+    if (totalPages > 0 && page > totalPages - 1) {
+      setPage(totalPages - 1);
+    }
+  }, [page, totalPages]);
   const selectedSet = useMemo(() => new Set(selected.map((repository) => repository.id)), [selected]);
 
   const toggle = (repository: GitHubRepository) => {
@@ -191,7 +197,11 @@ export function RepositoryPicker({ selected, onChange, status, max = 3 }: Reposi
         />
       ) : (
         <>
-          <ul className="max-h-72 space-y-1.5 overflow-y-auto pr-1" aria-label="Repositórios disponíveis">
+          <ul
+            ref={listRef}
+            className="max-h-72 space-y-1.5 overflow-y-auto pr-1"
+            aria-label="Repositórios disponíveis"
+          >
             {repositories.map((repository) => {
               const isSelected = selectedSet.has(repository.id);
               const disabled = (!isSelected && selected.length >= max) || repository.accessStatus !== 'ACCESSIBLE';
@@ -250,31 +260,16 @@ export function RepositoryPicker({ selected, onChange, status, max = 3 }: Reposi
             })}
           </ul>
 
-          {totalPages > 1 ? (
-            <div className="flex items-center justify-between text-[11px] text-muted">
-              <Button
-                variant="ghost"
-                size="sm"
-                disabled={page === 0}
-                onClick={() => setPage((current) => Math.max(0, current - 1))}
-              >
-                <ArrowLeft aria-hidden />
-                Anterior
-              </Button>
-              <span className="font-mono">
-                página {page + 1} de {totalPages}
-              </span>
-              <Button
-                variant="ghost"
-                size="sm"
-                disabled={page + 1 >= totalPages}
-                onClick={() => setPage((current) => current + 1)}
-              >
-                Próxima
-                <ArrowRight aria-hidden />
-              </Button>
-            </div>
-          ) : null}
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            totalElements={query.data?.totalElements}
+            pageSize={query.data?.size}
+            onPageChange={(next) => {
+              setPage(next);
+              listRef.current?.scrollTo({ top: 0 });
+            }}
+          />
 
           {query.isFetching ? (
             <p className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-faint">
