@@ -19,6 +19,7 @@ import { registerSchema, type RegisterValues } from '@/features/auth/schemas/aut
 import {
   MAX_PRIMARY_STACK,
   experienceLevelOptions,
+  safeExternalUrl,
   techStackOptions,
 } from '@/features/profile/domain/profile-options';
 
@@ -58,7 +59,7 @@ export default function RegisterPage() {
         acceptedTermsVersion: termsVersion,
         bio: values.bio?.trim() || null,
         location: values.location?.trim() || null,
-        websiteUrl: values.websiteUrl?.trim() || null,
+        websiteUrl: values.websiteUrl ? safeExternalUrl(values.websiteUrl) : null,
         experienceLevel: values.experienceLevel ?? null,
         primaryStack: values.primaryStack ?? [],
       });
