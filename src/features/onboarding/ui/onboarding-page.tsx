@@ -129,12 +129,17 @@ interface ProfileDraft {
 export default function OnboardingPage() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const github = useGitHubStatus();
   const dashboard = useDashboard();
   const updateProfile = useUpdateProfile();
 
   const [currentStep, setCurrentStep] = useState(() => initialStepFromParam(searchParams.get('step')));
+
+  useEffect(() => {
+    const fromUrl = initialStepFromParam(searchParams.get('step'));
+    setCurrentStep((current) => (current === fromUrl ? current : fromUrl));
+  }, [searchParams]);
   const [connecting, setConnecting] = useState<GitHubFlow | null>(null);
   const [profile, setProfile] = useState<ProfileDraft>(() => ({
     bio: user?.bio ?? '',
@@ -174,11 +179,18 @@ export default function OnboardingPage() {
     //---- Only previous steps are clickable; forward navigation happens through the CTAs.
     if (index < 0 || index >= STEPS.length || index > currentStep) return;
     setCurrentStep(index);
+    setSearchParams({ step: STEPS[index].id });
   };
 
-  const advance = () => setCurrentStep((current) => Math.min(current + 1, STEPS.length - 1));
+  const advance = () => {
+    const next = Math.min(currentStep + 1, STEPS.length - 1);
+    setCurrentStep(next);
+    setSearchParams({ step: STEPS[next].id });
+  };
 
   const skipSetup = () => navigate('/app');
+
+  const savingProfile = updateProfile.isPending;
 
   const skipStep = () => {
     if (currentStep === STEPS.length - 1) {
@@ -262,11 +274,11 @@ export default function OnboardingPage() {
 
       <header className="relative z-20 border-b border-line bg-bg/85 backdrop-blur">
         <div className="ds-container flex h-16 items-center justify-between gap-3">
-          <Link to="/" aria-label="DevRats — início" className="ds-focus-ring rounded-lg">
+          <Link to="/" aria-label="DevRats - início" className="ds-focus-ring rounded-lg">
             <Logo />
           </Link>
           <div className="flex items-center gap-1">
-            <Button variant="ghost" size="sm" onClick={skipSetup} aria-label="Pular configuração">
+            <Button variant="ghost" size="sm" onClick={skipSetup} disabled={savingProfile} aria-label="Pular configuração">
               <span className="sm:hidden">Pular</span>
               <span className="hidden sm:inline">Pular configuração</span>
             </Button>
@@ -379,7 +391,7 @@ export default function OnboardingPage() {
                     <ArrowLeft aria-hidden />
                     Voltar
                   </Button>
-                  <Button variant="ghost" size="sm" onClick={skipStep}>
+                  <Button variant="ghost" size="sm" onClick={skipStep} disabled={savingProfile}>
                     Pular
                   </Button>
                 </div>
@@ -389,7 +401,7 @@ export default function OnboardingPage() {
                     className="sm:w-auto"
                     onClick={handlePrimaryAction}
                     loading={step.id === 'profile' && updateProfile.isPending}
-                    disabled={step.id === 'challenge' && dashboard.isLoading}
+                    disabled={savingProfile || (step.id === 'challenge' && dashboard.isLoading)}
                   >
                     {step.id === 'challenge' && !hasGroups ? <Rocket aria-hidden /> : null}
                     {primaryLabel}
@@ -453,7 +465,7 @@ function WizardRail({
                     onClick={() => onSelect(index)}
                     disabled={!available}
                     aria-current={active ? 'step' : undefined}
-                    aria-label={`Passo ${index + 1}: ${item.title}${done ? ' — concluído' : ''}`}
+                    aria-label={`Passo ${index + 1}: ${item.title}${done ? ' - concluído' : ''}`}
                     className={cn(
                       'ds-focus-ring flex w-full items-center gap-2.5 rounded-xl px-2 py-2 text-left transition-colors',
                       active ? 'bg-volt-soft' : available ? 'hover:bg-card-2' : 'opacity-45',
@@ -542,7 +554,7 @@ function MobileProgress({
                 onClick={() => onSelect(index)}
                 disabled={!available}
                 aria-current={active ? 'step' : undefined}
-                aria-label={`Passo ${index + 1}: ${item.title}${done ? ' — concluído' : ''}`}
+                aria-label={`Passo ${index + 1}: ${item.title}${done ? ' - concluído' : ''}`}
                 className={cn(
                   'ds-focus-ring inline-flex size-8 items-center justify-center rounded-lg border font-mono text-[11px] transition-colors',
                   active || done
@@ -565,7 +577,7 @@ function WelcomeStep({ firstName }: { firstName: string }) {
   return (
     <div className="space-y-4">
       <p className="text-[12px] leading-relaxed text-muted">
-        Bora, <strong className="text-fg">{firstName}</strong>. Em menos de dois minutos você configura o essencial —
+        Bora, <strong className="text-fg">{firstName}</strong>. Em menos de dois minutos você configura o essencial -
         e pode parar quando quiser.
       </p>
 
@@ -879,7 +891,7 @@ function ChallengeStep({
         <ul className="space-y-2">
           {[
             'Defina a meta de dias válidos e a modalidade de verificação.',
-            'Escolha os repositórios permitidos — ou valide apenas os seus.',
+            'Escolha os repositórios permitidos - ou valide apenas os seus.',
             'Compartilhe o link privado com quem vai competir junto.',
           ].map((item) => (
             <li key={item} className="flex gap-2 text-[12px] leading-relaxed text-muted">
@@ -896,7 +908,7 @@ function ChallengeStep({
     <div className="space-y-4">
       <p className="text-[12px] leading-relaxed text-muted">
         Um desafio é a regra do jogo: quantos dias válidos até a meta, quais repositórios contam e quem participa. Você
-        cria em um formulário guiado — não precisa configurar tudo agora.
+        cria em um formulário guiado - não precisa configurar tudo agora.
       </p>
 
       <div className="grid gap-3 sm:grid-cols-3">
@@ -932,7 +944,7 @@ function InviteStep() {
     <div className="space-y-4">
       <p className="text-[12px] leading-relaxed text-muted">
         Depois de criar o desafio, compartilhe um convite privado. Quem receber o link entra no grupo, vê as regras e
-        começa a valer os próprios commits — sem cadastro público.
+        começa a valer os próprios commits - sem cadastro público.
       </p>
 
       <div className="rounded-xl border border-dashed border-line-strong bg-card-2/50 p-4">
@@ -947,7 +959,7 @@ function InviteStep() {
 
       <ul className="space-y-2">
         {[
-          'Só entra quem receber o link — não existe busca pública de grupos.',
+          'Só entra quem receber o link - não existe busca pública de grupos.',
           'Você define prazo e limite de usos, e pode revogar quando quiser.',
           'Quem entrar segue as mesmas regras de dia válido e horário de Brasília.',
         ].map((item) => (

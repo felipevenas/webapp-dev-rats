@@ -57,10 +57,15 @@ export default function RegisterPage() {
         form.setError('email', { message: appError.detail });
         form.setError('username', { message: appError.detail });
       } else if (appError.fieldErrors.length > 0) {
+        let mapped = false;
         appError.fieldErrors.forEach((field) => {
           const key = field.field as keyof RegisterValues;
-          if (key in form.getValues()) form.setError(key, { message: field.message });
+          if (key in form.getValues()) {
+            mapped = true;
+            form.setError(key, { message: field.message });
+          }
         });
+        if (!mapped) toast.error(appError.detail);
       } else {
         toast.error(appError.detail);
       }
@@ -159,7 +164,7 @@ export default function RegisterPage() {
                   <Link to="/privacidade" className="text-accent hover:underline" onClick={(event) => event.stopPropagation()}>
                     Política de privacidade
                   </Link>
-                  . Apenas metadados de commits são lidos — nunca o conteúdo dos seus repositórios.
+                  . Apenas metadados de commits são lidos - nunca o conteúdo dos seus repositórios.
                 </span>
               </label>
             )}
