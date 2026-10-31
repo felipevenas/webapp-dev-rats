@@ -72,4 +72,19 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o 
 - Nenhum token é persistido no navegador.
 - Segredos permanecem exclusivamente no backend; variáveis `VITE_*` são tratadas como públicas.
 - Rotas protegidas com restauração de sessão e `next` restrito a caminhos internos.
-- Documentação de escopo de segurança e canal privado de divulgação.
+- Documentação de escopo de segurança e canal privado de divulgação.## [N?o publicado]
+
+### ?? Alterado
+
+- Sombras mais suaves em cards, modais e superf?cies flutuantes.
+
+### ?? Adicionado
+
+- Pagina??o padronizada nas listas de reposit?rios e notifica??es.
+- Fuso hor?rio fixo em Bras?lia nos novos cadastros e desafios.
+- Login com e-mail ou nome de usu?rio.
+- Novos campos de perfil: bio, localiza??o, site, n?vel e stack.
+- Exibi??o dos commits que validaram cada dia.
+- Foto de perfil com upload e fallback para o GitHub.
+
+
