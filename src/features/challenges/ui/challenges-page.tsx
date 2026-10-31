@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Plus, Search, Swords } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/core/auth/auth-provider';
+import { DEFAULT_TIME_ZONE } from '@/core/lib/date';
 import { Page, PageHeader } from '@/components/layout/page-header';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -137,7 +138,7 @@ export default function ChallengesPage() {
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {filtered.map((group, index) => (
-            <DashboardChallengeCard key={group.groupId} group={group} timeZone={user.timezone} index={index} />
+            <DashboardChallengeCard key={group.groupId} group={group} timeZone={DEFAULT_TIME_ZONE} index={index} />
           ))}
         </div>
       )}

@@ -15,7 +15,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useAuth } from '@/core/auth/auth-provider';
 import { toAppError } from '@/core/http/problem';
-import { formatFullDate, localDateInZone } from '@/core/lib/date';
+import { DEFAULT_TIME_ZONE, formatFullDate, localDateInZone, timeZoneLabel } from '@/core/lib/date';
 import { Page, PageHeader } from '@/components/layout/page-header';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -56,6 +56,9 @@ export default function ProfilePage() {
   }, [dashboard.data]);
 
   if (!user) return null;
+
+  const displayTimezone =
+    user.timezone === DEFAULT_TIME_ZONE ? BRASILIA_LABEL : `${timeZoneLabel(user.timezone)} (conta antiga)`;
 
   const dirty = displayName.trim() !== user.displayName;
 
@@ -210,14 +213,14 @@ export default function ProfilePage() {
                 <Field label="E-mail" htmlFor="email" hint="usado para login">
                   <Input id="email" value={user.email} readOnly disabled />
                 </Field>
-                <Field label="Fuso horário" htmlFor="timezone" hint="fixo em todo o app">
-                  <Input id="timezone" value={BRASILIA_LABEL} readOnly disabled />
+                <Field label="Fuso horário" htmlFor="timezone" hint="novos desafios usam Brasília">
+                  <Input id="timezone" value={displayTimezone} readOnly disabled />
                 </Field>
               </div>
 
               <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line pt-3">
                 <p className="text-[11px] text-faint">
-                  {dirty ? 'Há alterações não salvas.' : `Preferência atual: ${BRASILIA_LABEL}`}
+                  {dirty ? 'Há alterações não salvas.' : `Fuso exibido: ${displayTimezone}`}
                 </p>
                 <Button onClick={() => void handleSave()} loading={updateProfile.isPending} disabled={!dirty}>
                   <Save aria-hidden />

@@ -1,7 +1,7 @@
 import { CalendarCheck, Flame, Plus, RefreshCw, Swords, Target, Trophy, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/core/auth/auth-provider';
-import { capitalize, formatFullDate, todayInZone } from '@/core/lib/date';
+import { DEFAULT_TIME_ZONE, capitalize, formatFullDate, todayInZone } from '@/core/lib/date';
 import { firstName } from '@/core/lib/format';
 import type { IconComponent } from '@/core/types/ui';
 import { Page, PageHeader } from '@/components/layout/page-header';
@@ -21,7 +21,7 @@ export default function DashboardPage() {
 
   const groups = data?.groups ?? [];
   const active = groups.filter((group) => group.challengeStatus === 'ACTIVE');
-  const today = todayInZone(user.timezone);
+  const today = todayInZone(DEFAULT_TIME_ZONE);
   const validatedToday = active.filter((group) => group.lastValidDate === today).length;
   const totalDays = groups.reduce((total, group) => total + group.validDays, 0);
   const bestStreak = groups.reduce((best, group) => Math.max(best, group.bestStreak), 0);
@@ -35,10 +35,10 @@ export default function DashboardPage() {
             weekday: 'long',
             day: '2-digit',
             month: 'long',
-            timeZone: user.timezone,
+            timeZone: DEFAULT_TIME_ZONE,
           }).format(new Date()),
         )}
-        title={`${greeting(user.timezone)}, ${firstName(user.displayName)}`}
+        title={`${greeting(DEFAULT_TIME_ZONE)}, ${firstName(user.displayName)}`}
         description="Um commit por dia. O painel mostra o que já foi validado — sem planilha, sem autoengano."
         actions={
           <>
@@ -147,7 +147,7 @@ export default function DashboardPage() {
                   <DashboardChallengeCard
                     key={group.groupId}
                     group={group}
-                    timeZone={user.timezone}
+                    timeZone={DEFAULT_TIME_ZONE}
                     index={index}
                   />
                 ))}

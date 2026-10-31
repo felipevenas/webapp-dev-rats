@@ -83,8 +83,7 @@ describe('create challenge schema', () => {
     expect(createChallengeSchema.safeParse({ ...base, targetValidDays: 366 }).success).toBe(false);
   });
 
-  it('converts a date input to the end of the local day', () => {
-    const iso = endOfDayLocal('2026-10-28');
-    expect(new Date(iso).getTime()).toBeGreaterThan(new Date('2026-10-28T00:00:00').getTime());
+  it('converts a date input to the end of the day in Brasília', () => {
+    expect(endOfDayLocal('2026-10-28')).toBe('2026-10-29T02:59:59.000Z');
   });
 });

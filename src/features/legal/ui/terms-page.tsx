@@ -43,7 +43,7 @@ export default function TermsPage() {
             <>
               <p>
                 Cada grupo define uma meta individual de dias válidos, uma modalidade de verificação e um fuso
-                fixo. O primeiro participante a atingir a meta é declarado vencedor.
+                fixo (Brasília nos novos desafios). O primeiro participante a atingir a meta é declarado vencedor.
               </p>
               <p>
                 A modalidade e a lista de repositórios não podem ser alteradas após o início. O criador pode

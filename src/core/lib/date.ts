@@ -50,6 +50,58 @@ export function todayInZone(timeZone: string): string {
   return localDateInZone(new Date(), timeZone);
 }
 
+/** Offset of a timezone at a given instant, in milliseconds. */
+function zoneOffsetMs(instant: Date, timeZone: string): number {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    hourCycle: 'h23',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  }).formatToParts(instant);
+  const get = (type: string) => Number(parts.find((part) => part.type === type)?.value ?? '0');
+  return Date.UTC(get('year'), get('month') - 1, get('day'), get('hour'), get('minute'), get('second')) - instant.getTime();
+}
+
+/** Converts a `datetime-local` value interpreted in `timeZone` to an ISO instant. */
+export function zonedDateTimeToInstant(value: string, timeZone: string): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?$/.exec(value);
+  if (!match) return new Date(value).toISOString();
+  const [, year, month, day, hour, minute, second = '00'] = match;
+  const asUtc = Date.UTC(Number(year), Number(month) - 1, Number(day), Number(hour), Number(minute), Number(second));
+  //---- Resolve twice so the offset is applied to the correct side of a DST boundary.
+  const firstGuess = asUtc - zoneOffsetMs(new Date(asUtc), timeZone);
+  const offset = zoneOffsetMs(new Date(firstGuess), timeZone);
+  return new Date(asUtc - offset).toISOString();
+}
+
+/** Formats an instant as `YYYY-MM-DDTHH:mm` in the given timezone. */
+export function toZonedDateTimeInput(instant: Date | string, timeZone: string): string {
+  const date = typeof instant === 'string' ? new Date(instant) : instant;
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    hourCycle: 'h23',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).formatToParts(date);
+  const get = (type: string) => parts.find((part) => part.type === type)?.value ?? '00';
+  return `${get('year')}-${get('month')}-${get('day')}T${get('hour')}:${get('minute')}`;
+}
+
+export function startOfDayInZone(isoDate: string, timeZone: string): string {
+  return zonedDateTimeToInstant(`${isoDate}T00:00:00`, timeZone);
+}
+
+export function endOfDayInZone(isoDate: string, timeZone: string): string {
+  return zonedDateTimeToInstant(`${isoDate}T23:59:59`, timeZone);
+}
+
 export function addDays(isoDate: string, days: number): string {
   const date = parseIsoDate(isoDate);
   date.setUTCDate(date.getUTCDate() + days);

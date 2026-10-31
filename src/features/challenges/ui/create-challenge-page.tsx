@@ -23,7 +23,17 @@ import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { toAppError } from '@/core/http/problem';
-import { DEFAULT_TIME_ZONE, capitalize, formatDateTime, formatFullDate } from '@/core/lib/date';
+import {
+  DEFAULT_TIME_ZONE,
+  addDays,
+  capitalize,
+  endOfDayInZone,
+  formatDateTime,
+  formatFullDate,
+  todayInZone,
+  toZonedDateTimeInput,
+  zonedDateTimeToInstant,
+} from '@/core/lib/date';
 import { cn } from '@/core/lib/cn';
 import type { GitHubRepository } from '@/core/types/api';
 import type { IconComponent } from '@/core/types/ui';
@@ -56,20 +66,11 @@ interface Step {
 }
 
 function todayInput(): string {
-  const now = new Date();
-  const pad = (value: number) => String(value).padStart(2, '0');
-  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
-}
-
-function dateInput(date: Date): string {
-  const pad = (value: number) => String(value).padStart(2, '0');
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+  return todayInZone(DEFAULT_TIME_ZONE);
 }
 
 function admissionDefault(): string {
-  const date = new Date();
-  date.setDate(date.getDate() + 7);
-  return dateInput(date);
+  return addDays(todayInZone(DEFAULT_TIME_ZONE), 7);
 }
 
 export default function CreateChallengePage() {
@@ -126,14 +127,16 @@ export default function CreateChallengePage() {
 
   //---- Keep the admission window after the start whenever the start date changes.
   useEffect(() => {
-    const start = startMode === 'now' ? new Date() : new Date(startAtLocal || '');
+    const start =
+      startMode === 'now'
+        ? new Date()
+        : new Date(zonedDateTimeToInstant(startAtLocal || '', DEFAULT_TIME_ZONE));
     if (Number.isNaN(start.getTime())) return;
     const current = form.getValues('admissionEndsAtDate');
     if (!current) return;
-    if (new Date(`${current}T23:59:59`).getTime() < start.getTime()) {
-      const next = new Date(start);
-      next.setDate(next.getDate() + 7);
-      form.setValue('admissionEndsAtDate', dateInput(next));
+    if (new Date(endOfDayInZone(current, DEFAULT_TIME_ZONE)).getTime() < start.getTime()) {
+      const startDate = toZonedDateTimeInput(start, DEFAULT_TIME_ZONE).slice(0, 10);
+      form.setValue('admissionEndsAtDate', addDays(startDate, 7));
     }
   }, [startMode, startAtLocal, form]);
 
@@ -182,7 +185,7 @@ export default function CreateChallengePage() {
       const startsAt =
         values.startMode === 'now'
           ? new Date().toISOString()
-          : new Date(values.startAtLocal as string).toISOString();
+          : zonedDateTimeToInstant(values.startAtLocal as string, DEFAULT_TIME_ZONE);
       const group = await createGroup.mutateAsync({
         name: values.name,
         description: values.description?.trim() ? values.description.trim() : undefined,
@@ -716,7 +719,7 @@ function WindowStep({ form }: { form: StepForm }) {
           label="Data e hora de início"
           htmlFor="startAtLocal"
           error={form.formState.errors.startAtLocal?.message}
-          hint="horário local"
+          hint="horário de Brasília"
         >
           <Input
             id="startAtLocal"
@@ -749,7 +752,7 @@ function WindowStep({ form }: { form: StepForm }) {
           label="Admissão até"
           htmlFor="admissionEndsAtDate"
           optional
-          hint="fim do dia no fuso"
+          hint="fim do dia em Brasília"
           error={form.formState.errors.admissionEndsAtDate?.message}
         >
           <Input
@@ -821,7 +824,7 @@ function ReviewStep({
     values.startMode === 'now'
       ? 'Imediatamente ao iniciar'
       : values.startAtLocal
-        ? formatDateTime(new Date(values.startAtLocal).toISOString())
+        ? formatDateTime(zonedDateTimeToInstant(values.startAtLocal, DEFAULT_TIME_ZONE), DEFAULT_TIME_ZONE)
         : '—';
 
   return (
