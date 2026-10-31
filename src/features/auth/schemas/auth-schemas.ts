@@ -9,8 +9,42 @@ export const passwordSchema = z
   .regex(/\d/, 'Inclua um número')
   .regex(/[^A-Za-z0-9]/, 'Inclua um caractere especial');
 
+const usernamePattern = /^@?[a-z0-9_]{3,30}$/i;
+const emailPattern = z.email();
+
 export const loginSchema = z.object({
-  email: z.email('Informe um e-mail válido'),
+  identifier: z
+    .string()
+    .trim()
+    .superRefine((value, ctx) => {
+      if (!value) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Informe seu e-mail ou usuário',
+        });
+        return;
+      }
+
+      //---- Um "@" no início indica usuário; fora disso, o valor é tratado como e-mail.
+      const isUsername = value.startsWith('@') || !value.includes('@');
+
+      if (isUsername) {
+        if (!usernamePattern.test(value)) {
+          ctx.addIssue({
+            code: 'custom',
+            message: 'Use de 3 a 30 caracteres com letras, números ou _',
+          });
+        }
+        return;
+      }
+
+      if (!emailPattern.safeParse(value).success) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Informe um e-mail válido',
+        });
+      }
+    }),
   password: z.string().min(1, 'Informe sua senha'),
 });
 
