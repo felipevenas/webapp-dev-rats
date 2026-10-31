@@ -15,6 +15,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o 
 ### 🚀 Adicionado
 
 - Paginação padronizada nas listas de repositórios e notificações.
+- Fuso horário fixo em Brasília nos novos cadastros e desafios.
 
 ### 📝 Documentação
 
