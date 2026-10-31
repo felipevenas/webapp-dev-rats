@@ -28,7 +28,7 @@ export function AvatarUploader({ user, className }: AvatarUploaderProps) {
   const [error, setError] = useState<string | null>(null);
 
   const busy = uploadAvatar.isPending || deleteAvatar.isPending;
-  const hasAvatar = Boolean(previewUrl ?? user.avatarUrl);
+  const canRemove = user.avatarSource === 'CUSTOM';
 
   //---- Every preview owns an object URL; release it as soon as it is replaced or unmounted.
   useEffect(() => {
@@ -104,7 +104,7 @@ export function AvatarUploader({ user, className }: AvatarUploaderProps) {
               <Camera aria-hidden />
               Alterar foto
             </Button>
-            {hasAvatar ? (
+            {canRemove ? (
               <Button
                 type="button"
                 variant="ghost"

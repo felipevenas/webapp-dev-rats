@@ -59,10 +59,24 @@ describe('AvatarUploader', () => {
     expect(screen.queryByRole('button', { name: /remover foto/i })).toBeNull();
   });
 
-  it('mostra "Remover foto" quando há avatar do GitHub', () => {
-    renderUploader({ ...baseUser, avatarUrl: 'https://avatars.githubusercontent.com/u/1' });
+  it('não mostra "Remover foto" para o avatar padrão do GitHub', () => {
+    renderUploader({
+      ...baseUser,
+      avatarUrl: 'https://avatars.githubusercontent.com/u/1',
+      avatarSource: 'GITHUB',
+    });
 
     expect(screen.getByRole('button', { name: /alterar foto/i })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: /remover foto/i })).toBeNull();
+  });
+
+  it('mostra "Remover foto" para uma foto enviada pelo usuário', () => {
+    renderUploader({
+      ...baseUser,
+      avatarUrl: 'https://cdn.devrats.app/avatars/user-1/a.jpg',
+      avatarSource: 'CUSTOM',
+    });
+
     expect(screen.getByRole('button', { name: /remover foto/i })).toBeTruthy();
   });
 
@@ -88,7 +102,11 @@ describe('AvatarUploader', () => {
 
   it('remove a foto ao confirmar a ação', async () => {
     mocks.remove.mutateAsync.mockResolvedValue({ ...baseUser, avatarUrl: null });
-    renderUploader({ ...baseUser, avatarUrl: 'https://avatars.githubusercontent.com/u/1' });
+    renderUploader({
+      ...baseUser,
+      avatarUrl: 'https://cdn.devrats.app/avatars/user-1/a.jpg',
+      avatarSource: 'CUSTOM',
+    });
 
     fireEvent.click(screen.getByRole('button', { name: /remover foto/i }));
 

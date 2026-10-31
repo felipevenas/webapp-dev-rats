@@ -78,6 +78,9 @@ export async function processAvatarImage(file: File): Promise<File> {
 
   context.imageSmoothingEnabled = true;
   context.imageSmoothingQuality = 'high';
+  //---- PNG transparency becomes white in JPEG, matching the backend encoder.
+  context.fillStyle = '#ffffff';
+  context.fillRect(0, 0, AVATAR_SIZE, AVATAR_SIZE);
   context.drawImage(
     image,
     Math.floor((width - sourceSize) / 2),
@@ -89,6 +92,9 @@ export async function processAvatarImage(file: File): Promise<File> {
     AVATAR_SIZE,
     AVATAR_SIZE,
   );
+  if (typeof ImageBitmap !== 'undefined' && image instanceof ImageBitmap) {
+    image.close();
+  }
 
   const blob = await new Promise<Blob | null>((resolve) => {
     canvas.toBlob(resolve, 'image/jpeg', AVATAR_JPEG_QUALITY);
