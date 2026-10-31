@@ -25,6 +25,16 @@ export const profileApi = {
     const response = await api.patch<User>('/me', payload);
     return response.data;
   },
+  async uploadAvatar(file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await api.put<User>('/me/avatar', formData);
+    return response.data;
+  },
+  async deleteAvatar() {
+    const response = await api.delete<User>('/me/avatar');
+    return response.data;
+  },
   async exportData() {
     const response = await api.get<Record<string, unknown>>('/me/export');
     return response.data;
