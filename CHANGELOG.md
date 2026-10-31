@@ -22,6 +22,9 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o 
 
 - Novos campos de perfil: bio, localização, site, nível e stack.
 - Exibição dos commits que validaram cada dia.
+### 🚀 Adicionado
+
+- Foto de perfil com upload e fallback para o GitHub.
 
 ### 📝 Documentação
 
