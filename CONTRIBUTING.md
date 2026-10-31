@@ -38,12 +38,15 @@ Adotamos **Trunk-Based Development** com branches curtas a partir de `main`, mes
 
 ### Nomes de branches
 
-- `funcionalidade/nome-da-feature`
-- `correcao/nome-do-bug`
-- `documentacao/nome-do-documento`
-- `melhoria/nome-do-ajuste`
+- `feat/nome-da-feature`
+- `bug/nome-do-bug`
+- `chore/nome-da-tarefa`
+- `docs/nome-do-documento`
+- `style/nome-do-ajuste-visual`
+- `refactor/nome-da-refatoracao`
+- `test/nome-do-teste`
 
-Exemplos: `funcionalidade/calendario-por-membro`, `correcao/refresh-na-reabertura`.
+Exemplos: `feat/calendario-por-membro`, `bug/refresh-na-reabertura`, `style/sombras-suaves`.
 
 ### Commits
 
