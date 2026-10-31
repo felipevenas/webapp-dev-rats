@@ -52,7 +52,7 @@ export function WinnerHero({
           <span className="absolute inset-0 animate-pulse rounded-full bg-volt/20 blur-xl" aria-hidden />
           <div className="relative">
             <Avatar src={winner?.avatarUrl} name={result.winnerDisplayName} size="2xl" ring />
-            <span className="absolute -bottom-1 -right-1 inline-flex size-8 items-center justify-center rounded-full border border-volt-line bg-volt text-volt-ink shadow-sm">
+            <span className="absolute -bottom-1 -right-1 inline-flex size-8 items-center justify-center rounded-full border border-volt-line bg-volt text-volt-ink shadow-float ring-2 ring-bg">
               <Crown className="size-4" aria-hidden />
             </span>
           </div>
