@@ -405,7 +405,7 @@ export default function GroupSettingsPage() {
               {isOwner ? (
                 <>
                   <p className="text-[11px] leading-relaxed text-muted">
-                    O criador não pode sair do grupo. Para encerrar, cancele o desafio — o histórico permanece
+                    O criador não pode sair do grupo. Para encerrar, cancele o desafio - o histórico permanece
                     consultável.
                   </p>
                   {challengeOpen ? (

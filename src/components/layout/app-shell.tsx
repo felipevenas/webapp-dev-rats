@@ -44,7 +44,7 @@ export function AppShell() {
     <div className="min-h-dvh bg-bg">
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-60 flex-col border-r border-line bg-surface px-4 py-5 lg:flex">
         <div className="mb-7 flex items-center justify-between px-1">
-          <Link to="/app" className="inline-flex" aria-label="DevRats — início">
+          <Link to="/app" className="inline-flex" aria-label="DevRats - início">
             <Logo />
           </Link>
           <ThemeToggle />
@@ -125,7 +125,7 @@ export function AppShell() {
 
       <div className="lg:pl-60">
         <header className="ds-glass sticky top-0 z-20 flex h-14 items-center justify-between px-4 lg:hidden">
-          <Link to="/app" className="inline-flex items-center gap-2" aria-label="DevRats — início">
+          <Link to="/app" className="inline-flex items-center gap-2" aria-label="DevRats - início">
             <Logo />
           </Link>
           <div className="flex items-center gap-0.5">

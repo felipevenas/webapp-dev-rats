@@ -319,7 +319,7 @@ export default function GroupPage() {
             <Trophy className="size-4.5" aria-hidden />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold">Rascunho — o relógio ainda não começou</p>
+            <p className="text-sm font-semibold">Rascunho - o relógio ainda não começou</p>
             <p className="mt-0.5 text-[12px] leading-relaxed text-muted">
               Convide o grupo e inicie quando estiver pronto. Ao iniciar, modalidade, meta, fuso e repositórios
               ficam travados. {startLabel}.
@@ -446,7 +446,7 @@ export default function GroupPage() {
             </CardTitle>
             <p className="text-[12px] leading-relaxed text-muted">
               Um dia com pelo menos um commit elegível conta uma vez. Dias sem atividade são diferentes de
-              verificação indisponível — o status da integração aparece no topo.
+              verificação indisponível - o status da integração aparece no topo.
             </p>
           </CardHeader>
           <CardContent>
@@ -468,7 +468,7 @@ export default function GroupPage() {
               Atividade do desafio
             </CardTitle>
             <p className="text-[12px] leading-relaxed text-muted">
-              Marcos e mudanças de estado do grupo. O feed prioriza progresso — mensagens e código de commits
+              Marcos e mudanças de estado do grupo. O feed prioriza progresso - mensagens e código de commits
               nunca são exibidos.
             </p>
           </CardHeader>

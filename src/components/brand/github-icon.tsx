@@ -1,6 +1,6 @@
 import type { SVGProps } from 'react';
 
-/** GitHub mark — Lucide removed brand icons, so the integration icon lives with the brand. */
+/** GitHub mark - Lucide removed brand icons, so the integration icon lives with the brand. */
 export function Github(props: SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...props}>

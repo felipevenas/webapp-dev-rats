@@ -2,7 +2,7 @@
 
 # DevRats Web 🎯
 
-**Frontend React do DevRats — desafios privados de constância para desenvolvedores, com verificação automática de commits no GitHub, ranking, sequência e calendário de dias válidos.**
+**Frontend React do DevRats - desafios privados de constância para desenvolvedores, com verificação automática de commits no GitHub, ranking, sequência e calendário de dias válidos.**
 
 [![CI](https://github.com/felipevenas/webapp-dev-rats/actions/workflows/ci.yml/badge.svg)](https://github.com/felipevenas/webapp-dev-rats/actions/workflows/ci.yml)
 [![React](https://img.shields.io/badge/React-19.3-61DAFB?style=for-the-badge&logo=react&logoColor=white)](https://react.dev/)
@@ -226,15 +226,15 @@ Este repositório segue uma governança formal, espelhando a dos demais projetos
 
 ## Documentação relacionada
 
-- [`docs/PRD-MVD.md`](docs/PRD-MVD.md) — PRD do MVP e regras de produto.
-- [`docs/RESPONSIVE-QA.md`](docs/RESPONSIVE-QA.md) — auditoria de responsividade com Playwright.
-- [`../api-dev-rats`](../api-dev-rats) — API Spring Boot que serve este frontend.
+- [`docs/PRD-MVD.md`](docs/PRD-MVD.md) - PRD do MVP e regras de produto.
+- [`docs/RESPONSIVE-QA.md`](docs/RESPONSIVE-QA.md) - auditoria de responsividade com Playwright.
+- [`../api-dev-rats`](../api-dev-rats) - API Spring Boot que serve este frontend.
 
 ---
 
 ## 📄 Licença
 
-Software **proprietário** — todos os direitos reservados. Consulte o arquivo [`LICENSE`](LICENSE) para os termos completos.
+Software **proprietário** - todos os direitos reservados. Consulte o arquivo [`LICENSE`](LICENSE) para os termos completos.
 
 <div align="center">
 Desenvolvido com excelência por <b><a href="https://github.com/felipevenas">Felipe Venas</a></b>

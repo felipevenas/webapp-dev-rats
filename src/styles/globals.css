@@ -3,7 +3,7 @@
 @import '@fontsource-variable/geist-mono/wght.css';
 
 /* ---------------------------------------------------------------------------
-   Design tokens — dark is the default theme, `.light` is an opt-in override.
+   Design tokens - dark is the default theme, `.light` is an opt-in override.
    Every semantic token has a light counterpart with AA contrast checked.
 --------------------------------------------------------------------------- */
 :root {

@@ -1,4 +1,4 @@
-# Relatório de responsividade — DevRats Web
+# Relatório de responsividade - DevRats Web
 
 Auditoria conduzida com o MCP do Playwright no frontend em execução (`http://localhost:5174`), com a API local (`http://localhost:8080`) e dados de um grupo ativo.
 
@@ -11,7 +11,7 @@ Auditoria conduzida com o MCP do Playwright no frontend em execução (`http://l
 - Landing, login, cadastro (topo e rodapé), recuperação de senha, termos, 404.
 - Convite público válido (deslogado), CTA de login com `next`.
 - Onboarding autenticado.
-- Dashboard, lista de desafios, wizard (etapas 1–4), grupo (visão geral, ranking, calendário, atividade), configurações, perfil, integrações, alertas.
+- Dashboard, lista de desafios, wizard (etapas 1-4), grupo (visão geral, ranking, calendário, atividade), configurações, perfil, integrações, alertas.
 - Modais: convite (bottom sheet), exclusão de conta (bottom sheet), início/cancelamento de desafio.
 - Temas escuro e claro.
 
@@ -61,6 +61,6 @@ Auditoria conduzida com o MCP do Playwright no frontend em execução (`http://l
 
 ## Observações residuais
 
-- O calendário é um heatmap compacto: em 320/360px as células ficam em torno de 30–36px. A interação continua acessível por teclado e cada dia tem rótulo completo; para alvos de 44px, seria necessário um modo de calendário em lista ou zoom.
+- O calendário é um heatmap compacto: em 320/360px as células ficam em torno de 30-36px. A interação continua acessível por teclado e cada dia tem rótulo completo; para alvos de 44px, seria necessário um modo de calendário em lista ou zoom.
 - A bottom nav fixa ocupa ~72px; todas as páginas têm padding inferior suficiente para rolar o conteúdo até acima dela.
 - A alternância de tema é persistida em `localStorage`; o padrão é escuro.

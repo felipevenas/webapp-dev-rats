@@ -36,7 +36,7 @@ export function Pagination({
     >
       {from !== null && to !== null && totalElements !== undefined ? (
         <p aria-live="polite" className="font-mono text-[10px] uppercase tracking-[0.1em] text-faint">
-          {from}–{to} de {totalElements}
+          {from}-{to} de {totalElements}
         </p>
       ) : (
         <span />

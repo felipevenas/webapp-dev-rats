@@ -10,6 +10,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o 
 
 ### 🎨 Alterado
 
+- Copy padronizada sem travessões e autenticação centralizada no viewport.
 - Sombras mais suaves em cards, modais e superfícies flutuantes.
 
 ### 🚀 Adicionado

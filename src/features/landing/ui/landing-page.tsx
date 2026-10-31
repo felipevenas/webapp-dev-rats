@@ -38,7 +38,7 @@ const steps = [
     number: '01',
     title: 'Conecte o GitHub',
     description:
-      'Autorize a GitHub App com permissão de leitura. A identidade é confirmada pelo ID numérico da conta — nunca por nome ou e-mail do commit.',
+      'Autorize a GitHub App com permissão de leitura. A identidade é confirmada pelo ID numérico da conta - nunca por nome ou e-mail do commit.',
     icon: Github,
   },
   {
@@ -52,7 +52,7 @@ const steps = [
     number: '03',
     title: 'Sustente a sequência',
     description:
-      'Cada dia com ao menos um commit elegível conta uma vez. O primeiro a alcançar a meta vence — com ranking e calendário ao vivo.',
+      'Cada dia com ao menos um commit elegível conta uma vez. O primeiro a alcançar a meta vence - com ranking e calendário ao vivo.',
     icon: Flame,
   },
 ];
@@ -61,7 +61,7 @@ const faqs = [
   {
     question: 'Preciso commitar todos os dias?',
     answer:
-      'Sim. Um dia só é válido com pelo menos um commit elegível. Vários commits no mesmo dia continuam valendo um único dia — a competição é de constância, não de volume.',
+      'Sim. Um dia só é válido com pelo menos um commit elegível. Vários commits no mesmo dia continuam valendo um único dia - a competição é de constância, não de volume.',
   },
   {
     question: 'Se eu perder um dia, perco tudo?',
@@ -97,7 +97,7 @@ export default function LandingPage() {
     <div className="min-h-dvh bg-bg">
       <header className="ds-glass sticky top-0 z-40">
         <div className="ds-container flex h-16 items-center justify-between gap-4">
-          <Link to="/" aria-label="DevRats — início" className="inline-flex items-center gap-2.5">
+          <Link to="/" aria-label="DevRats - início" className="inline-flex items-center gap-2.5">
             <Logo />
             <Badge variant="outline" size="sm" className="hidden sm:inline-flex">
               MVP
@@ -157,7 +157,7 @@ export default function LandingPage() {
               </h1>
 
               <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-muted sm:text-base">
-                Desafie amigos a manter o ritmo. Cada dia com pelo menos um commit elegível vira um dia válido —
+                Desafie amigos a manter o ritmo. Cada dia com pelo menos um commit elegível vira um dia válido -
                 o GitHub verifica, o ranking mostra quem sustenta e o calendário prova.
               </p>
 
@@ -260,7 +260,7 @@ export default function LandingPage() {
                     </h3>
                     <p className="mt-1 max-w-md text-[13px] leading-relaxed text-muted">
                       Válido, vazio, futuro, antes do início. O dia não cumprido é diferente de verificação
-                      indisponível — e a interface nunca confunde os dois.
+                      indisponível - e a interface nunca confunde os dois.
                     </p>
                   </div>
                   <Badge variant="volt" size="sm">
@@ -278,7 +278,7 @@ export default function LandingPage() {
                   Ranking que não engana
                 </h3>
                 <p className="mt-1 text-[13px] leading-relaxed text-muted">
-                  Ordenado por dias válidos. Empate resolve por sequência e atividade elegível mais recente — a
+                  Ordenado por dias válidos. Empate resolve por sequência e atividade elegível mais recente - a
                   vitória é de quem alcança a meta primeiro.
                 </p>
                 <div className="mt-4">
