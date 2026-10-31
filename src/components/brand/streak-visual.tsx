@@ -8,7 +8,7 @@ export function StreakVisual({ className, compact = false }: { className?: strin
   return (
     <div
       className={cn(
-        'relative overflow-hidden rounded-2xl border border-line bg-card/90 p-4 shadow-2xl backdrop-blur-sm',
+        'relative overflow-hidden rounded-2xl border border-line bg-card/90 p-4 shadow-float backdrop-blur-sm',
         compact ? 'max-w-sm' : 'max-w-md',
         className,
       )}

@@ -169,7 +169,7 @@ function BottomNav({ unread }: { unread: number }) {
       aria-label="Navegação principal"
       className="ds-safe-bottom fixed inset-x-0 bottom-0 z-30 lg:hidden"
     >
-      <div className="mx-3 mb-2 flex items-center justify-between rounded-2xl border border-line bg-[color-mix(in_srgb,var(--ds-card)_88%,transparent)] px-2 py-1.5 shadow-2xl backdrop-blur-xl">
+      <div className="mx-3 mb-2 flex items-center justify-between rounded-2xl border border-line bg-[color-mix(in_srgb,var(--ds-card)_88%,transparent)] px-2 py-1.5 shadow-float backdrop-blur-xl">
         {left.map((item) => (
           <MobileTab
             key={item.to}

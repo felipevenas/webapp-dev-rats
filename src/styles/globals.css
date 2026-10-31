@@ -42,8 +42,9 @@
   --ds-bronze: #e0a16e;
 
   --ds-grid: rgba(255, 255, 255, 0.035);
-  --ds-glow: 0 0 0 1px rgba(200, 255, 61, 0.22), 0 0 40px -10px rgba(200, 255, 61, 0.4);
-  --ds-shadow: 0 24px 60px -28px rgba(0, 0, 0, 0.8);
+  --ds-glow: 0 0 0 1px rgba(200, 255, 61, 0.18), 0 0 32px -12px rgba(200, 255, 61, 0.32);
+  --ds-shadow: 0 14px 36px -22px rgba(0, 0, 0, 0.6), 0 1px 2px rgba(0, 0, 0, 0.35);
+  --ds-shadow-float: 0 18px 44px -28px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.03);
 
   color-scheme: dark;
 }
@@ -84,8 +85,9 @@
   --ds-bronze: #a15c2a;
 
   --ds-grid: rgba(11, 13, 18, 0.045);
-  --ds-glow: 0 10px 30px -14px rgba(120, 160, 0, 0.35);
-  --ds-shadow: 0 24px 60px -32px rgba(15, 18, 25, 0.22);
+  --ds-glow: 0 8px 24px -14px rgba(120, 160, 0, 0.28);
+  --ds-shadow: 0 14px 36px -24px rgba(15, 18, 25, 0.2), 0 1px 2px rgba(15, 18, 25, 0.06);
+  --ds-shadow-float: 0 18px 44px -30px rgba(15, 18, 25, 0.22), 0 0 0 1px rgba(15, 18, 25, 0.03);
 
   color-scheme: light;
 }
@@ -135,6 +137,7 @@
 
   --shadow-glow: var(--ds-glow);
   --shadow-card: var(--ds-shadow);
+  --shadow-float: var(--ds-shadow-float);
 
   --animate-fade-up: fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-fade-in: fade-in 0.3s ease-out both;
