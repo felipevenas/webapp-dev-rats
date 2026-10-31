@@ -10,6 +10,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o 
 
 ### 🎨 Alterado
 
+- Lateral da autenticação com identidade visual compacta, sem rolagem.
 - Lado esquerdo da autenticação simplificado, sem elementos gráficos e sem rolagem.
 - Copy padronizada sem travessões e autenticação centralizada no viewport.
 - Sombras mais suaves em cards, modais e superfícies flutuantes.
