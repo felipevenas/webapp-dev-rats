@@ -1,3 +1,4 @@
+import { Flame, GitCommitHorizontal, Trophy } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Logo } from '@/components/brand/logo';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
@@ -12,12 +13,13 @@ interface AuthLayoutProps {
 export function AuthLayout({ title, subtitle, children, footer }: AuthLayoutProps) {
   return (
     <div className="min-h-dvh bg-bg lg:grid lg:grid-cols-[1.05fr_1fr]">
-      <aside className="relative hidden border-r border-line bg-surface lg:flex lg:h-dvh lg:flex-col lg:justify-between lg:p-10">
-        <div className="relative">
+      <aside className="relative hidden overflow-hidden border-r border-line bg-surface lg:flex lg:h-dvh lg:flex-col lg:justify-between lg:p-10">
+        <div className="ds-grid-bg ds-radial pointer-events-none absolute inset-0 opacity-70" aria-hidden />
+        <div className="relative z-10">
           <Link to="/" aria-label="DevRats - página inicial">
             <Logo />
           </Link>
-          <div className="mt-14 max-w-sm">
+          <div className="mt-12 max-w-sm">
             <p className="ds-label mb-3">Constância verificável</p>
             <h1 className="text-[38px] font-semibold leading-[1.06] tracking-[-0.045em]">
               Constância
@@ -29,8 +31,35 @@ export function AuthLayout({ title, subtitle, children, footer }: AuthLayoutProp
               sem autoengano.
             </p>
           </div>
+
+          <div className="mt-8 max-w-sm rounded-2xl border border-line bg-card/70 p-4 shadow-float backdrop-blur-sm">
+            <div className="flex items-center justify-between gap-3">
+              <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-faint">devrats · live</span>
+              <span className="inline-flex items-center gap-1 rounded-full border border-volt-line bg-volt-soft px-2 py-0.5 font-mono text-[9px] text-accent">
+                <span className="size-1.5 rounded-full bg-volt" aria-hidden />
+                ativo
+              </span>
+            </div>
+            <div className="mt-3 space-y-2 font-mono text-[11px]">
+              <p className="flex items-center gap-2">
+                <GitCommitHorizontal className="size-3.5 shrink-0 text-accent" aria-hidden />
+                <span className="text-fg">commit verificado</span>
+                <span className="ml-auto text-faint">21:14</span>
+              </p>
+              <p className="flex items-center gap-2">
+                <Flame className="size-3.5 shrink-0 text-amber" aria-hidden />
+                <span className="text-fg">12 dias de sequência</span>
+                <span className="ml-auto text-faint">+2</span>
+              </p>
+              <p className="flex items-center gap-2">
+                <Trophy className="size-3.5 shrink-0 text-gold" aria-hidden />
+                <span className="text-fg">#1 no ranking</span>
+                <span className="ml-auto text-faint">grupo</span>
+              </p>
+            </div>
+          </div>
         </div>
-        <div className="relative flex items-center justify-between text-[11px] text-faint">
+        <div className="relative z-10 flex items-center justify-between text-[11px] text-faint">
           <span>GitHub verificado · dados privados protegidos</span>
           <Link to="/termos" className="hover:text-muted">
             Termos
