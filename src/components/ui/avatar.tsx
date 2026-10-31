@@ -38,6 +38,7 @@ export function Avatar({ src, name, size = 'md', className, ring = false }: Avat
           src={src ?? undefined}
           alt=""
           loading="lazy"
+          referrerPolicy="no-referrer"
           className="size-full object-cover"
           onError={() => setBroken(true)}
         />
