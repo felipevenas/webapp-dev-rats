@@ -1,4 +1,5 @@
 import { BellOff, CheckCheck } from 'lucide-react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { api } from '@/core/http/api-client';
@@ -11,22 +12,25 @@ import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Pagination } from '@/components/ui/pagination';
 import { notificationCopy, notificationDetail } from '@/features/notifications/domain/notification-copy';
 import {
   useMarkAllNotificationsRead,
   useMarkNotificationRead,
   useNotifications,
+  useUnreadNotifications,
 } from '@/features/notifications/data/use-notifications';
 import { cn } from '@/core/lib/cn';
 
 export default function NotificationsPage() {
   const navigate = useNavigate();
-  const { data, isLoading, isError, error, refetch } = useNotifications(0);
+  const [page, setPage] = useState(0);
+  const { data, isLoading, isError, error, refetch } = useNotifications(page);
   const markRead = useMarkNotificationRead();
   const markAllRead = useMarkAllNotificationsRead();
+  const unread = useUnreadNotifications();
 
   const notifications = data?.content ?? [];
-  const unread = notifications.filter((notification) => !notification.readAt).length;
 
   const openNotification = async (notification: AppNotification) => {
     if (!notification.readAt) markRead.mutate(notification.id);
@@ -42,6 +46,7 @@ export default function NotificationsPage() {
   const handleMarkAll = async () => {
     try {
       await markAllRead.mutateAsync();
+      setPage(0);
       toast.success('Todos os alertas foram marcados como lidos.');
     } catch (error) {
       toast.error(toAppError(error).detail);
@@ -88,53 +93,63 @@ export default function NotificationsPage() {
           }
         />
       ) : (
-        <div className="space-y-2">
-          {notifications.map((notification) => {
-            const copy = notificationCopy(notification.type);
-            const detail = notificationDetail(notification.type, notification.payload);
-            const Icon = copy.icon;
-            const unreadItem = !notification.readAt;
-            return (
-              <button
-                key={notification.id}
-                type="button"
-                onClick={() => void openNotification(notification)}
-                className={cn(
-                  'ds-focus-ring flex w-full items-start gap-3.5 rounded-2xl border p-4 text-left transition-colors',
-                  unreadItem
-                    ? 'border-line bg-card hover:border-line-strong'
-                    : 'border-transparent bg-card/40 hover:bg-card',
-                )}
-              >
-                <span
+        <div className="space-y-3">
+          <div className="space-y-2">
+            {notifications.map((notification) => {
+              const copy = notificationCopy(notification.type);
+              const detail = notificationDetail(notification.type, notification.payload);
+              const Icon = copy.icon;
+              const unreadItem = !notification.readAt;
+              return (
+                <button
+                  key={notification.id}
+                  type="button"
+                  onClick={() => void openNotification(notification)}
                   className={cn(
-                    'mt-0.5 inline-flex size-9 shrink-0 items-center justify-center rounded-xl border',
-                    copy.tone === 'volt' && 'border-volt-line bg-volt-soft text-accent',
-                    copy.tone === 'cyan' && 'border-cyan/30 bg-cyan-soft text-cyan',
-                    copy.tone === 'amber' && 'border-amber/30 bg-amber-soft text-amber',
-                    copy.tone === 'rose' && 'border-rose/30 bg-rose-soft text-rose',
-                    copy.tone === 'violet' && 'border-violet/30 bg-violet-soft text-violet',
-                    copy.tone === 'neutral' && 'border-line bg-card-2 text-muted',
+                    'ds-focus-ring flex w-full items-start gap-3.5 rounded-2xl border p-4 text-left transition-colors',
+                    unreadItem
+                      ? 'border-line bg-card hover:border-line-strong'
+                      : 'border-transparent bg-card/40 hover:bg-card',
                   )}
                 >
-                  <Icon className="size-4" aria-hidden />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <p className={cn('text-sm', unreadItem ? 'font-semibold text-fg' : 'font-medium text-muted')}>
-                      {copy.title}
-                    </p>
-                    {unreadItem ? <Dot tone="volt" /> : null}
-                    <Badge variant="outline" size="sm" className="ml-auto">
-                      {formatRelativeTime(notification.createdAt)}
-                    </Badge>
+                  <span
+                    className={cn(
+                      'mt-0.5 inline-flex size-9 shrink-0 items-center justify-center rounded-xl border',
+                      copy.tone === 'volt' && 'border-volt-line bg-volt-soft text-accent',
+                      copy.tone === 'cyan' && 'border-cyan/30 bg-cyan-soft text-cyan',
+                      copy.tone === 'amber' && 'border-amber/30 bg-amber-soft text-amber',
+                      copy.tone === 'rose' && 'border-rose/30 bg-rose-soft text-rose',
+                      copy.tone === 'violet' && 'border-violet/30 bg-violet-soft text-violet',
+                      copy.tone === 'neutral' && 'border-line bg-card-2 text-muted',
+                    )}
+                  >
+                    <Icon className="size-4" aria-hidden />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className={cn('text-sm', unreadItem ? 'font-semibold text-fg' : 'font-medium text-muted')}>
+                        {copy.title}
+                      </p>
+                      {unreadItem ? <Dot tone="volt" /> : null}
+                      <Badge variant="outline" size="sm" className="ml-auto">
+                        {formatRelativeTime(notification.createdAt)}
+                      </Badge>
+                    </div>
+                    <p className="mt-0.5 text-[13px] leading-relaxed text-muted">{copy.description}</p>
+                    {detail ? <p className="mt-1 font-mono text-[11px] text-faint">{detail}</p> : null}
                   </div>
-                  <p className="mt-0.5 text-[13px] leading-relaxed text-muted">{copy.description}</p>
-                  {detail ? <p className="mt-1 font-mono text-[11px] text-faint">{detail}</p> : null}
-                </div>
-              </button>
-            );
-          })}
+                </button>
+              );
+            })}
+          </div>
+
+          <Pagination
+            page={page}
+            totalPages={data?.totalPages ?? 0}
+            totalElements={data?.totalElements}
+            pageSize={data?.size}
+            onPageChange={setPage}
+          />
         </div>
       )}
     </Page>
