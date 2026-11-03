@@ -198,7 +198,8 @@ export function InviteDialog({ groupId, groupName, open, onOpenChange }: InviteD
                     />
                     <div className="min-w-0 flex-1">
                       <p className="font-mono text-[11px] text-fg">
-                        {invite.uses} {invite.maxUses ? `/ ${invite.maxUses}` : ''} usos
+                        {invite.uses} {invite.maxUses ? `/ ${invite.maxUses}` : ''}{' '}
+                        {(invite.maxUses ?? invite.uses) === 1 ? 'uso' : 'usos'}
                       </p>
                       <p className="truncate text-[10px] text-faint">
                         {revoked

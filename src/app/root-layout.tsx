@@ -2,6 +2,11 @@ import { useEffect } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { NavigationProgress } from '@/components/feedback/navigation-progress';
+import {
+  GITHUB_RETURN_STORAGE_KEY,
+  readGitHubCallback,
+  resolveGitHubReturnTo,
+} from '@/features/github/domain/callback';
 
 export function RootLayout() {
   return (
@@ -31,7 +36,7 @@ function ScrollToTop() {
   return null;
 }
 
-/** The backend redirects OAuth flows to the frontend root with `?github=connected|installed`. */
+/** The backend redirects OAuth flows to the frontend root with `?github=connected|installed|error`. */
 function GitHubCallbackCatcher() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -41,16 +46,18 @@ function GitHubCallbackCatcher() {
     const result = params.get('github');
     if (!result) return;
 
-    const returnTo = sessionStorage.getItem('ds-github-return') ?? '/app/settings/integrations';
-    sessionStorage.removeItem('ds-github-return');
+    const outcome = readGitHubCallback(result, params.get('reason'));
+    const returnTo = resolveGitHubReturnTo(sessionStorage.getItem(GITHUB_RETURN_STORAGE_KEY));
+    sessionStorage.removeItem(GITHUB_RETURN_STORAGE_KEY);
 
-    if (result === 'connected') {
-      toast.success('GitHub conectado. A verificação de commits está pronta.');
-    } else if (result === 'installed') {
-      toast.success('GitHub App instalada. Os repositórios serão sincronizados.');
+    if (outcome?.kind === 'error') {
+      toast.error(outcome.message);
+    } else if (outcome) {
+      toast.success(outcome.message);
     }
 
-    navigate(returnTo.startsWith('/') ? returnTo : '/app/settings/integrations', { replace: true });
+    // Navigating to the stored route also drops the `github`/`reason` params from the URL.
+    navigate(returnTo, { replace: true });
   }, [location.search, navigate]);
 
   return null;

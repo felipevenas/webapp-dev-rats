@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/core/auth/auth-provider';
+import { cn } from '@/core/lib/cn';
 import { Logo } from '@/components/brand/logo';
 import { StreakVisual } from '@/components/brand/streak-visual';
 import { Badge } from '@/components/ui/badge';
@@ -197,14 +198,23 @@ export default function LandingPage() {
           </div>
 
           <div className="border-y border-line bg-surface/60">
-            <div className="ds-container grid grid-cols-2 divide-x divide-line sm:grid-cols-4">
+            <div className="ds-container grid grid-cols-2 sm:grid-cols-4">
               {[
                 ['01', 'commit por dia'],
                 ['03', 'repositórios por grupo'],
                 ['02', 'modos de verificação'],
                 ['00', 'planilhas ou registros manuais'],
-              ].map(([value, label]) => (
-                <div key={label} className="px-3 py-5 sm:px-5">
+              ].map(([value, label], index) => (
+                <div
+                  key={label}
+                  className={cn(
+                    'border-line px-3 py-5 sm:px-5',
+                    index % 2 === 1 && 'border-l',
+                    index >= 2 && 'border-t',
+                    'sm:border-t-0',
+                    index > 0 && 'sm:border-l',
+                  )}
+                >
                   <p className="font-mono text-2xl text-fg sm:text-3xl">{value}</p>
                   <p className="mt-1 text-[11px] leading-snug text-muted">{label}</p>
                 </div>

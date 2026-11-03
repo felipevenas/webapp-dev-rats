@@ -77,8 +77,9 @@ export default function IntegrationsPage() {
   const handleSync = async () => {
     try {
       await sync.mutateAsync();
-      toast.success('Sincronização solicitada. Os repositórios serão atualizados em instantes.');
-      window.setTimeout(() => void statusQuery.refetch(), 2500);
+      toast.success('Repositórios sincronizados.');
+      //---- The backend runs the sync synchronously, so both queries can be refreshed right away.
+      await Promise.all([statusQuery.refetch(), repos.refetch()]);
     } catch (error) {
       toast.error(toAppError(error).detail);
     }
@@ -122,8 +123,8 @@ export default function IntegrationsPage() {
       ) : statusQuery.isError ? (
         <ErrorState error={statusQuery.error} onRetry={() => void statusQuery.refetch()} />
       ) : status ? (
-        <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
-          <div className="space-y-4">
+        <div className="grid min-w-0 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
+          <div className="min-w-0 space-y-4">
             <Card className="relative overflow-hidden">
               <span
                 className="pointer-events-none absolute -right-20 -top-20 size-52 rounded-full bg-volt/10 blur-3xl"
@@ -161,10 +162,17 @@ export default function IntegrationsPage() {
                       </Button>
                     ) : (
                       <>
-                        <Button variant="secondary" onClick={() => void handleInstall()} loading={connecting}>
-                          <Link2 aria-hidden />
-                          Gerenciar instalação
-                        </Button>
+                        {status.installationCount > 0 ? (
+                          <Button variant="secondary" onClick={() => void handleInstall()} loading={connecting}>
+                            <Link2 aria-hidden />
+                            Gerenciar instalação
+                          </Button>
+                        ) : (
+                          <Button onClick={() => void handleInstall()} loading={connecting}>
+                            <Github aria-hidden />
+                            Instalar nos repositórios
+                          </Button>
+                        )}
                         <Button variant="danger-ghost" size="icon" onClick={() => setDisconnectOpen(true)} aria-label="Desconectar GitHub">
                           <Unplug aria-hidden />
                         </Button>
@@ -199,6 +207,22 @@ export default function IntegrationsPage() {
                     value={status.lastSyncedAt ? formatRelativeTime(status.lastSyncedAt) : '-'}
                   />
                 </dl>
+
+                {status.connected && status.installationCount === 0 ? (
+                  <div className="flex flex-col gap-2.5 rounded-xl border border-amber/30 bg-amber-soft p-3 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="flex items-start gap-2.5 text-[12px] leading-relaxed text-muted">
+                      <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber" aria-hidden />
+                      <span>
+                        <strong className="font-medium text-fg">Falta instalar a GitHub App.</strong> A conta já
+                        está autorizada, mas nenhum repositório é liberado sem a instalação.
+                      </span>
+                    </p>
+                    <Button size="sm" onClick={() => void handleInstall()} loading={connecting} className="shrink-0">
+                      <Github aria-hidden />
+                      Instalar agora
+                    </Button>
+                  </div>
+                ) : null}
 
                 {status.permissions && status.permissions.length > 0 ? (
                   <div className="border-t border-line pt-4">
@@ -264,16 +288,32 @@ export default function IntegrationsPage() {
                       <EmptyState
                         icon={Github}
                         compact
-                        title={debouncedSearch ? 'Nenhum resultado' : 'Nenhum repositório sincronizado'}
+                        title={
+                          debouncedSearch
+                            ? 'Nenhum resultado'
+                            : status.installationCount === 0
+                              ? 'GitHub App não instalada'
+                              : 'Nenhum repositório sincronizado'
+                        }
                         description={
                           debouncedSearch
                             ? 'Tente outro termo.'
-                            : 'Sincronize para importar os repositórios que a instalação acessa.'
+                            : status.installationCount === 0
+                              ? 'A autorização da conta existe, mas a App ainda não foi instalada. Instale para escolher os repositórios que o DevRats pode verificar.'
+                              : 'Sincronize para importar os repositórios que a instalação acessa.'
                         }
                         action={
-                          <Button size="sm" variant="secondary" onClick={() => void handleSync()} loading={sync.isPending}>
-                            Sincronizar agora
-                          </Button>
+                          debouncedSearch ? undefined : status.installationCount === 0 ? (
+                            <Button size="sm" onClick={() => void handleInstall()} loading={connecting}>
+                              <Github aria-hidden />
+                              Instalar nos repositórios
+                            </Button>
+                          ) : (
+                            <Button size="sm" variant="secondary" onClick={() => void handleSync()} loading={sync.isPending}>
+                              <RefreshCw aria-hidden />
+                              Sincronizar agora
+                            </Button>
+                          )
                         }
                       />
                     ) : (
@@ -282,7 +322,7 @@ export default function IntegrationsPage() {
                           {repos.data?.content.map((repository) => (
                             <li key={repository.id} className="flex items-center gap-3 bg-card-2/40 px-3 py-2.5">
                               <div className="min-w-0 flex-1">
-                                <p className="truncate font-mono text-[12px] text-fg">{repository.fullName}</p>
+                                <p className="truncate font-mono text-[12px] text-fg" title={repository.fullName}>{repository.fullName}</p>
                                 <p className="mt-0.5 flex flex-wrap items-center gap-1.5">
                                   <Badge variant="outline" size="sm">
                                     {repository.privateRepository ? (
@@ -305,9 +345,6 @@ export default function IntegrationsPage() {
                                   ) : null}
                                 </p>
                               </div>
-                              <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-faint">
-                                {repository.visibility.toLowerCase()}
-                              </span>
                             </li>
                           ))}
                         </ul>
@@ -329,7 +366,7 @@ export default function IntegrationsPage() {
             </Card>
           </div>
 
-          <aside className="space-y-4">
+          <aside className="min-w-0 space-y-4">
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-sm">
@@ -414,9 +451,9 @@ export default function IntegrationsPage() {
         }
       >
         <p className="text-[12px] leading-relaxed text-muted">
-          A autorização é revogada e novas consultas deixam de funcionar. Seus dias válidos já registrados
-          permanecem no histórico. Você pode reconectar quando quiser, mas o período desconectado não é
-          recuperado automaticamente.
+          A autorização é revogada no GitHub e os tokens são removidos do DevRats. Novas consultas deixam de
+          funcionar. Seus dias válidos já registrados permanecem no histórico. Você pode reconectar quando
+          quiser, mas o período desconectado não é recuperado automaticamente.
         </p>
       </Modal>
     </Page>

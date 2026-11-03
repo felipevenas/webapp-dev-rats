@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '@/core/auth/auth-provider';
 import { DEFAULT_TIME_ZONE, capitalize, formatFullDate, todayInZone } from '@/core/lib/date';
 import { firstName } from '@/core/lib/format';
+import { cn } from '@/core/lib/cn';
 import type { IconComponent } from '@/core/types/ui';
 import { Page, PageHeader } from '@/components/layout/page-header';
 import { Button } from '@/components/ui/button';
@@ -70,7 +71,7 @@ export default function DashboardPage() {
       ) : (
         <>
           <section className="ds-card-flat overflow-hidden" aria-label="Resumo">
-            <div className="grid grid-cols-2 divide-x divide-y divide-line sm:grid-cols-4 sm:divide-y-0">
+            <div className="grid grid-cols-2 sm:grid-cols-4">
               <SummaryTile
                 label="Hoje"
                 value={active.length > 0 ? `${validatedToday}/${active.length}` : '-'}
@@ -84,6 +85,7 @@ export default function DashboardPage() {
                 caption="somados em todos os desafios"
                 tone="cyan"
                 icon={Target}
+                className="border-l border-line"
               />
               <SummaryTile
                 label="Melhor sequência"
@@ -91,6 +93,7 @@ export default function DashboardPage() {
                 caption="sua maior corrida ativa"
                 tone="amber"
                 icon={Flame}
+                className="border-t border-line sm:border-t-0 sm:border-l"
               />
               <SummaryTile
                 label="Melhor posição"
@@ -98,6 +101,7 @@ export default function DashboardPage() {
                 caption="ranking entre os grupos"
                 tone="gold"
                 icon={Trophy}
+                className="border-t border-l border-line sm:border-t-0"
               />
             </div>
           </section>
@@ -195,12 +199,14 @@ function SummaryTile({
   caption,
   tone,
   icon: Icon,
+  className,
 }: {
   label: string;
   value: string;
   caption: string;
   tone: 'volt' | 'cyan' | 'amber' | 'gold' | 'neutral';
   icon: IconComponent;
+  className?: string;
 }) {
   const color = {
     volt: 'text-accent',
@@ -210,7 +216,7 @@ function SummaryTile({
     neutral: 'text-fg',
   }[tone];
   return (
-    <div className="p-4 sm:p-5">
+    <div className={cn('p-4 sm:p-5', className)}>
       <div className="flex items-center justify-between">
         <p className="ds-label">{label}</p>
         <Icon className={`size-3.5 ${color}`} aria-hidden />

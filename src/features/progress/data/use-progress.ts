@@ -67,10 +67,10 @@ export function useChallengeResult(challengeId: string | undefined, enabled = tr
   });
 }
 
-export function useFeed(challengeId?: string) {
+export function useFeed(challengeId?: string, limit = 20) {
   return useQuery({
-    queryKey: queryKeys.feed(challengeId ?? ''),
-    queryFn: () => progressApi.feed(challengeId as string, 20),
+    queryKey: [...queryKeys.feed(challengeId ?? ''), limit],
+    queryFn: () => progressApi.feed(challengeId as string, limit),
     enabled: Boolean(challengeId),
     refetchInterval: 60_000,
   });
