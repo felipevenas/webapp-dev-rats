@@ -180,7 +180,7 @@ export function OverviewTab({
               {feed.length === 0 ? (
                 <p className="text-[12px] text-muted">Nenhum evento registrado ainda.</p>
               ) : (
-                <FeedList items={feed} limit={6} />
+                <FeedList items={feed} limit={6} timezone={challenge.timezone} />
               )}
             </CardContent>
           </Card>

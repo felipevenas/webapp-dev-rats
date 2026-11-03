@@ -45,11 +45,11 @@ import { FinishedBanner } from '@/features/progress/ui/result-hero';
 
 type Tab = 'overview' | 'leaderboard' | 'calendar' | 'activity';
 
-const tabOptions: Array<{ id: Tab; label: string }> = [
-  { id: 'overview', label: 'Visão geral' },
-  { id: 'leaderboard', label: 'Ranking' },
-  { id: 'calendar', label: 'Calendário' },
-  { id: 'activity', label: 'Atividade' },
+const tabOptions: Array<{ id: Tab; label: string; shortLabel: string }> = [
+  { id: 'overview', label: 'Visão geral', shortLabel: 'Geral' },
+  { id: 'leaderboard', label: 'Ranking', shortLabel: 'Ranking' },
+  { id: 'calendar', label: 'Calendário', shortLabel: 'Calendário' },
+  { id: 'activity', label: 'Atividade', shortLabel: 'Atividade' },
 ];
 
 export default function GroupPage() {
@@ -69,7 +69,7 @@ export default function GroupPage() {
   const challenge = group?.currentChallenge ?? undefined;
   const progressQuery = useProgress(challenge?.id);
   const membersQuery = useGroupMembers(groupId);
-  const feedQuery = useFeed(challenge?.id);
+  const feedQuery = useFeed(challenge?.id, 50);
   const resultQuery = useChallengeResult(challenge?.id, challenge?.status === 'COMPLETED');
   const startChallenge = useStartChallenge(groupId ?? '');
   const cancelChallenge = useCancelChallenge(groupId ?? '');
@@ -351,18 +351,16 @@ export default function GroupPage() {
               onClick={() => setTab(option.id)}
               aria-current={active ? 'page' : undefined}
               className={cn(
-                'ds-focus-ring flex min-w-0 items-center justify-center gap-1 rounded-lg px-1.5 py-2 text-[11px] font-medium transition-colors sm:px-3.5 sm:text-[12px]',
+                'ds-focus-ring flex min-w-0 items-center justify-center gap-1 rounded-lg px-1 py-2 text-[10px] font-medium transition-colors sm:px-3.5 sm:text-[12px]',
                 active ? 'bg-volt-soft text-accent' : 'text-muted hover:bg-card hover:text-fg',
               )}
             >
-              <span className="truncate">
-                <span className={option.id === 'overview' ? 'sm:hidden' : 'hidden'}>
-                  {option.id === 'overview' ? 'Geral' : option.label}
-                </span>
+              <span className="min-w-0 truncate">
+                <span className="sm:hidden">{option.shortLabel}</span>
                 <span className="hidden sm:inline">{option.label}</span>
               </span>
               {option.id === 'leaderboard' && entries.length > 0 ? (
-                <span className="font-mono text-[10px] text-faint">{entries.length}</span>
+                <span className="shrink-0 font-mono text-[9px] text-faint sm:text-[10px]">{entries.length}</span>
               ) : null}
             </button>
           );
@@ -484,7 +482,7 @@ export default function GroupPage() {
             ) : feed.length === 0 ? (
               <EmptyState icon={CalendarDays} compact title="Nenhum evento registrado" />
             ) : (
-              <FeedList items={feed} />
+              <FeedList items={feed} timezone={challenge.timezone} />
             )}
           </CardContent>
         </Card>

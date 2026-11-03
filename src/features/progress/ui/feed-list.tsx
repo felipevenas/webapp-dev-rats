@@ -1,3 +1,4 @@
+import { useMemo, useState } from 'react';
 import {
   CalendarCheck,
   CheckCircle2,
@@ -17,6 +18,7 @@ import type { LucideIcon } from 'lucide-react';
 import type { FeedItem } from '@/core/types/api';
 import { formatRelativeTime } from '@/core/lib/date';
 import { cn } from '@/core/lib/cn';
+import { groupFeedItems } from '@/features/progress/domain/feed-grouping';
 
 const feedCopy: Record<string, { label: string; icon: LucideIcon; tone: string }> = {
   CHALLENGE_CREATED: { label: 'Desafio criado', icon: Flag, tone: 'text-cyan' },
@@ -42,7 +44,9 @@ const feedCopy: Record<string, { label: string; icon: LucideIcon; tone: string }
   CHALLENGE_REPOSITORIES_LOCKED: { label: 'Lista de repositórios travada', icon: Lock, tone: 'text-muted' },
 };
 
-export function feedItemCopy(item: FeedItem): { label: string; icon: LucideIcon; tone: string } {
+const PAGE_SIZE = 10;
+
+function feedItemCopy(item: FeedItem): { label: string; icon: LucideIcon; tone: string } {
   const known = feedCopy[item.type];
   if (known) return known;
   //---- The API falls back to the raw enum for unmapped actions; show a neutral label instead.
@@ -50,34 +54,60 @@ export function feedItemCopy(item: FeedItem): { label: string; icon: LucideIcon;
   return { label: human, icon: CheckCircle2, tone: 'text-muted' };
 }
 
-export function FeedList({ items, limit }: { items: FeedItem[]; limit?: number }) {
-  const visible = limit ? items.slice(0, limit) : items;
+export function FeedList({
+  items,
+  limit,
+  timezone,
+}: {
+  items: FeedItem[];
+  limit?: number;
+  timezone?: string;
+}) {
+  const entries = useMemo(() => groupFeedItems(items, timezone), [items, timezone]);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+
+  const visible = limit ? entries.slice(0, limit) : entries.slice(0, visibleCount);
+  const remaining = limit ? 0 : entries.length - visible.length;
 
   return (
-    <ol className="relative space-y-0.5" aria-label="Atividade do desafio">
-      {visible.map((item, index) => {
-        const copy = feedItemCopy(item);
-        const Icon = copy.icon;
-        return (
-          <li key={item.id} className="relative flex gap-3 pb-3">
-            {index < visible.length - 1 ? (
-              <span className="absolute left-[13px] top-7 h-[calc(100%-1.5rem)] w-px bg-line" aria-hidden />
-            ) : null}
-            <span
-              className={cn(
-                'relative z-10 mt-0.5 inline-flex size-7 shrink-0 items-center justify-center rounded-full border border-line bg-card-2',
-                copy.tone,
-              )}
-            >
-              <Icon className="size-3.5" aria-hidden />
-            </span>
-            <div className="min-w-0 flex-1 pt-0.5">
-              <p className="text-[12px] leading-snug text-fg">{copy.label}</p>
-              <p className="mt-0.5 font-mono text-[10px] text-faint">{formatRelativeTime(item.createdAt)}</p>
-            </div>
-          </li>
-        );
-      })}
-    </ol>
+    <div>
+      <ol className="relative space-y-0.5" aria-label="Atividade do desafio">
+        {visible.map((entry, index) => {
+          const copy = feedItemCopy(entry.item);
+          const Icon = copy.icon;
+          return (
+            <li key={entry.key} className="relative flex gap-3 pb-3">
+              {index < visible.length - 1 ? (
+                <span className="absolute left-[13px] top-7 h-[calc(100%-1.5rem)] w-px bg-line" aria-hidden />
+              ) : null}
+              <span
+                className={cn(
+                  'relative z-10 mt-0.5 inline-flex size-7 shrink-0 items-center justify-center rounded-full border border-line bg-card-2',
+                  copy.tone,
+                )}
+              >
+                <Icon className="size-3.5" aria-hidden />
+              </span>
+              <div className="min-w-0 flex-1 pt-0.5">
+                <p className="text-[12px] leading-snug text-fg">{copy.label}</p>
+                <p className="mt-0.5 font-mono text-[10px] text-faint">
+                  {formatRelativeTime(entry.item.createdAt)}
+                </p>
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+
+      {remaining > 0 ? (
+        <button
+          type="button"
+          onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}
+          className="ds-focus-ring mt-1 w-full rounded-lg border border-line bg-card-2 py-2 text-[11px] font-medium text-muted transition-colors hover:border-line-strong hover:text-fg"
+        >
+          Carregar mais ({remaining})
+        </button>
+      ) : null}
+    </div>
   );
 }
