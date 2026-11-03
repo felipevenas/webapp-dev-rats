@@ -180,6 +180,14 @@ export function formatMonthLabel(monthKey: string): string {
   );
 }
 
+const SHORT_MONTHS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+
+/** Compact label for narrow screens, e.g. "nov/2026". */
+export function formatMonthShortLabel(monthKey: string): string {
+  const [year, month] = monthKey.split('-').map(Number);
+  return `${SHORT_MONTHS[month - 1]}/${year}`;
+}
+
 export function formatFullDate(isoDate: string): string {
   const date = parseIsoDate(isoDate);
   return new Intl.DateTimeFormat('pt-BR', {

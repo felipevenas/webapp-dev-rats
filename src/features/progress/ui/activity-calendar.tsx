@@ -8,6 +8,7 @@ import {
   firstDayOfMonth,
   formatFullDate,
   formatMonthLabel,
+  formatMonthShortLabel,
   formatTime,
   formatWeekdayLong,
   lastDayOfMonth,
@@ -195,7 +196,10 @@ export function ActivityCalendar({
           <Button variant="secondary" size="icon-sm" onClick={() => setMonth(shiftMonth(monthKey, -1))} aria-label="Mês anterior">
             <ChevronLeft aria-hidden />
           </Button>
-          <p className="min-w-40 text-center text-[13px] font-medium">{formatMonthLabel(monthKey)}</p>
+          <p className="min-w-0 flex-1 text-center text-[12px] font-medium whitespace-nowrap sm:min-w-40 sm:flex-none sm:text-[13px]">
+            <span className="sm:hidden">{formatMonthShortLabel(monthKey)}</span>
+            <span className="hidden sm:inline">{formatMonthLabel(monthKey)}</span>
+          </p>
           <Button variant="secondary" size="icon-sm" onClick={() => setMonth(shiftMonth(monthKey, 1))} aria-label="Próximo mês">
             <ChevronRight aria-hidden />
           </Button>
@@ -204,8 +208,8 @@ export function ActivityCalendar({
           </Button>
         </div>
 
-        <div className="flex items-center gap-2">
-          <label htmlFor="calendar-member" className="text-[11px] text-muted">
+        <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:gap-2">
+          <label htmlFor="calendar-member" className="text-[11px] whitespace-nowrap text-muted">
             Calendário de
           </label>
           <Select

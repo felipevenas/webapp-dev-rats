@@ -285,12 +285,15 @@ export default function GroupSettingsPage() {
                   >
                     <Avatar src={member.avatarUrl} name={member.displayName} size="sm" />
                     <div className="min-w-0 flex-1">
-                      <p className="flex items-center gap-1.5 truncate text-[12px] font-medium">
-                        {member.displayName}
-                        {member.userId === user.id ? <span className="text-accent">· você</span> : null}
-                      </p>
+                      <p className="truncate text-[12px] font-medium">{member.displayName}</p>
                       <p className="truncate font-mono text-[10px] text-faint">
-                        @{member.username} · entrou em {formatDateTime(member.joinedAt, group.timezone)}
+                        @{member.username}
+                        {member.userId === user.id ? (
+                          <span className="hidden text-accent sm:inline"> · você</span>
+                        ) : null}
+                        <span className="hidden sm:inline">
+                          {' '}· entrou em {formatDateTime(member.joinedAt, group.timezone)}
+                        </span>
                       </p>
                     </div>
                     {member.role === 'OWNER' ? (

@@ -6,6 +6,7 @@ import {
   eachDay,
   formatCountdown,
   formatMonthLabel,
+  formatMonthShortLabel,
   endOfDayInZone,
   localDateInZone,
   monthGrid,
@@ -66,6 +67,8 @@ describe('date helpers', () => {
     expect(shiftMonth('2026-01', -1)).toBe('2025-12');
     expect(shiftMonth('2026-12', 1)).toBe('2027-01');
     expect(formatMonthLabel('2026-10')).toBe('Outubro de 2026');
+    expect(formatMonthShortLabel('2026-10')).toBe('out/2026');
+    expect(formatMonthShortLabel('2027-01')).toBe('jan/2027');
   });
 
   it('creates an inclusive day range', () => {
