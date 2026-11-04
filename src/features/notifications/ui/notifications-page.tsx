@@ -65,10 +65,6 @@ export default function NotificationsPage() {
 
   /** Deletes one alert while keeping independent loading state for concurrent rows. */
   const handleDelete = async (notification: AppNotification) => {
-    if (!navigator.onLine) {
-      toast.error('Sem conexão. Tente novamente quando estiver online.');
-      return;
-    }
     setDeletingIds((current) => new Set(current).add(notification.id));
     try {
       await deleteNotification.mutateAsync(notification.id);

@@ -44,10 +44,6 @@ export function DeleteGroupModal({
 
   /** Deletes the group, closes the dialog and returns to the dashboard. */
   const handleDelete = async () => {
-    if (!navigator.onLine) {
-      toast.error('Sem conexão. Tente novamente quando estiver online.');
-      return;
-    }
     try {
       await deleteGroup.mutateAsync();
       toast.success(`O grupo "${groupName}" foi excluído.`);
