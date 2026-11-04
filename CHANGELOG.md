@@ -29,6 +29,8 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o 
 
 ### 🚀 Adicionado
 
+- Exclusão individual de alertas na central de notificações.
+- Exclusão de grupo pelo criador, com confirmação por nome e notificação aos participantes.
 - Onboarding interativo pós-cadastro com perfil, GitHub, desafio e convite.
 - Paginação padronizada nas listas de repositórios e notificações.
 - Fuso horário fixo em Brasília nos novos cadastros e desafios.

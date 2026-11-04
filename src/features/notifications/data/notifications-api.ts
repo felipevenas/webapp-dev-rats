@@ -14,4 +14,7 @@ export const notificationsApi = {
   async markAllRead() {
     await api.post('/notifications/read-all');
   },
+  async remove(notificationId: string) {
+    await api.delete(`/notifications/${notificationId}`);
+  },
 };

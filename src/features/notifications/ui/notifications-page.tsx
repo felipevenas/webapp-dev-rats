@@ -1,4 +1,4 @@
-import { BellOff, CheckCheck } from 'lucide-react';
+import { BellOff, CheckCheck, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -21,6 +21,7 @@ import {
   notificationDetail,
 } from '@/features/notifications/domain/notification-copy';
 import {
+  useDeleteNotification,
   useMarkAllNotificationsRead,
   useMarkNotificationRead,
   useNotifications,
@@ -34,6 +35,8 @@ export default function NotificationsPage() {
   const { data, isLoading, isError, error, refetch } = useNotifications(page);
   const markRead = useMarkNotificationRead();
   const markAllRead = useMarkAllNotificationsRead();
+  const deleteNotification = useDeleteNotification();
+  const [deletingIds, setDeletingIds] = useState<Set<string>>(() => new Set());
 
   const notifications = data?.content ?? [];
 
@@ -50,6 +53,7 @@ export default function NotificationsPage() {
     else if (total > 0 && page > total - 1) setPage(total - 1);
   }, [data?.totalPages, isError, page]);
 
+  /** Opens the related challenge or marks the alert as read when it has no target. */
   const openNotification = async (notification: AppNotification) => {
     if (!notification.readAt) markRead.mutate(notification.id);
 
@@ -72,6 +76,7 @@ export default function NotificationsPage() {
     }
   };
 
+  /** Marks every alert as read and returns to the first page. */
   const handleMarkAll = async () => {
     try {
       await markAllRead.mutateAsync();
@@ -79,6 +84,23 @@ export default function NotificationsPage() {
       toast.success('Todos os alertas foram marcados como lidos.');
     } catch (error) {
       toast.error(toAppError(error).detail);
+    }
+  };
+
+  /** Deletes one alert while keeping independent loading state for concurrent rows. */
+  const handleDelete = async (notification: AppNotification) => {
+    setDeletingIds((current) => new Set(current).add(notification.id));
+    try {
+      await deleteNotification.mutateAsync(notification.id);
+      toast.success('Alerta excluído.');
+    } catch (error) {
+      toast.error(toAppError(error).detail);
+    } finally {
+      setDeletingIds((current) => {
+        const next = new Set(current);
+        next.delete(notification.id);
+        return next;
+      });
     }
   };
 
@@ -137,13 +159,13 @@ export default function NotificationsPage() {
                 <article
                   key={notification.id}
                   className={cn(
-                    'rounded-2xl border p-4 transition-colors',
+                    'flex w-full items-start gap-2 rounded-2xl border p-4 transition-colors',
                     unreadItem
                       ? 'border-line bg-card hover:border-line-strong'
-                      : 'border-transparent bg-card/40',
+                      : 'border-transparent bg-card/40 hover:bg-card',
                   )}
                 >
-                  <div className="flex items-start gap-3.5">
+                  <div className="flex min-w-0 flex-1 items-start gap-3.5">
                     {hasActor && actor.username ? (
                       <Link
                         to={`/app/users/${actor.username}`}
@@ -224,6 +246,18 @@ export default function NotificationsPage() {
                       ) : null}
                     </div>
                   </div>
+
+                  <Button
+                    variant="danger-ghost"
+                    size="icon-sm"
+                    className="shrink-0"
+                    onClick={() => handleDelete(notification)}
+                    loading={deletingIds.has(notification.id)}
+                    aria-label={`Excluir alerta: ${copy.title}${detail ? ` (${detail})` : ''} - ${formatRelativeTime(notification.createdAt)}`}
+                    title="Excluir alerta"
+                  >
+                    <Trash2 aria-hidden />
+                  </Button>
                 </article>
               );
             })}

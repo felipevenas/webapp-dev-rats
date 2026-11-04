@@ -43,6 +43,9 @@ export const groupsApi = {
   async leave(groupId: string) {
     await api.post(`/groups/${groupId}/leave`);
   },
+  async remove(groupId: string) {
+    await api.delete(`/groups/${groupId}`);
+  },
   async invites(groupId: string) {
     const response = await api.get<Invite[]>(`/groups/${groupId}/invites`);
     return response.data;

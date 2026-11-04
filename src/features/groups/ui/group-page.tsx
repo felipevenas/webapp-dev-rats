@@ -32,6 +32,7 @@ import { ErrorState } from '@/components/ui/error-state';
 import { Modal } from '@/components/ui/modal';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useGroup, useGroupMembers, useLeaveGroup } from '@/features/groups/data/use-groups';
+import { DeleteGroupModal } from '@/features/groups/ui/delete-group-modal';
 import { InviteDialog } from '@/features/groups/ui/invite-dialog';
 import { OverviewTab } from '@/features/groups/ui/group-overview';
 import { useCancelChallenge, useStartChallenge } from '@/features/challenges/data/use-challenges';
@@ -63,6 +64,7 @@ export default function GroupPage() {
   const [startOpen, setStartOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
   const [leaveOpen, setLeaveOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   const groupQuery = useGroup(groupId);
   const group = groupQuery.data;
@@ -99,6 +101,11 @@ export default function GroupPage() {
   const entries = progressQuery.data ?? [];
   const me = entries.find((entry) => entry.userId === user.id) ?? null;
   const members = membersQuery.data ?? [];
+  const otherParticipants = Math.max(
+    members.filter((member) => member.status === 'ACTIVE' && member.userId !== user.id).length,
+    0,
+  );
+  const participantCountKnown = !membersQuery.isLoading && !membersQuery.isError;
   const feed = feedQuery.data ?? [];
   const result = resultQuery.data ?? null;
   const mode = challenge ? verificationModeCopy(challenge.verificationMode) : null;
@@ -278,7 +285,14 @@ export default function GroupPage() {
                     Sair do grupo
                   </DropdownItem>
                 </>
-              ) : null}
+              ) : (
+                <>
+                  <DropdownSeparator />
+                  <DropdownItem icon={Trash2} danger onSelect={() => setDeleteOpen(true)}>
+                    Excluir grupo
+                  </DropdownItem>
+                </>
+              )}
             </Dropdown>
           </div>
         </div>
@@ -581,6 +595,14 @@ export default function GroupPage() {
           novo convite, respeitando a janela de admissão.
         </p>
       </Modal>
+
+      <DeleteGroupModal
+        groupId={group.id}
+        groupName={group.name}
+        participantCount={participantCountKnown ? otherParticipants : null}
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+      />
     </Page>
   );
 }

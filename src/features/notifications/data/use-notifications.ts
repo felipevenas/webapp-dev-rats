@@ -35,3 +35,16 @@ export function useMarkAllNotificationsRead() {
     },
   });
 }
+
+export function useDeleteNotification() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: notificationsApi.remove,
+    //---- Offline deletion must reject immediately so the caller's finally clears the row.
+    networkMode: 'always',
+    retry: false,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['notifications'] });
+    },
+  });
+}
