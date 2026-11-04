@@ -97,6 +97,18 @@ export const router = createBrowserRouter([
                 }),
               },
               {
+                path: '/app/friends',
+                lazy: async () => ({
+                  Component: (await import('@/features/friends/ui/friends-page')).default,
+                }),
+              },
+              {
+                path: '/app/users/:username',
+                lazy: async () => ({
+                  Component: (await import('@/features/users/ui/public-profile-page')).default,
+                }),
+              },
+              {
                 path: '/app/profile',
                 lazy: async () => ({ Component: (await import('@/features/profile/ui/profile-page')).default }),
               },

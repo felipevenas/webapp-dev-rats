@@ -16,6 +16,14 @@ export const queryKeys = {
   result: (challengeId: string) => ['challenges', challengeId, 'result'] as const,
   feed: (challengeId: string) => ['challenges', challengeId, 'feed'] as const,
   notifications: (page: number) => ['notifications', page] as const,
+  friends: (page: number, size = 12) => ['friends', 'list', page, size] as const,
+  friendRequests: (direction: 'RECEIVED' | 'SENT', page: number, size = 12) =>
+    ['friends', 'requests', direction, page, size] as const,
+  friendRequestsCount: ['friends', 'requests', 'received', 'count'] as const,
+  friendshipStatuses: (userIds: string[]) =>
+    ['friends', 'status', [...userIds].sort().join(',')] as const,
+  userSearch: (query: string) => ['users', 'search', query] as const,
+  publicProfile: (username: string) => ['users', username, 'profile'] as const,
   github: ['integrations', 'github'] as const,
   repositories: (search: string, page: number) => ['github', 'repositories', search, page] as const,
   invitePreview: (token: string) => ['invites', token] as const,

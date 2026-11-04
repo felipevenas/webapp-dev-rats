@@ -42,6 +42,8 @@ import { InviteDialog } from '@/features/groups/ui/invite-dialog';
 import { useCancelChallenge, useStartChallenge } from '@/features/challenges/data/use-challenges';
 import { challengeStatusCopy, verificationModeCopy } from '@/features/challenges/domain/challenge-status';
 import { ChallengeStatusBadge } from '@/features/challenges/ui/challenge-status-badge';
+import { useFriendshipStatuses } from '@/features/friends/data/use-friends';
+import { FriendButton } from '@/features/friends/ui/friend-button';
 
 export default function GroupSettingsPage() {
   const { groupId } = useParams<{ groupId: string }>();
@@ -50,6 +52,12 @@ export default function GroupSettingsPage() {
   const groupQuery = useGroup(groupId);
   const group = groupQuery.data;
   const membersQuery = useGroupMembers(groupId);
+  const friendshipStatuses = useFriendshipStatuses(
+    (membersQuery.data ?? [])
+      .filter((member) => member.status === 'ACTIVE' && member.userId !== user?.id)
+      .map((member) => member.userId),
+  );
+  const statuses = friendshipStatuses.data ?? {};
   const invitesQuery = useGroupInvites(groupId, Boolean(group));
   const updateGroup = useUpdateGroup(groupId ?? '');
   const removeMember = useRemoveMember(groupId ?? '');
@@ -283,40 +291,61 @@ export default function GroupSettingsPage() {
                     key={member.id}
                     className="flex min-w-0 items-center gap-3 rounded-xl border border-line bg-card-2 px-3 py-2.5"
                   >
-                    <Avatar src={member.avatarUrl} name={member.displayName} size="sm" />
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-[12px] font-medium">{member.displayName}</p>
-                      <p className="truncate font-mono text-[10px] text-faint">
-                        @{member.username}
-                        {member.userId === user.id ? (
-                          <span className="hidden text-accent sm:inline"> · você</span>
-                        ) : null}
-                        <span className="hidden sm:inline">
-                          {' '}· entrou em {formatDateTime(member.joinedAt, group.timezone)}
+                    <Link
+                      to={`/app/users/${member.username}`}
+                      className="ds-focus-ring flex min-w-0 flex-1 items-center gap-3 rounded-lg"
+                    >
+                      <Avatar src={member.avatarUrl} name={member.displayName} size="sm" />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-[12px] font-medium">
+                          {member.displayName}
                         </span>
-                      </p>
+                        <span className="block truncate font-mono text-[10px] text-faint">
+                          @{member.username}
+                          {member.userId === user.id ? (
+                            <span className="hidden text-accent sm:inline"> · você</span>
+                          ) : null}
+                          <span className="hidden sm:inline">
+                            {' '}· entrou em {formatDateTime(member.joinedAt, group.timezone)}
+                          </span>
+                        </span>
+                      </span>
+                    </Link>
+                    <div className="flex shrink-0 items-center gap-1">
+                      {member.role === 'OWNER' ? (
+                        <Badge variant="volt" size="sm">
+                          <Crown className="size-2.5" aria-hidden /> dono
+                        </Badge>
+                      ) : null}
+                      {member.userId === user.id ? (
+                        <Badge variant="outline" size="sm">
+                          você
+                        </Badge>
+                      ) : friendshipStatuses.isLoading ? (
+                        <span className="ds-skeleton size-9 rounded-xl" aria-hidden />
+                      ) : (
+                        <FriendButton
+                          compact
+                          userId={member.userId}
+                          username={member.username}
+                          displayName={member.displayName}
+                          status={statuses[member.userId] ?? 'NONE'}
+                        />
+                      )}
+                      {isOwner && member.userId !== user.id ? (
+                        <Button
+                          variant="danger-ghost"
+                          size="icon-sm"
+                          onClick={() =>
+                            setSelectedMember({ userId: member.userId, displayName: member.displayName })
+                          }
+                          aria-label={`Remover ${member.displayName}`}
+                          title="Remover do grupo"
+                        >
+                          <UserMinus aria-hidden />
+                        </Button>
+                      ) : null}
                     </div>
-                    {member.role === 'OWNER' ? (
-                      <Badge variant="volt" size="sm">
-                        <Crown className="size-2.5" aria-hidden /> dono
-                      </Badge>
-                    ) : isOwner ? (
-                      <Button
-                        variant="danger-ghost"
-                        size="icon-sm"
-                        onClick={() =>
-                          setSelectedMember({ userId: member.userId, displayName: member.displayName })
-                        }
-                        aria-label={`Remover ${member.displayName}`}
-                        title="Remover do grupo"
-                      >
-                        <UserMinus aria-hidden />
-                      </Button>
-                    ) : member.userId === user.id ? (
-                      <Badge variant="outline" size="sm">
-                        você
-                      </Badge>
-                    ) : null}
                   </div>
                 ))
               )}
