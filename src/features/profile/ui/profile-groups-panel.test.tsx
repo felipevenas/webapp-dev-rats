@@ -120,6 +120,7 @@ describe('ProfileGroupsPanel', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /tentar novamente/i }));
 
+    expect(screen.getAllByText('—')).toHaveLength(3);
     expect(onRetry).toHaveBeenCalledTimes(1);
   });
 });
