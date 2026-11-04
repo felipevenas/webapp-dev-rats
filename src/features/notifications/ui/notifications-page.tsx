@@ -25,6 +25,7 @@ import {
   useMarkNotificationRead,
   useNotifications,
 } from '@/features/notifications/data/use-notifications';
+import { useFriendshipStatuses } from '@/features/friends/data/use-friends';
 import { FriendRequestActions } from '@/features/notifications/ui/friend-request-actions';
 
 export default function NotificationsPage() {
@@ -36,10 +37,18 @@ export default function NotificationsPage() {
 
   const notifications = data?.content ?? [];
 
+  const friendRequestActorIds = notifications
+    .filter((notification) => notification.type === 'FRIEND_REQUEST')
+    .map((notification) => notificationActor(notification.payload).userId)
+    .filter((userId): userId is string => Boolean(userId));
+  const friendshipStatuses = useFriendshipStatuses(friendRequestActorIds);
+
   useEffect(() => {
+    if (isError) return;
     const total = data?.totalPages ?? 0;
-    if (total > 0 && page > total - 1) setPage(total - 1);
-  }, [data?.totalPages, page]);
+    if (total === 0 && page !== 0) setPage(0);
+    else if (total > 0 && page > total - 1) setPage(total - 1);
+  }, [data?.totalPages, isError, page]);
 
   const openNotification = async (notification: AppNotification) => {
     if (!notification.readAt) markRead.mutate(notification.id);
@@ -198,6 +207,7 @@ export default function NotificationsPage() {
                           notificationId={notification.id}
                           friendshipId={actor.friendshipId}
                           displayName={actor.displayName}
+                          friendshipStatus={actor.userId ? friendshipStatuses.data?.[actor.userId] : undefined}
                         />
                       ) : null}
 

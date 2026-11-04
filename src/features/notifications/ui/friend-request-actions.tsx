@@ -1,8 +1,9 @@
 import { Check, X } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { toAppError } from '@/core/http/problem';
+import type { FriendshipStatus } from '@/core/types/api';
 import { Button } from '@/components/ui/button';
 import {
   useAcceptFriendRequest,
@@ -14,9 +15,29 @@ interface FriendRequestActionsProps {
   notificationId: string;
   friendshipId: string;
   displayName?: string | null;
+  friendshipStatus?: FriendshipStatus;
 }
 
 type Resolution = 'accepted' | 'declined' | 'stale';
+
+const RESOLUTION_PREFIX = 'devrats:friend-resolution:';
+
+function readStoredResolution(notificationId: string): Resolution | null {
+  try {
+    const value = sessionStorage.getItem(RESOLUTION_PREFIX + notificationId);
+    return value === 'accepted' || value === 'declined' || value === 'stale' ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+function storeResolution(notificationId: string, resolution: Resolution) {
+  try {
+    sessionStorage.setItem(RESOLUTION_PREFIX + notificationId, resolution);
+  } catch {
+    //---- UI-only hint; storage failures must never block the action.
+  }
+}
 
 /**
  * Inline accept/decline used in the notification center.
@@ -26,34 +47,53 @@ export function FriendRequestActions({
   notificationId,
   friendshipId,
   displayName,
+  friendshipStatus,
 }: FriendRequestActionsProps) {
   const queryClient = useQueryClient();
   const accept = useAcceptFriendRequest();
   const decline = useDeclineFriendRequest();
   const markRead = useMarkNotificationRead();
-  const [resolution, setResolution] = useState<Resolution | null>(null);
+  const [resolution, setResolution] = useState<Resolution | null>(() =>
+    friendshipStatus === 'FRIENDS' ? 'accepted' : readStoredResolution(notificationId),
+  );
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (friendshipStatus === 'FRIENDS' && resolution !== 'accepted') {
+      setResolution('accepted');
+    }
+  }, [friendshipStatus, resolution]);
 
   const resolve = async (action: Resolution) => {
+    if (submitting || resolution) return;
+    setSubmitting(true);
     try {
       if (action === 'accepted') {
         await accept.mutateAsync(friendshipId);
       } else {
         await decline.mutateAsync(friendshipId);
       }
-      //---- The notification stays in history but must not keep unread actions.
-      await markRead.mutateAsync(notificationId).catch(() => undefined);
+      //---- Resolve the row before awaiting mark-read so repeated clicks cannot race.
       setResolution(action);
+      storeResolution(notificationId, action);
+      await markRead.mutateAsync(notificationId).catch(() => undefined);
       toast.success(action === 'accepted' ? 'Solicitação aceita.' : 'Solicitação recusada.');
     } catch (error) {
       const appError = toAppError(error);
-      if (appError.status === 404 || appError.status === 409) {
+      const stale =
+        appError.status === 404 ||
+        (appError.status === 409 && appError.code === 'INVALID_FRIENDSHIP_STATE');
+      if (stale) {
         //---- Already handled elsewhere: hide the stale actions and resync.
         await markRead.mutateAsync(notificationId).catch(() => undefined);
         void queryClient.invalidateQueries({ queryKey: ['friends'] });
         void queryClient.invalidateQueries({ queryKey: ['notifications'] });
         setResolution('stale');
+        storeResolution(notificationId, 'stale');
       }
       toast.error(appError.detail);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -83,8 +123,8 @@ export function FriendRequestActions({
         variant="accent"
         size="sm"
         onClick={() => void resolve('accepted')}
-        loading={accept.isPending}
-        disabled={decline.isPending}
+        loading={accept.isPending || submitting}
+        disabled={decline.isPending || submitting}
       >
         <Check aria-hidden />
         Aceitar
@@ -93,8 +133,8 @@ export function FriendRequestActions({
         variant="ghost"
         size="sm"
         onClick={() => void resolve('declined')}
-        loading={decline.isPending}
-        disabled={accept.isPending}
+        loading={decline.isPending || submitting}
+        disabled={accept.isPending || submitting}
       >
         <X aria-hidden />
         Recusar

@@ -85,6 +85,14 @@ export function FriendButton({
       if (incomingRequest) {
         await acceptRequest.mutateAsync(incomingRequest.id);
       } else {
+        const listComplete =
+          incomingQuery.isSuccess &&
+          incomingQuery.data.totalElements <= incomingQuery.data.content.length;
+        if (listComplete) {
+          toast.error('Não encontramos esta solicitação. Atualize a página e tente novamente.');
+          void incomingQuery.refetch();
+          return;
+        }
         //---- A crossed request is auto-accepted by the API, so resending is a safe fallback.
         await sendRequest.mutateAsync(username);
       }
