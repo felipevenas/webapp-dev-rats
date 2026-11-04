@@ -50,6 +50,7 @@ Auditoria conduzida com o MCP do Playwright no frontend em execução (`http://l
 | Tema claro tinha labels pequenos com contraste baixo | App inteiro | Token `faint` ajustado para contraste AA |
 | Preview de convite retornava 401 para visitantes | API (SecurityConfig) | `GET /api/v1/invites/**` liberado; aceite continua autenticado |
 | Header do grupo ocupava a tela toda antes do calendário | Tabs do grupo | Header compacto no mobile nas abas que não são “Visão geral” |
+| Banner do perfil espremia foto, informações e estatísticas na horizontal | Perfil | Foto e dados empilhados; cards dos grupos no canto superior direito a partir de `xl` |
 
 ## Resultado final
 

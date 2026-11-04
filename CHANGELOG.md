@@ -10,6 +10,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o 
 
 ### 🎨 Alterado
 
+- Banner do perfil com foto no topo, informações abaixo e cards dos grupos no canto superior direito.
 - Lateral da autenticação com identidade visual compacta, sem rolagem.
 - Lado esquerdo da autenticação simplificado, sem elementos gráficos e sem rolagem.
 - Copy padronizada sem travessões e autenticação centralizada no viewport.

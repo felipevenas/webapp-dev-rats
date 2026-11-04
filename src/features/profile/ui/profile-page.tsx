@@ -1,5 +1,5 @@
 import { Github } from '@/components/brand/github-icon';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import {
   AlertTriangle,
   Bell,
@@ -44,6 +44,7 @@ import {
   useUpdateProfile,
 } from '@/features/profile/data/use-profile';
 import { AvatarUploader } from '@/features/profile/ui/avatar-uploader';
+import { ProfileGroupsPanel } from '@/features/profile/ui/profile-groups-panel';
 
 const BRASILIA_LABEL = 'Horário de Brasília (GMT-3)';
 
@@ -66,15 +67,6 @@ export default function ProfilePage() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [password, setPassword] = useState('');
   const [confirmation, setConfirmation] = useState('');
-
-  const stats = useMemo(() => {
-    const groups = dashboard.data?.groups ?? [];
-    return {
-      groups: groups.length,
-      validDays: groups.reduce((total, group) => total + group.validDays, 0),
-      bestStreak: groups.reduce((best, group) => Math.max(best, group.bestStreak), 0),
-    };
-  }, [dashboard.data]);
 
   if (!user) return null;
 
@@ -209,67 +201,71 @@ export default function ProfilePage() {
 
       <section className="ds-card relative overflow-hidden p-5 sm:p-6">
         <div className="ds-grid-bg-sm pointer-events-none absolute inset-0 opacity-50" aria-hidden />
-        <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center">
-          <AvatarUploader user={user} />
-          <div className="min-w-0 flex-1">
-            <h2 className="text-2xl font-semibold tracking-[-0.03em]">{user.displayName}</h2>
-            <p className="font-mono text-[12px] text-muted">@{user.username}</p>
-            <p className="mt-1 text-[11px] text-faint">{user.email}</p>
-            {user.bio ? (
-              <p className="mt-2 max-w-xl text-[12px] leading-relaxed text-muted">{user.bio}</p>
-            ) : null}
-            {user.location || safeWebsite ? (
-              <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted">
-                {user.location ? (
-                  <span className="inline-flex items-center gap-1">
-                    <MapPin className="size-3 shrink-0" aria-hidden />
-                    {user.location}
-                  </span>
-                ) : null}
-                {safeWebsite ? (
-                  <a
-                    href={safeWebsite}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    className="inline-flex items-center gap-1 text-accent hover:underline"
-                  >
-                    <Globe className="size-3 shrink-0" aria-hidden />
-                    {websiteLabel(safeWebsite)}
-                  </a>
-                ) : null}
-              </div>
-            ) : null}
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              {user.experienceLevel ? (
-                <Badge variant="violet" size="sm">
-                  <Briefcase className="size-3" aria-hidden />
-                  {experienceLevelLabel(user.experienceLevel)}
-                </Badge>
+        <div className="relative grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px] xl:items-start">
+          <div className="min-w-0">
+            <AvatarUploader user={user} />
+            <div className="mt-4 min-w-0">
+              <h2 className="text-2xl font-semibold tracking-[-0.03em]">{user.displayName}</h2>
+              <p className="font-mono text-[12px] text-muted">@{user.username}</p>
+              <p className="mt-1 text-[11px] text-faint">{user.email}</p>
+              {user.bio ? (
+                <p className="mt-2 max-w-xl text-[12px] leading-relaxed text-muted">{user.bio}</p>
               ) : null}
-              <Badge variant={user.githubConnected ? 'volt' : 'amber'} size="sm">
-                <Github className="size-3" aria-hidden />
-                {user.githubConnected ? `@${user.githubUsername ?? 'github'}` : 'GitHub desconectado'}
-              </Badge>
-              <Badge variant="outline" size="sm">
-                <CalendarDays className="size-3" aria-hidden />
-                desde {formatFullDate(localDateInZone(user.createdAt, user.timezone))}
-              </Badge>
-            </div>
-            {user.primaryStack && user.primaryStack.length > 0 ? (
-              <div className="mt-2 flex flex-wrap items-center gap-1.5" aria-label="Stack principal">
-                {user.primaryStack.map((code) => (
-                  <Badge key={code} variant="outline" size="sm">
-                    {techStackLabel(code)}
+              {user.location || safeWebsite ? (
+                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted">
+                  {user.location ? (
+                    <span className="inline-flex items-center gap-1">
+                      <MapPin className="size-3 shrink-0" aria-hidden />
+                      {user.location}
+                    </span>
+                  ) : null}
+                  {safeWebsite ? (
+                    <a
+                      href={safeWebsite}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      className="inline-flex items-center gap-1 text-accent hover:underline"
+                    >
+                      <Globe className="size-3 shrink-0" aria-hidden />
+                      {websiteLabel(safeWebsite)}
+                    </a>
+                  ) : null}
+                </div>
+              ) : null}
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                {user.experienceLevel ? (
+                  <Badge variant="violet" size="sm">
+                    <Briefcase className="size-3" aria-hidden />
+                    {experienceLevelLabel(user.experienceLevel)}
                   </Badge>
-                ))}
+                ) : null}
+                <Badge variant={user.githubConnected ? 'volt' : 'amber'} size="sm">
+                  <Github className="size-3" aria-hidden />
+                  {user.githubConnected ? `@${user.githubUsername ?? 'github'}` : 'GitHub desconectado'}
+                </Badge>
+                <Badge variant="outline" size="sm">
+                  <CalendarDays className="size-3" aria-hidden />
+                  desde {formatFullDate(localDateInZone(user.createdAt, user.timezone))}
+                </Badge>
               </div>
-            ) : null}
+              {user.primaryStack && user.primaryStack.length > 0 ? (
+                <div className="mt-2 flex flex-wrap items-center gap-1.5" aria-label="Stack principal">
+                  {user.primaryStack.map((code) => (
+                    <Badge key={code} variant="outline" size="sm">
+                      {techStackLabel(code)}
+                    </Badge>
+                  ))}
+                </div>
+              ) : null}
+            </div>
           </div>
-          <div className="grid grid-cols-3 gap-3 sm:w-64">
-            <HeroStat label="grupos" value={String(stats.groups)} />
-            <HeroStat label="dias válidos" value={String(stats.validDays)} />
-            <HeroStat label="melhor streak" value={`${stats.bestStreak}d`} />
-          </div>
+
+          <ProfileGroupsPanel
+            groups={dashboard.data?.groups ?? []}
+            isLoading={dashboard.isLoading}
+            isError={dashboard.isError}
+            onRetry={() => void dashboard.refetch()}
+          />
         </div>
       </section>
 
@@ -558,15 +554,6 @@ function websiteLabel(url: string) {
   } catch {
     return url;
   }
-}
-
-function HeroStat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-xl border border-line bg-bg/50 p-2.5">
-      <p className="font-mono text-[9px] uppercase tracking-[0.1em] text-faint">{label}</p>
-      <p className="mt-1 font-mono text-lg leading-none text-fg">{value}</p>
-    </div>
-  );
 }
 
 function PreferenceRow({
