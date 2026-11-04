@@ -25,6 +25,8 @@ export function ProfileGroupsPanel({ groups, isLoading, isError, onRetry }: Prof
   const visibleGroups = groups.slice(0, MAX_VISIBLE_GROUPS);
   const validDays = groups.reduce((total, group) => total + group.validDays, 0);
   const bestStreak = groups.reduce((best, group) => Math.max(best, group.bestStreak), 0);
+  //---- Never show zeroed totals while the first load is pending or has failed.
+  const summaryUnavailable = groups.length === 0 && (isLoading || isError);
 
   return (
     <aside className="min-w-0 xl:w-[340px] xl:shrink-0" aria-labelledby="profile-groups-title">
@@ -48,9 +50,9 @@ export function ProfileGroupsPanel({ groups, isLoading, isError, onRetry }: Prof
       </div>
 
       <div className="mt-2 grid grid-cols-3 gap-2">
-        <GroupStat label="grupos" value={String(groups.length)} />
-        <GroupStat label="dias válidos" value={String(validDays)} />
-        <GroupStat label="melhor streak" value={`${bestStreak}d`} />
+        <GroupStat label="grupos" value={summaryUnavailable ? '—' : String(groups.length)} />
+        <GroupStat label="dias válidos" value={summaryUnavailable ? '—' : String(validDays)} />
+        <GroupStat label="melhor streak" value={summaryUnavailable ? '—' : `${bestStreak}d`} />
       </div>
 
       <div className="mt-3 space-y-2">

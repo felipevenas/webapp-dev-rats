@@ -104,6 +104,14 @@ describe('ProfileGroupsPanel', () => {
 
     expect(screen.getByText(/ainda não participa de nenhum grupo/i)).toBeTruthy();
     expect(screen.getByRole('link', { name: /criar o primeiro desafio/i })).toBeTruthy();
+    expect(screen.getAllByText('0')).toHaveLength(2);
+  });
+
+  it('usa placeholder nos totais enquanto os grupos carregam', () => {
+    renderPanel({ groups: [], isLoading: true });
+
+    expect(screen.getAllByText('—')).toHaveLength(3);
+    expect(screen.queryByText('0d')).toBeNull();
   });
 
   it('permite tentar novamente quando a lista falha', () => {
