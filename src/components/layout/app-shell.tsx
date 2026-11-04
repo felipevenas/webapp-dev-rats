@@ -7,10 +7,13 @@ import {
   Settings,
   Swords,
   User as UserIcon,
+  Users,
 } from 'lucide-react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '@/core/auth/auth-provider';
 import { useUnreadNotifications } from '@/features/notifications/data/use-notifications';
+import { useFriendRequestsCount } from '@/features/friends/data/use-friends';
+import { usePresenceHeartbeat } from '@/features/friends/data/use-presence';
 import { cn } from '@/core/lib/cn';
 import { Logo } from '@/components/brand/logo';
 import { Avatar } from '@/components/ui/avatar';
@@ -24,8 +27,16 @@ import type { IconComponent } from '@/core/types/ui';
 const primaryNav = [
   { to: '/app', label: 'Início', icon: Home, end: true },
   { to: '/app/challenges', label: 'Desafios', icon: Swords, end: false },
+  { to: '/app/friends', label: 'Amigos', icon: Users, end: false },
   { to: '/app/notifications', label: 'Alertas', icon: Bell, end: false },
   { to: '/app/profile', label: 'Perfil', icon: UserIcon, end: false },
+];
+
+const mobileNav = [
+  { to: '/app', label: 'Início', icon: Home, end: true },
+  { to: '/app/challenges', label: 'Desafios', icon: Swords, end: false },
+  { to: '/app/notifications', label: 'Alertas', icon: Bell, end: false },
+  { to: '/app/friends', label: 'Amigos', icon: Users, end: false },
 ];
 
 function navClass(active: boolean) {
@@ -38,7 +49,11 @@ function navClass(active: boolean) {
 export function AppShell() {
   const { user, logout } = useAuth();
   const unread = useUnreadNotifications();
+  const pendingRequests = useFriendRequestsCount();
+  const pendingFriends = pendingRequests.data ?? 0;
   const location = useLocation();
+
+  usePresenceHeartbeat();
 
   return (
     <div className="min-h-dvh bg-bg">
@@ -63,9 +78,9 @@ export function AppShell() {
               <item.icon className="size-4.5" aria-hidden />
               <span className="flex-1">{item.label}</span>
               {item.to === '/app/notifications' && unread > 0 ? (
-                <span className="rounded-full bg-volt px-1.5 py-0.5 font-mono text-[10px] font-semibold text-volt-ink">
-                  {unread > 9 ? '9+' : unread}
-                </span>
+                <NavCount value={unread} />
+              ) : item.to === '/app/friends' && pendingFriends > 0 ? (
+                <NavCount value={pendingFriends} />
               ) : null}
             </NavLink>
           ))}
@@ -149,15 +164,23 @@ export function AppShell() {
         </main>
       </div>
 
-      <BottomNav unread={unread} />
+      <BottomNav unread={unread} pending={pendingFriends} />
     </div>
   );
 }
 
-function BottomNav({ unread }: { unread: number }) {
+function NavCount({ value }: { value: number }) {
+  return (
+    <span className="rounded-full bg-volt px-1.5 py-0.5 font-mono text-[10px] font-semibold text-volt-ink">
+      {value > 9 ? '9+' : value}
+    </span>
+  );
+}
+
+function BottomNav({ unread, pending }: { unread: number; pending: number }) {
   const location = useLocation();
-  const left = primaryNav.slice(0, 2);
-  const right = primaryNav.slice(2);
+  const left = mobileNav.slice(0, 2);
+  const right = mobileNav.slice(2);
 
   //---- Editors take over the viewport on mobile; the page header has its own back link.
   if (location.pathname === '/app/groups/new' || location.pathname.endsWith('/settings')) {
@@ -174,7 +197,7 @@ function BottomNav({ unread }: { unread: number }) {
           <MobileTab
             key={item.to}
             {...item}
-            active={item.end ? location.pathname === item.to : location.pathname.startsWith(item.to)}
+            active={isTabActive(item, location.pathname)}
           />
         ))}
 
@@ -190,13 +213,21 @@ function BottomNav({ unread }: { unread: number }) {
           <MobileTab
             key={item.to}
             {...item}
-            active={location.pathname.startsWith(item.to)}
-            badge={item.to === '/app/notifications' ? unread : 0}
+            active={isTabActive(item, location.pathname)}
+            badge={item.to === '/app/notifications' ? unread : item.to === '/app/friends' ? pending : 0}
           />
         ))}
       </div>
     </nav>
   );
+}
+
+function isTabActive(item: (typeof mobileNav)[number], pathname: string) {
+  if (item.end) return pathname === item.to;
+  if (item.to === '/app/friends') {
+    return pathname.startsWith('/app/friends') || pathname.startsWith('/app/users/');
+  }
+  return pathname.startsWith(item.to);
 }
 
 function MobileTab({

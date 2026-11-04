@@ -44,6 +44,8 @@ import { FeedList } from '@/features/progress/ui/feed-list';
 import { LeaderboardList } from '@/features/progress/ui/leaderboard';
 import { WinnerHero } from '@/features/progress/ui/result-hero';
 import { verificationModeCopy } from '@/features/challenges/domain/challenge-status';
+import { useFriendshipStatuses } from '@/features/friends/data/use-friends';
+import { FriendButton } from '@/features/friends/ui/friend-button';
 
 type Tab = 'overview' | 'leaderboard' | 'calendar' | 'activity';
 
@@ -77,6 +79,11 @@ export function OverviewTab({
   onTab,
 }: OverviewProps) {
   const me = entries.find((entry) => entry.userId === user.id) ?? null;
+  const otherMemberIds = members
+    .filter((member) => member.userId !== user.id)
+    .map((member) => member.userId);
+  const statusesQuery = useFriendshipStatuses(otherMemberIds);
+  const statuses = statusesQuery.data ?? {};
 
   return (
     <div className="space-y-4">
@@ -201,21 +208,41 @@ export function OverviewTab({
             </CardHeader>
             <CardContent className="space-y-2.5 pt-0">
               {members.slice(0, 6).map((member) => (
-                <div key={member.id} className="flex items-center gap-2.5">
-                  <Avatar src={member.avatarUrl} name={member.displayName} size="sm" />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-[12px] font-medium">{member.displayName}</p>
-                    <p className="truncate font-mono text-[10px] text-faint">@{member.username}</p>
+                <div key={member.id} className="flex min-w-0 items-center gap-2.5">
+                  <Link
+                    to={`/app/users/${member.username}`}
+                    className="ds-focus-ring flex min-w-0 flex-1 items-center gap-2.5 rounded-lg"
+                  >
+                    <Avatar src={member.avatarUrl} name={member.displayName} size="sm" />
+                    <span className="min-w-0">
+                      <span className="block truncate text-[12px] font-medium">{member.displayName}</span>
+                      <span className="block truncate font-mono text-[10px] text-faint">
+                        @{member.username}
+                      </span>
+                    </span>
+                  </Link>
+                  <div className="flex shrink-0 items-center gap-1">
+                    {member.role === 'OWNER' ? (
+                      <Badge variant="volt" size="sm">
+                        dono
+                      </Badge>
+                    ) : null}
+                    {member.userId === user.id ? (
+                      <Badge variant="outline" size="sm">
+                        você
+                      </Badge>
+                    ) : statusesQuery.isLoading ? (
+                      <span className="ds-skeleton size-9 rounded-xl" aria-hidden />
+                    ) : (
+                      <FriendButton
+                        compact
+                        userId={member.userId}
+                        username={member.username}
+                        displayName={member.displayName}
+                        status={statuses[member.userId] ?? 'NONE'}
+                      />
+                    )}
                   </div>
-                  {member.role === 'OWNER' ? (
-                    <Badge variant="volt" size="sm">
-                      dono
-                    </Badge>
-                  ) : member.userId === user.id ? (
-                    <Badge variant="outline" size="sm">
-                      você
-                    </Badge>
-                  ) : null}
                 </div>
               ))}
               {members.length > 6 ? (

@@ -13,12 +13,14 @@ import {
   ShieldCheck,
   Trash2,
   UserRound,
+  Users,
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useAuth } from '@/core/auth/auth-provider';
 import { toAppError } from '@/core/http/problem';
 import { DEFAULT_TIME_ZONE, formatFullDate, localDateInZone, timeZoneLabel } from '@/core/lib/date';
+import { formatNumber } from '@/core/lib/format';
 import type { ExperienceLevel, TechStack } from '@/core/types/api';
 import { Page, PageHeader } from '@/components/layout/page-header';
 import { Badge } from '@/components/ui/badge';
@@ -45,6 +47,7 @@ import {
 } from '@/features/profile/data/use-profile';
 import { AvatarUploader } from '@/features/profile/ui/avatar-uploader';
 import { ProfileGroupsPanel } from '@/features/profile/ui/profile-groups-panel';
+import { useFriends } from '@/features/friends/data/use-friends';
 
 const BRASILIA_LABEL = 'Horário de Brasília (GMT-3)';
 
@@ -55,6 +58,8 @@ export default function ProfilePage() {
   const updateProfile = useUpdateProfile();
   const exportData = useExportData();
   const deleteAccount = useDeleteAccount();
+  const friendsQuery = useFriends(0, 1);
+  const friendsCount = friendsQuery.data?.totalElements ?? 0;
 
   const [displayName, setDisplayName] = useState(user?.displayName ?? '');
   const [bio, setBio] = useState(user?.bio ?? '');
@@ -426,6 +431,32 @@ export default function ProfilePage() {
         </div>
 
         <aside className="min-w-0 space-y-4">
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-sm">
+                <Users className="size-4 text-accent" aria-hidden />
+                Sua rede
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-baseline justify-between gap-2">
+                <span className="font-mono text-2xl leading-none text-fg">
+                  {friendsQuery.isLoading ? '—' : formatNumber(friendsCount)}
+                </span>
+                <Badge variant="outline" size="sm">
+                  {friendsCount === 1 ? 'amigo' : 'amigos'}
+                </Badge>
+              </div>
+              <p className="text-[12px] leading-relaxed text-muted">
+                Sua presença só aparece para quem está na sua rede. Gerencie solicitações e encontre
+                pessoas pelo @usuário.
+              </p>
+              <Button asChild variant="secondary" size="sm" full>
+                <Link to="/app/friends">Gerenciar amigos</Link>
+              </Button>
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-sm">

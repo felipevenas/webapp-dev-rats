@@ -8,8 +8,19 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o 
 
 ## [Não publicado]
 
+### 🚀 Adicionado
+
+- Sistema de amizades: busca por @usuário, solicitações com aceite, recusa e cancelamento, além de remoção com confirmação.
+- Perfil público em `/app/users/:username` com bio, localização, site, nível, stack, contagem de amigos e status de amizade.
+- Presença online, ausente e offline com heartbeat a cada 60 segundos apenas com a aba visível.
+- Notificações sociais `FRIEND_REQUEST` e `FRIEND_REQUEST_ACCEPTED` com ações inline de aceitar e recusar na central de alertas.
+- Item Amigos na sidebar e na bottom nav mobile, com badge de solicitações pendentes.
+- Atalho para o perfil público e botão de amizade na lista de participantes do grupo.
+- Contagem e atalho da sua rede no perfil.
+
 ### 🎨 Alterado
 
+- Central de alertas reescrita para suportar ações inline sem botões aninhados.
 - Banner do perfil com foto no topo, informações abaixo e cards dos grupos no canto superior direito.
 - Lateral da autenticação com identidade visual compacta, sem rolagem.
 - Lado esquerdo da autenticação simplificado, sem elementos gráficos e sem rolagem.

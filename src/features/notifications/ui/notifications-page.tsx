@@ -1,26 +1,33 @@
 import { BellOff, CheckCheck, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { api } from '@/core/http/api-client';
 import { toAppError } from '@/core/http/problem';
 import { formatRelativeTime } from '@/core/lib/date';
+import { cn } from '@/core/lib/cn';
 import type { AppNotification, Challenge } from '@/core/types/api';
 import { Page, PageHeader } from '@/components/layout/page-header';
+import { Avatar } from '@/components/ui/avatar';
 import { Badge, Dot } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Pagination } from '@/components/ui/pagination';
-import { notificationCopy, notificationDetail } from '@/features/notifications/domain/notification-copy';
+import {
+  notificationActor,
+  notificationCopy,
+  notificationDetail,
+} from '@/features/notifications/domain/notification-copy';
 import {
   useDeleteNotification,
   useMarkAllNotificationsRead,
   useMarkNotificationRead,
   useNotifications,
 } from '@/features/notifications/data/use-notifications';
-import { cn } from '@/core/lib/cn';
+import { useFriendshipStatuses } from '@/features/friends/data/use-friends';
+import { FriendRequestActions } from '@/features/notifications/ui/friend-request-actions';
 
 export default function NotificationsPage() {
   const navigate = useNavigate();
@@ -33,6 +40,12 @@ export default function NotificationsPage() {
 
   const notifications = data?.content ?? [];
 
+  const friendRequestActorIds = notifications
+    .filter((notification) => notification.type === 'FRIEND_REQUEST')
+    .map((notification) => notificationActor(notification.payload).userId)
+    .filter((userId): userId is string => Boolean(userId));
+  const friendshipStatuses = useFriendshipStatuses(friendRequestActorIds);
+
   useEffect(() => {
     if (isError) return;
     const total = data?.totalPages ?? 0;
@@ -43,7 +56,18 @@ export default function NotificationsPage() {
   /** Opens the related challenge or marks the alert as read when it has no target. */
   const openNotification = async (notification: AppNotification) => {
     if (!notification.readAt) markRead.mutate(notification.id);
+
+    if (notification.type === 'FRIEND_REQUEST_ACCEPTED') {
+      const actor = notificationActor(notification.payload);
+      if (actor.username) {
+        navigate(`/app/users/${actor.username}`);
+        return;
+      }
+    }
+    //---- Friend requests are resolved inline; there is no destination page.
+    if (notification.type === 'FRIEND_REQUEST') return;
     if (!notification.challengeId) return;
+
     try {
       const challenge = await api.get<Challenge>(`/challenges/${notification.challengeId}`);
       navigate(`/app/groups/${challenge.data.groupId}?tab=activity`);
@@ -85,7 +109,7 @@ export default function NotificationsPage() {
       <PageHeader
         eyebrow="Central de atividade"
         title="Alertas"
-        description="Marcos, convites e avisos da integração. Nada de conteúdo privado de repositórios."
+        description="Marcos, convites, amizades e avisos da integração. Nada de conteúdo privado de repositórios."
         actions={
           <Button
             variant="secondary"
@@ -111,7 +135,7 @@ export default function NotificationsPage() {
         <EmptyState
           icon={BellOff}
           title="Nenhum alerta por enquanto"
-          description="Quando alguém alcançar um marco, entrar no grupo ou a integração precisar de atenção, você verá aqui."
+          description="Quando alguém pedir amizade, alcançar um marco, entrar no grupo ou a integração precisar de atenção, você verá aqui."
           action={
             <Button variant="secondary" onClick={() => navigate('/app')}>
               Voltar ao início
@@ -124,10 +148,15 @@ export default function NotificationsPage() {
             {notifications.map((notification) => {
               const copy = notificationCopy(notification.type);
               const detail = notificationDetail(notification.type, notification.payload);
+              const actor = notificationActor(notification.payload);
               const Icon = copy.icon;
               const unreadItem = !notification.readAt;
+              const isFriendRequest = notification.type === 'FRIEND_REQUEST';
+              const isFriendAccepted = notification.type === 'FRIEND_REQUEST_ACCEPTED';
+              const hasActor = Boolean(actor.username || actor.displayName);
+
               return (
-                <div
+                <article
                   key={notification.id}
                   className={cn(
                     'flex w-full items-start gap-2 rounded-2xl border p-4 transition-colors',
@@ -136,50 +165,100 @@ export default function NotificationsPage() {
                       : 'border-transparent bg-card/40 hover:bg-card',
                   )}
                 >
-                  <button
-                    type="button"
-                    onClick={() => void openNotification(notification)}
-                    className="ds-focus-ring flex min-w-0 flex-1 items-start gap-3.5 rounded-xl text-left"
-                  >
-                    <span
-                      className={cn(
-                        'mt-0.5 inline-flex size-9 shrink-0 items-center justify-center rounded-xl border',
-                        copy.tone === 'volt' && 'border-volt-line bg-volt-soft text-accent',
-                        copy.tone === 'cyan' && 'border-cyan/30 bg-cyan-soft text-cyan',
-                        copy.tone === 'amber' && 'border-amber/30 bg-amber-soft text-amber',
-                        copy.tone === 'rose' && 'border-rose/30 bg-rose-soft text-rose',
-                        copy.tone === 'violet' && 'border-violet/30 bg-violet-soft text-violet',
-                        copy.tone === 'neutral' && 'border-line bg-card-2 text-muted',
-                      )}
-                    >
-                      <Icon className="size-4" aria-hidden />
-                    </span>
+                  <div className="flex min-w-0 flex-1 items-start gap-3.5">
+                    {hasActor && actor.username ? (
+                      <Link
+                        to={`/app/users/${actor.username}`}
+                        className="ds-focus-ring mt-0.5 shrink-0 rounded-full"
+                        aria-label={`Ver perfil de ${actor.displayName ?? actor.username}`}
+                        onClick={() => {
+                          if (!notification.readAt) markRead.mutate(notification.id);
+                        }}
+                      >
+                        <Avatar
+                          src={actor.avatarUrl}
+                          name={actor.displayName ?? actor.username ?? 'Dev'}
+                          size="md"
+                        />
+                      </Link>
+                    ) : (
+                      <span
+                        className={cn(
+                          'mt-0.5 inline-flex size-10 shrink-0 items-center justify-center rounded-xl border',
+                          copy.tone === 'volt' && 'border-volt-line bg-volt-soft text-accent',
+                          copy.tone === 'cyan' && 'border-cyan/30 bg-cyan-soft text-cyan',
+                          copy.tone === 'amber' && 'border-amber/30 bg-amber-soft text-amber',
+                          copy.tone === 'rose' && 'border-rose/30 bg-rose-soft text-rose',
+                          copy.tone === 'violet' && 'border-violet/30 bg-violet-soft text-violet',
+                          copy.tone === 'neutral' && 'border-line bg-card-2 text-muted',
+                        )}
+                      >
+                        <Icon className="size-4" aria-hidden />
+                      </span>
+                    )}
+
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <p className={cn('text-sm', unreadItem ? 'font-semibold text-fg' : 'font-medium text-muted')}>
-                          {copy.title}
-                        </p>
+                        <button
+                          type="button"
+                          onClick={() => void openNotification(notification)}
+                          className="ds-focus-ring min-w-0 rounded text-left"
+                        >
+                          <span
+                            className={cn(
+                              'text-sm',
+                              unreadItem ? 'font-semibold text-fg' : 'font-medium text-muted',
+                            )}
+                          >
+                            {copy.title}
+                          </span>
+                        </button>
                         {unreadItem ? <Dot tone="volt" /> : null}
                         <Badge variant="outline" size="sm" className="ml-auto">
                           {formatRelativeTime(notification.createdAt)}
                         </Badge>
                       </div>
-                      <p className="mt-0.5 text-[13px] leading-relaxed text-muted">{copy.description}</p>
+
+                      <p className="mt-0.5 text-[13px] leading-relaxed text-muted">
+                        {copy.description}
+                      </p>
                       {detail ? <p className="mt-1 font-mono text-[11px] text-faint">{detail}</p> : null}
+
+                      {isFriendRequest && actor.friendshipId ? (
+                        <FriendRequestActions
+                          notificationId={notification.id}
+                          friendshipId={actor.friendshipId}
+                          displayName={actor.displayName}
+                          friendshipStatus={actor.userId ? friendshipStatuses.data?.[actor.userId] : undefined}
+                        />
+                      ) : null}
+
+                      {isFriendAccepted && actor.username ? (
+                        <Link
+                          to={`/app/users/${actor.username}`}
+                          className="ds-focus-ring mt-2 inline-flex items-center gap-1 rounded text-[11px] font-medium text-accent hover:underline"
+                          onClick={() => {
+                            if (!notification.readAt) markRead.mutate(notification.id);
+                          }}
+                        >
+                          Ver perfil de @{actor.username}
+                        </Link>
+                      ) : null}
                     </div>
-                  </button>
+                  </div>
+
                   <Button
                     variant="danger-ghost"
                     size="icon-sm"
                     className="shrink-0"
                     onClick={() => handleDelete(notification)}
                     loading={deletingIds.has(notification.id)}
-                    aria-label={`Excluir alerta: ${copy.title}${detail ? ` (${detail})` : ''} — ${formatRelativeTime(notification.createdAt)}`}
+                    aria-label={`Excluir alerta: ${copy.title}${detail ? ` (${detail})` : ''} - ${formatRelativeTime(notification.createdAt)}`}
                     title="Excluir alerta"
                   >
                     <Trash2 aria-hidden />
                   </Button>
-                </div>
+                </article>
               );
             })}
           </div>

@@ -4,7 +4,7 @@ export default function PrivacyPage() {
   return (
     <LegalPage
       title="Política de privacidade"
-      updatedAt="28 de outubro de 2026"
+      updatedAt="3 de novembro de 2026"
       intro="Esta política explica quais dados o DevRats trata, para quê e por quanto tempo. O princípio é simples: coletar o mínimo necessário para comprovar atividade elegível e manter o desafio funcionando."
       sections={[
         {
@@ -15,7 +15,8 @@ export default function PrivacyPage() {
               <li>GitHub: identificador numérico da conta, nome de usuário, avatar e permissões concedidas.</li>
               <li>Atividade: repositório, SHA do commit, autoria, data do commit e dia validado.</li>
               <li>Grupos: nome, descrição, participantes, convites, ranking e resultado.</li>
-              <li>Segurança: registros de auditoria de ações que afetam o resultado do desafio.</li>
+              <li>Rede social: perfil público (bio, localização, site, nível e stack), solicitações de amizade, amizades e último heartbeat de presença.</li>
+              <li>Segurança: registros de auditoria de ações que afetam o resultado do desafio ou o grafo social.</li>
             </ul>
           ),
         },
@@ -33,8 +34,8 @@ export default function PrivacyPage() {
           body: (
             <>
               <p>
-                Tratamos os dados para executar o contrato de uso da plataforma (conta, grupos, ranking e
-                resultados), cumprir obrigações legais e garantir a segurança do serviço.
+                Tratamos os dados para executar o contrato de uso da plataforma (conta, grupos, ranking, resultados
+                e rede social), cumprir obrigações legais e garantir a segurança do serviço.
               </p>
               <p>
                 Notificações não essenciais podem ser desativadas nas preferências do perfil. A conexão com o
@@ -47,9 +48,10 @@ export default function PrivacyPage() {
           title: '4. Compartilhamento',
           body: (
             <p>
-              Os dados de progresso são visíveis apenas para membros do mesmo grupo. Não vendemos dados pessoais.
-              Provedores de infraestrutura atuam como operadores e recebem apenas o necessário para hospedar o
-              serviço.
+              Os dados de progresso são visíveis apenas para membros do mesmo grupo. O perfil público exibe apenas
+              os campos que você preencheu e nunca e-mail, fuso, preferências ou tokens. A presença online é visível
+              somente para amigos. Não vendemos dados pessoais. Provedores de infraestrutura atuam como operadores e
+              recebem apenas o necessário para hospedar o serviço.
             </p>
           ),
         },
@@ -58,8 +60,10 @@ export default function PrivacyPage() {
           body: (
             <p>
               Eventos de webhook são mantidos por até 90 dias; notificações, por até 180 dias; registros de
-              auditoria, por até 2 anos. Resultados finalizados permanecem enquanto o grupo existir, para preservar
-              o histórico do desafio.
+              auditoria, por até 2 anos. O último heartbeat de presença é mantido por até 30 dias. Solicitações de
+              amizade recusadas ou canceladas são mantidas por até 180 dias; amizades permanecem enquanto a conta
+              existir. Resultados finalizados permanecem enquanto o grupo existir, para preservar o histórico do
+              desafio.
             </p>
           ),
         },
@@ -69,7 +73,8 @@ export default function PrivacyPage() {
             <>
               <p>
                 Você pode acessar, corrigir, exportar e excluir seus dados. O perfil oferece exportação em JSON e
-                exclusão de conta com confirmação de senha.
+                exclusão de conta com confirmação de senha. A exclusão remove amizades, solicitações, presença e as
+                notificações sociais que carregam seus dados públicos.
               </p>
               <p>
                 Para solicitações adicionais, escreva para contato@devrats.app. Responderemos dentro dos prazos

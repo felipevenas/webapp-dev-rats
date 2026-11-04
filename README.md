@@ -156,6 +156,8 @@ Cada feature usa `domain` (regras e tipos), `data` (API + hooks) e `ui` (apresen
 | `/app/groups/:id` | Desafio: visão geral, ranking, calendário e atividade |
 | `/app/groups/:id/settings` | Grupo, membros, convites e zona de risco |
 | `/app/notifications` | Alertas |
+| `/app/friends` | Amigos: busca, solicitações e presença |
+| `/app/users/:username` | Perfil público e conexão de amizade |
 | `/app/profile` | Perfil, preferências e dados |
 | `/app/settings/integrations` | Integração GitHub e repositórios |
 | `/termos`, `/privacidade` | Documentos legais |
@@ -169,6 +171,7 @@ Decisões relevantes:
 - Sidebar a partir de `lg`; bottom nav abaixo disso, com FAB central de criação.
 - Telas editoriais (wizard e configurações do grupo) escondem a bottom nav no mobile para liberar o formulário e evitam sobreposição do CTA fixo.
 - Layouts de duas colunas (main + rail) só a partir de `xl`, porque a sidebar consome 240px em `lg`.
+- A busca de amigos vira card acima das abas no mobile e rail sticky à direita a partir de `xl`.
 - Filtros viram `select` nativo abaixo de `sm`; tabs do desafio usam grade de 4 colunas no mobile.
 - Calendário com largura limitada e breakpoint em `md` para evitar células gigantes em tablet.
 - Cards, grids e textos longos usam `min-w-0` para impedir blowout horizontal.

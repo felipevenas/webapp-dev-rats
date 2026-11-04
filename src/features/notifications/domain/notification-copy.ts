@@ -5,6 +5,7 @@ import {
   ShieldAlert,
   Trash2,
   Trophy,
+  UserCheck,
   UserPlus,
   XCircle,
 } from 'lucide-react';
@@ -83,6 +84,20 @@ export function notificationCopy(type: NotificationType): NotificationCopy {
         icon: ShieldAlert,
         tone: 'amber',
       };
+    case 'FRIEND_REQUEST':
+      return {
+        title: 'Nova solicitação de amizade',
+        description: 'Alguém quer entrar na sua rede e ver sua presença.',
+        icon: UserPlus,
+        tone: 'cyan',
+      };
+    case 'FRIEND_REQUEST_ACCEPTED':
+      return {
+        title: 'Solicitação de amizade aceita',
+        description: 'Vocês agora são amigos e a presença aparece para os dois.',
+        icon: UserCheck,
+        tone: 'volt',
+      };
     default:
       return {
         title: 'Atualização',
@@ -111,5 +126,30 @@ export function notificationDetail(type: NotificationType, payload?: string | nu
   ) {
     return `Grupo: ${data.groupName}`;
   }
+  if (type === 'FRIEND_REQUEST' || type === 'FRIEND_REQUEST_ACCEPTED') {
+    const username = notificationActor(payload).username;
+    return username ? `@${username}` : null;
+  }
   return null;
+}
+
+interface NotificationActor {
+  friendshipId: string | null;
+  userId: string | null;
+  username: string | null;
+  displayName: string | null;
+  avatarUrl: string | null;
+}
+
+/** Social notifications carry a small actor snapshot; every field is optional. */
+export function notificationActor(payload?: string | null): NotificationActor {
+  const data = parseNotificationPayload(payload);
+  const read = (key: string) => (typeof data[key] === 'string' && data[key] ? (data[key] as string) : null);
+  return {
+    friendshipId: read('friendshipId'),
+    userId: read('actorUserId'),
+    username: read('actorUsername'),
+    displayName: read('actorDisplayName'),
+    avatarUrl: read('actorAvatarUrl'),
+  };
 }

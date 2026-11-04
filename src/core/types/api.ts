@@ -253,6 +253,69 @@ export interface InvitePreview {
   reason?: string | null;
 }
 
+export type FriendshipStatus = 'NONE' | 'PENDING_OUTGOING' | 'PENDING_INCOMING' | 'FRIENDS' | 'SELF';
+export type PresenceStatus = 'ONLINE' | 'AWAY' | 'OFFLINE';
+export type FriendRequestDirection = 'RECEIVED' | 'SENT';
+export type FriendRequestStatus = 'PENDING' | 'ACCEPTED' | 'DECLINED' | 'CANCELLED';
+
+/**
+ * Public projection of another user. It intentionally carries no e-mail, timezone,
+ * notification preferences, tokens or any other private account field.
+ */
+export interface PublicUser {
+  id: UUID;
+  username: string;
+  displayName: string;
+  avatarUrl?: string | null;
+  bio?: string | null;
+  location?: string | null;
+  websiteUrl?: string | null;
+  experienceLevel?: ExperienceLevel | null;
+  primaryStack?: TechStack[] | null;
+  createdAt: IsoInstant;
+  friendshipStatus: FriendshipStatus;
+  /** Only present when the viewer is a friend of this user; never inferred on the client. */
+  presence?: PresenceStatus | null;
+  friendsCount: number;
+}
+
+/** Minimal public summary embedded in friend requests and search results. */
+export interface PublicUserSummary {
+  id: UUID;
+  username: string;
+  displayName: string;
+  avatarUrl?: string | null;
+  experienceLevel?: ExperienceLevel | null;
+  primaryStack?: TechStack[] | null;
+}
+
+export interface UserSearchResult extends PublicUserSummary {
+  friendshipStatus: FriendshipStatus;
+}
+
+export interface Friend {
+  friendshipId: UUID;
+  userId: UUID;
+  username: string;
+  displayName: string;
+  avatarUrl?: string | null;
+  presence?: PresenceStatus | null;
+  friendsSince: IsoInstant;
+}
+
+export interface FriendRequest {
+  id: UUID;
+  user: PublicUserSummary;
+  direction: FriendRequestDirection;
+  status: FriendRequestStatus;
+  createdAt: IsoInstant;
+}
+
+export interface FriendshipStatusResult {
+  userId: UUID;
+  status: FriendshipStatus;
+}
+
 export type NotificationType =
   | 'DAILY_GOAL'
   | 'MILESTONE'
@@ -262,7 +325,9 @@ export type NotificationType =
   | 'MEMBER_JOINED'
   | 'INVITE_ACCEPTED'
   | 'GROUP_DELETED'
-  | 'INTEGRATION_ATTENTION';
+  | 'INTEGRATION_ATTENTION'
+  | 'FRIEND_REQUEST'
+  | 'FRIEND_REQUEST_ACCEPTED';
 
 export interface AppNotification {
   id: UUID;
