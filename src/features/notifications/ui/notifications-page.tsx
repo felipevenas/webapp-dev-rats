@@ -29,6 +29,7 @@ export default function NotificationsPage() {
   const markRead = useMarkNotificationRead();
   const markAllRead = useMarkAllNotificationsRead();
   const deleteNotification = useDeleteNotification();
+  const [deletingIds, setDeletingIds] = useState<Set<string>>(() => new Set());
 
   const notifications = data?.content ?? [];
 
@@ -38,6 +39,7 @@ export default function NotificationsPage() {
     else if (total > 0 && page > total - 1) setPage(total - 1);
   }, [data?.totalPages, page]);
 
+  /** Opens the related challenge or marks the alert as read when it has no target. */
   const openNotification = async (notification: AppNotification) => {
     if (!notification.readAt) markRead.mutate(notification.id);
     if (!notification.challengeId) return;
@@ -49,6 +51,7 @@ export default function NotificationsPage() {
     }
   };
 
+  /** Marks every alert as read and returns to the first page. */
   const handleMarkAll = async () => {
     try {
       await markAllRead.mutateAsync();
@@ -59,13 +62,20 @@ export default function NotificationsPage() {
     }
   };
 
-  const handleDelete = async (notification: AppNotification) => {
-    try {
-      await deleteNotification.mutateAsync(notification.id);
-      toast.success('Alerta excluído.');
-    } catch (error) {
-      toast.error(toAppError(error).detail);
-    }
+  /** Deletes one alert while keeping independent loading state for concurrent rows. */
+  const handleDelete = (notification: AppNotification) => {
+    setDeletingIds((current) => new Set(current).add(notification.id));
+    deleteNotification.mutate(notification.id, {
+      onSuccess: () => toast.success('Alerta excluído.'),
+      onError: (error) => toast.error(toAppError(error).detail),
+      onSettled: () => {
+        setDeletingIds((current) => {
+          const next = new Set(current);
+          next.delete(notification.id);
+          return next;
+        });
+      },
+    });
   };
 
   return (
@@ -160,9 +170,9 @@ export default function NotificationsPage() {
                     variant="danger-ghost"
                     size="icon-sm"
                     className="shrink-0"
-                    onClick={() => void handleDelete(notification)}
-                    loading={deleteNotification.isPending && deleteNotification.variables === notification.id}
-                    aria-label={`Excluir alerta: ${copy.title}`}
+                    onClick={() => handleDelete(notification)}
+                    loading={deletingIds.has(notification.id)}
+                    aria-label={`Excluir alerta: ${copy.title}${detail ? ` (${detail})` : ''} — ${formatRelativeTime(notification.createdAt)}`}
                     title="Excluir alerta"
                   >
                     <Trash2 aria-hidden />

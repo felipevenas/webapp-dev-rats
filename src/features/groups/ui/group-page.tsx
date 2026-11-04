@@ -101,6 +101,11 @@ export default function GroupPage() {
   const entries = progressQuery.data ?? [];
   const me = entries.find((entry) => entry.userId === user.id) ?? null;
   const members = membersQuery.data ?? [];
+  const otherParticipants = Math.max(
+    members.filter((member) => member.status === 'ACTIVE' && member.userId !== user.id).length,
+    0,
+  );
+  const participantCountKnown = !membersQuery.isLoading && !membersQuery.isError;
   const feed = feedQuery.data ?? [];
   const result = resultQuery.data ?? null;
   const mode = challenge ? verificationModeCopy(challenge.verificationMode) : null;
@@ -594,7 +599,7 @@ export default function GroupPage() {
       <DeleteGroupModal
         groupId={group.id}
         groupName={group.name}
-        participantCount={Math.max(members.length - 1, 0)}
+        participantCount={participantCountKnown ? otherParticipants : null}
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
       />

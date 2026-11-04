@@ -117,7 +117,11 @@ export default function GroupSettingsPage() {
   );
   const challengeOpen = challenge?.status === 'DRAFT' || challenge?.status === 'ACTIVE';
   const canStart = isOwner && challenge?.status === 'DRAFT';
-  const otherParticipants = Math.max(activeMembers.length - 1, 0);
+  const otherParticipants = Math.max(
+    activeMembers.filter((member) => member.userId !== user.id).length,
+    0,
+  );
+  const participantCountKnown = !membersQuery.isLoading && !membersQuery.isError;
 
   const handleSave = async () => {
     if (name.trim().length < 2) {
@@ -528,7 +532,7 @@ export default function GroupSettingsPage() {
       <DeleteGroupModal
         groupId={group.id}
         groupName={group.name}
-        participantCount={otherParticipants}
+        participantCount={participantCountKnown ? otherParticipants : null}
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
       />

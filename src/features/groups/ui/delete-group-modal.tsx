@@ -11,7 +11,7 @@ import { useDeleteGroup } from '@/features/groups/data/use-groups';
 interface DeleteGroupModalProps {
   groupId: string;
   groupName: string;
-  participantCount: number;
+  participantCount: number | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -32,11 +32,17 @@ export function DeleteGroupModal({
     onOpenChange(false);
   };
 
+  /**
+   * Keeps the dialog open while the permanent deletion is in flight so the
+   * success handler can close it and navigate without a race.
+   */
   const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen && deleteGroup.isPending) return;
     if (!nextOpen) setConfirmation('');
     onOpenChange(nextOpen);
   };
 
+  /** Deletes the group, closes the dialog and returns to the dashboard. */
   const handleDelete = async () => {
     try {
       await deleteGroup.mutateAsync();
@@ -57,7 +63,7 @@ export function DeleteGroupModal({
       size="sm"
       footer={
         <>
-          <Button variant="ghost" onClick={close}>
+          <Button variant="ghost" onClick={close} disabled={deleteGroup.isPending}>
             Cancelar
           </Button>
           <Button
@@ -79,9 +85,11 @@ export function DeleteGroupModal({
         </p>
         <div className="flex items-start gap-2 rounded-lg border border-rose/25 bg-rose-soft p-2.5 text-[11px] leading-relaxed text-muted">
           <AlertTriangle className="mt-0.5 size-3.5 shrink-0 text-rose" aria-hidden />
-          {participantCount > 0
-            ? `${participantCount} ${participantCount === 1 ? 'participante será notificado' : 'participantes serão notificados'} sobre a exclusão.`
-            : 'Não há outros participantes ativos para notificar.'}
+          {participantCount == null
+            ? 'A lista de participantes não está disponível agora. Os participantes ativos serão notificados sobre a exclusão.'
+            : participantCount > 0
+              ? `${participantCount} ${participantCount === 1 ? 'participante será notificado' : 'participantes serão notificados'} sobre a exclusão.`
+              : 'Não há outros participantes ativos para notificar.'}
         </div>
         <Field label="Confirmação" htmlFor="delete-group-confirmation" hint={groupName}>
           <Input
