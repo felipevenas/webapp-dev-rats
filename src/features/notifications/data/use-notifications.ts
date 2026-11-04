@@ -35,3 +35,13 @@ export function useMarkAllNotificationsRead() {
     },
   });
 }
+
+export function useDeleteNotification() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: notificationsApi.remove,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['notifications'] });
+    },
+  });
+}

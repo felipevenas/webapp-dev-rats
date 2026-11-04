@@ -3,6 +3,7 @@ import {
   CalendarCheck,
   Flag,
   ShieldAlert,
+  Trash2,
   Trophy,
   UserPlus,
   XCircle,
@@ -68,6 +69,13 @@ export function notificationCopy(type: NotificationType): NotificationCopy {
         icon: UserPlus,
         tone: 'cyan',
       };
+    case 'GROUP_DELETED':
+      return {
+        title: 'Grupo excluído',
+        description: 'O criador excluiu este grupo e todo o histórico do desafio.',
+        icon: Trash2,
+        tone: 'rose',
+      };
     case 'INTEGRATION_ATTENTION':
       return {
         title: 'GitHub precisa de atenção',
@@ -97,7 +105,10 @@ export function parseNotificationPayload(payload?: string | null): Record<string
 
 export function notificationDetail(type: NotificationType, payload?: string | null): string | null {
   const data = parseNotificationPayload(payload);
-  if (type === 'INVITE_ACCEPTED' && typeof data.groupName === 'string') {
+  if (
+    (type === 'INVITE_ACCEPTED' || type === 'GROUP_DELETED') &&
+    typeof data.groupName === 'string'
+  ) {
     return `Grupo: ${data.groupName}`;
   }
   return null;

@@ -75,6 +75,21 @@ export function useLeaveGroup(groupId: string) {
   });
 }
 
+export function useDeleteGroup(groupId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => groupsApi.remove(groupId),
+    onSuccess: () => {
+      queryClient.removeQueries({ queryKey: queryKeys.group(groupId) });
+      queryClient.removeQueries({ queryKey: queryKeys.groupMembers(groupId) });
+      queryClient.removeQueries({ queryKey: queryKeys.groupInvites(groupId) });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.groups });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.dashboard });
+      void queryClient.invalidateQueries({ queryKey: ['notifications'] });
+    },
+  });
+}
+
 export function useCreateInvite(groupId: string) {
   const queryClient = useQueryClient();
   return useMutation({

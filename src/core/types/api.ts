@@ -261,6 +261,7 @@ export type NotificationType =
   | 'CHALLENGE_EXPIRED'
   | 'MEMBER_JOINED'
   | 'INVITE_ACCEPTED'
+  | 'GROUP_DELETED'
   | 'INTEGRATION_ATTENTION';
 
 export interface AppNotification {

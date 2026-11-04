@@ -32,6 +32,7 @@ import { ErrorState } from '@/components/ui/error-state';
 import { Modal } from '@/components/ui/modal';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useGroup, useGroupMembers, useLeaveGroup } from '@/features/groups/data/use-groups';
+import { DeleteGroupModal } from '@/features/groups/ui/delete-group-modal';
 import { InviteDialog } from '@/features/groups/ui/invite-dialog';
 import { OverviewTab } from '@/features/groups/ui/group-overview';
 import { useCancelChallenge, useStartChallenge } from '@/features/challenges/data/use-challenges';
@@ -63,6 +64,7 @@ export default function GroupPage() {
   const [startOpen, setStartOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
   const [leaveOpen, setLeaveOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   const groupQuery = useGroup(groupId);
   const group = groupQuery.data;
@@ -278,7 +280,14 @@ export default function GroupPage() {
                     Sair do grupo
                   </DropdownItem>
                 </>
-              ) : null}
+              ) : (
+                <>
+                  <DropdownSeparator />
+                  <DropdownItem icon={Trash2} danger onSelect={() => setDeleteOpen(true)}>
+                    Excluir grupo
+                  </DropdownItem>
+                </>
+              )}
             </Dropdown>
           </div>
         </div>
@@ -581,6 +590,14 @@ export default function GroupPage() {
           novo convite, respeitando a janela de admissão.
         </p>
       </Modal>
+
+      <DeleteGroupModal
+        groupId={group.id}
+        groupName={group.name}
+        participantCount={Math.max(members.length - 1, 0)}
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+      />
     </Page>
   );
 }
