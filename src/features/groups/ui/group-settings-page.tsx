@@ -39,6 +39,7 @@ import {
   useUpdateGroup,
 } from '@/features/groups/data/use-groups';
 import { InviteDialog } from '@/features/groups/ui/invite-dialog';
+import { DeleteGroupModal } from '@/features/groups/ui/delete-group-modal';
 import { useCancelChallenge, useStartChallenge } from '@/features/challenges/data/use-challenges';
 import { challengeStatusCopy, verificationModeCopy } from '@/features/challenges/domain/challenge-status';
 import { ChallengeStatusBadge } from '@/features/challenges/ui/challenge-status-badge';
@@ -63,6 +64,7 @@ export default function GroupSettingsPage() {
   const [selectedMember, setSelectedMember] = useState<{ userId: string; displayName: string } | null>(null);
   const [leaveOpen, setLeaveOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   useEffect(() => {
     if (group) {
@@ -115,6 +117,11 @@ export default function GroupSettingsPage() {
   );
   const challengeOpen = challenge?.status === 'DRAFT' || challenge?.status === 'ACTIVE';
   const canStart = isOwner && challenge?.status === 'DRAFT';
+  const otherParticipants = Math.max(
+    activeMembers.filter((member) => member.userId !== user.id).length,
+    0,
+  );
+  const participantCountKnown = !membersQuery.isLoading && !membersQuery.isError;
 
   const handleSave = async () => {
     if (name.trim().length < 2) {
@@ -408,8 +415,8 @@ export default function GroupSettingsPage() {
               {isOwner ? (
                 <>
                   <p className="text-[11px] leading-relaxed text-muted">
-                    O criador não pode sair do grupo. Para encerrar, cancele o desafio - o histórico permanece
-                    consultável.
+                    O criador não pode sair do grupo. Você pode cancelar o desafio preservando o histórico ou
+                    excluir o grupo definitivamente.
                   </p>
                   {challengeOpen ? (
                     <Button variant="danger" size="sm" full onClick={() => setCancelOpen(true)}>
@@ -417,6 +424,10 @@ export default function GroupSettingsPage() {
                       Cancelar desafio
                     </Button>
                   ) : null}
+                  <Button variant="danger" size="sm" full onClick={() => setDeleteOpen(true)}>
+                    <Trash2 aria-hidden />
+                    Excluir grupo
+                  </Button>
                 </>
               ) : (
                 <>
@@ -517,6 +528,14 @@ export default function GroupSettingsPage() {
           O desafio será encerrado sem vencedor. O ranking e os dias válidos permanecem no histórico do grupo.
         </p>
       </Modal>
+
+      <DeleteGroupModal
+        groupId={group.id}
+        groupName={group.name}
+        participantCount={participantCountKnown ? otherParticipants : null}
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+      />
     </Page>
   );
 }

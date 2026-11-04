@@ -1,4 +1,4 @@
-import { BellOff, CheckCheck } from 'lucide-react';
+import { BellOff, CheckCheck, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -15,6 +15,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Pagination } from '@/components/ui/pagination';
 import { notificationCopy, notificationDetail } from '@/features/notifications/domain/notification-copy';
 import {
+  useDeleteNotification,
   useMarkAllNotificationsRead,
   useMarkNotificationRead,
   useNotifications,
@@ -27,14 +28,19 @@ export default function NotificationsPage() {
   const { data, isLoading, isError, error, refetch } = useNotifications(page);
   const markRead = useMarkNotificationRead();
   const markAllRead = useMarkAllNotificationsRead();
+  const deleteNotification = useDeleteNotification();
+  const [deletingIds, setDeletingIds] = useState<Set<string>>(() => new Set());
 
   const notifications = data?.content ?? [];
 
   useEffect(() => {
+    if (isError) return;
     const total = data?.totalPages ?? 0;
-    if (total > 0 && page > total - 1) setPage(total - 1);
-  }, [data?.totalPages, page]);
+    if (total === 0 && page !== 0) setPage(0);
+    else if (total > 0 && page > total - 1) setPage(total - 1);
+  }, [data?.totalPages, isError, page]);
 
+  /** Opens the related challenge or marks the alert as read when it has no target. */
   const openNotification = async (notification: AppNotification) => {
     if (!notification.readAt) markRead.mutate(notification.id);
     if (!notification.challengeId) return;
@@ -46,6 +52,7 @@ export default function NotificationsPage() {
     }
   };
 
+  /** Marks every alert as read and returns to the first page. */
   const handleMarkAll = async () => {
     try {
       await markAllRead.mutateAsync();
@@ -53,6 +60,23 @@ export default function NotificationsPage() {
       toast.success('Todos os alertas foram marcados como lidos.');
     } catch (error) {
       toast.error(toAppError(error).detail);
+    }
+  };
+
+  /** Deletes one alert while keeping independent loading state for concurrent rows. */
+  const handleDelete = async (notification: AppNotification) => {
+    setDeletingIds((current) => new Set(current).add(notification.id));
+    try {
+      await deleteNotification.mutateAsync(notification.id);
+      toast.success('Alerta excluído.');
+    } catch (error) {
+      toast.error(toAppError(error).detail);
+    } finally {
+      setDeletingIds((current) => {
+        const next = new Set(current);
+        next.delete(notification.id);
+        return next;
+      });
     }
   };
 
@@ -103,44 +127,59 @@ export default function NotificationsPage() {
               const Icon = copy.icon;
               const unreadItem = !notification.readAt;
               return (
-                <button
+                <div
                   key={notification.id}
-                  type="button"
-                  onClick={() => void openNotification(notification)}
                   className={cn(
-                    'ds-focus-ring flex w-full items-start gap-3.5 rounded-2xl border p-4 text-left transition-colors',
+                    'flex w-full items-start gap-2 rounded-2xl border p-4 transition-colors',
                     unreadItem
                       ? 'border-line bg-card hover:border-line-strong'
                       : 'border-transparent bg-card/40 hover:bg-card',
                   )}
                 >
-                  <span
-                    className={cn(
-                      'mt-0.5 inline-flex size-9 shrink-0 items-center justify-center rounded-xl border',
-                      copy.tone === 'volt' && 'border-volt-line bg-volt-soft text-accent',
-                      copy.tone === 'cyan' && 'border-cyan/30 bg-cyan-soft text-cyan',
-                      copy.tone === 'amber' && 'border-amber/30 bg-amber-soft text-amber',
-                      copy.tone === 'rose' && 'border-rose/30 bg-rose-soft text-rose',
-                      copy.tone === 'violet' && 'border-violet/30 bg-violet-soft text-violet',
-                      copy.tone === 'neutral' && 'border-line bg-card-2 text-muted',
-                    )}
+                  <button
+                    type="button"
+                    onClick={() => void openNotification(notification)}
+                    className="ds-focus-ring flex min-w-0 flex-1 items-start gap-3.5 rounded-xl text-left"
                   >
-                    <Icon className="size-4" aria-hidden />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <p className={cn('text-sm', unreadItem ? 'font-semibold text-fg' : 'font-medium text-muted')}>
-                        {copy.title}
-                      </p>
-                      {unreadItem ? <Dot tone="volt" /> : null}
-                      <Badge variant="outline" size="sm" className="ml-auto">
-                        {formatRelativeTime(notification.createdAt)}
-                      </Badge>
+                    <span
+                      className={cn(
+                        'mt-0.5 inline-flex size-9 shrink-0 items-center justify-center rounded-xl border',
+                        copy.tone === 'volt' && 'border-volt-line bg-volt-soft text-accent',
+                        copy.tone === 'cyan' && 'border-cyan/30 bg-cyan-soft text-cyan',
+                        copy.tone === 'amber' && 'border-amber/30 bg-amber-soft text-amber',
+                        copy.tone === 'rose' && 'border-rose/30 bg-rose-soft text-rose',
+                        copy.tone === 'violet' && 'border-violet/30 bg-violet-soft text-violet',
+                        copy.tone === 'neutral' && 'border-line bg-card-2 text-muted',
+                      )}
+                    >
+                      <Icon className="size-4" aria-hidden />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className={cn('text-sm', unreadItem ? 'font-semibold text-fg' : 'font-medium text-muted')}>
+                          {copy.title}
+                        </p>
+                        {unreadItem ? <Dot tone="volt" /> : null}
+                        <Badge variant="outline" size="sm" className="ml-auto">
+                          {formatRelativeTime(notification.createdAt)}
+                        </Badge>
+                      </div>
+                      <p className="mt-0.5 text-[13px] leading-relaxed text-muted">{copy.description}</p>
+                      {detail ? <p className="mt-1 font-mono text-[11px] text-faint">{detail}</p> : null}
                     </div>
-                    <p className="mt-0.5 text-[13px] leading-relaxed text-muted">{copy.description}</p>
-                    {detail ? <p className="mt-1 font-mono text-[11px] text-faint">{detail}</p> : null}
-                  </div>
-                </button>
+                  </button>
+                  <Button
+                    variant="danger-ghost"
+                    size="icon-sm"
+                    className="shrink-0"
+                    onClick={() => handleDelete(notification)}
+                    loading={deletingIds.has(notification.id)}
+                    aria-label={`Excluir alerta: ${copy.title}${detail ? ` (${detail})` : ''} — ${formatRelativeTime(notification.createdAt)}`}
+                    title="Excluir alerta"
+                  >
+                    <Trash2 aria-hidden />
+                  </Button>
+                </div>
               );
             })}
           </div>
