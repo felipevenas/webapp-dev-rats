@@ -63,19 +63,20 @@ export default function NotificationsPage() {
   };
 
   /** Deletes one alert while keeping independent loading state for concurrent rows. */
-  const handleDelete = (notification: AppNotification) => {
+  const handleDelete = async (notification: AppNotification) => {
     setDeletingIds((current) => new Set(current).add(notification.id));
-    deleteNotification.mutate(notification.id, {
-      onSuccess: () => toast.success('Alerta excluído.'),
-      onError: (error) => toast.error(toAppError(error).detail),
-      onSettled: () => {
-        setDeletingIds((current) => {
-          const next = new Set(current);
-          next.delete(notification.id);
-          return next;
-        });
-      },
-    });
+    try {
+      await deleteNotification.mutateAsync(notification.id);
+      toast.success('Alerta excluído.');
+    } catch (error) {
+      toast.error(toAppError(error).detail);
+    } finally {
+      setDeletingIds((current) => {
+        const next = new Set(current);
+        next.delete(notification.id);
+        return next;
+      });
+    }
   };
 
   return (

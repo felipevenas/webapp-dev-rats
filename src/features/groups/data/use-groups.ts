@@ -79,6 +79,9 @@ export function useDeleteGroup(groupId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => groupsApi.remove(groupId),
+    //---- Offline deletion must fail immediately instead of staying paused forever.
+    networkMode: 'always',
+    retry: false,
     onSuccess: () => {
       queryClient.removeQueries({ queryKey: queryKeys.group(groupId) });
       queryClient.removeQueries({ queryKey: queryKeys.groupMembers(groupId) });
