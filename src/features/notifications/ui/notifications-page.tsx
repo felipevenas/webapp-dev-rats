@@ -34,10 +34,11 @@ export default function NotificationsPage() {
   const notifications = data?.content ?? [];
 
   useEffect(() => {
+    if (isError) return;
     const total = data?.totalPages ?? 0;
     if (total === 0 && page !== 0) setPage(0);
     else if (total > 0 && page > total - 1) setPage(total - 1);
-  }, [data?.totalPages, page]);
+  }, [data?.totalPages, isError, page]);
 
   /** Opens the related challenge or marks the alert as read when it has no target. */
   const openNotification = async (notification: AppNotification) => {
@@ -64,6 +65,10 @@ export default function NotificationsPage() {
 
   /** Deletes one alert while keeping independent loading state for concurrent rows. */
   const handleDelete = async (notification: AppNotification) => {
+    if (!navigator.onLine) {
+      toast.error('Sem conexão. Tente novamente quando estiver online.');
+      return;
+    }
     setDeletingIds((current) => new Set(current).add(notification.id));
     try {
       await deleteNotification.mutateAsync(notification.id);
