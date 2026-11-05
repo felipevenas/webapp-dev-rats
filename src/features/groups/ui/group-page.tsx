@@ -4,6 +4,7 @@ import {
   Check,
   Copy,
   Lock,
+  MessageCircle,
   MoreHorizontal,
   Play,
   Settings,
@@ -32,6 +33,7 @@ import { ErrorState } from '@/components/ui/error-state';
 import { Modal } from '@/components/ui/modal';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useGroup, useGroupMembers, useLeaveGroup } from '@/features/groups/data/use-groups';
+import { useCreateConversation } from '@/features/chat/data/use-chat';
 import { DeleteGroupModal } from '@/features/groups/ui/delete-group-modal';
 import { InviteDialog } from '@/features/groups/ui/invite-dialog';
 import { OverviewTab } from '@/features/groups/ui/group-overview';
@@ -76,6 +78,7 @@ export default function GroupPage() {
   const startChallenge = useStartChallenge(groupId ?? '');
   const cancelChallenge = useCancelChallenge(groupId ?? '');
   const leaveGroup = useLeaveGroup(groupId ?? '');
+  const createConversation = useCreateConversation();
 
   if (!user) return null;
 
@@ -176,6 +179,18 @@ export default function GroupPage() {
     }
   };
 
+  const openGroupChat = async () => {
+    try {
+      const conversation = await createConversation.mutateAsync({
+        type: 'GROUP',
+        groupId: group.id,
+      });
+      navigate(`/app/chat/${conversation.id}`);
+    } catch (error) {
+      toast.error(toAppError(error).detail);
+    }
+  };
+
   return (
     <Page>
       <div>
@@ -230,6 +245,15 @@ export default function GroupPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
+            <Button
+              variant="secondary"
+              onClick={() => void openGroupChat()}
+              loading={createConversation.isPending}
+              aria-label="Abrir chat do grupo"
+            >
+              <MessageCircle aria-hidden />
+              <span className="hidden sm:inline">Chat</span>
+            </Button>
             {isOwner && (challenge?.status === 'DRAFT' || challenge?.status === 'ACTIVE') ? (
               <Button onClick={() => setInviteOpen(true)}>
                 <UserPlus aria-hidden />

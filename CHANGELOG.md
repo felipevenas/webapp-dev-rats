@@ -17,6 +17,27 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o 
 - Item Amigos na sidebar e na bottom nav mobile, com badge de solicitações pendentes.
 - Atalho para o perfil público e botão de amizade na lista de participantes do grupo.
 - Contagem e atalho da sua rede no perfil.
+- **Chat em tempo real**: lista de conversas, thread privado e chat de grupo com envio otimista, mensagens de texto, imagem, voz e documento.
+- **WebSocket/STOMP**: conexão autenticada por token, reconexão com backoff, renovação automática quando o token expira, indicador de conexão e indicador de "digitando".
+- **Anexos**: upload com progresso, preview de imagem com lightbox, player de áudio, cartão de documento e renovação transparente de URL assinada.
+- **Não lidas**: badge no item Conversas da sidebar e da bottom nav, atualizado por evento e por refetch.
+- **Atalhos**: botão "Mensagem" no card de amigo, botão "Chat" na página do grupo e rota `/app/chat/:conversationId`.
+- **Mobile**: thread ocupa a viewport, esconde a bottom nav, composer com área segura e lista com busca.
+
+### 🎨 Alterado
+
+- Navegação mobile troca o atalho de Alertas por Conversas; o sino de alertas permanece no header.
+- Cache de conversas e mensagens passa a ser reconciliado por `clientMessageId` e por evento do WebSocket, sem invalidar o thread inteiro a cada mensagem.
+
+### 🧪 Testes
+
+- Testes de domínio para merge/idempotência de mensagens, agrupamento por dia, regras de anexo e derivação da URL do WebSocket.
+
+### ⚠️ Limitações conhecidas
+
+- A v1 aceita um anexo por mensagem e não tem edição, busca, reações ou chamadas.
+- Sem broker distribuído, o tempo real funciona em uma única instância da API.
+- Sem criptografia ponta a ponta e sem push notification.
 
 ### 🎨 Alterado
 
@@ -48,6 +69,8 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o 
 
 - README padronizado com print da landing, badges, arquitetura, governança e licença.
 - Descrição e topics do repositório alinhados ao ecossistema DevRats.
+- Configuração do domínio `devrats.app`: rewrite de `/api` para `https://api.devrats.app`, canonical/OG em `https://devrats.app` e `VITE_WS_URL=wss://api.devrats.app/ws` para o WebSocket.
+- `docs/PR-CHAT.md` documenta o deploy com domínio próprio e a separação entre REST same-origin e WebSocket direto.
 
 ## [0.1.0] - 2026-10-29
 

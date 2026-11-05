@@ -44,6 +44,7 @@ Este repositório entrega o **MVP navegável** descrito em [`docs/PRD-MVD.md`](d
 - Tailwind CSS v4 com tokens semânticos (dark-first + tema claro)
 - React Router 7 com rotas lazy
 - TanStack Query para estado de servidor
+- STOMP/WebSocket (`@stomp/stompjs`) para chat em tempo real
 - React Hook Form + Zod para formulários
 - Radix UI para primitivas acessíveis (dialog, dropdown, tooltip, switch, checkbox)
 - Lucide + marca própria
@@ -64,11 +65,13 @@ npm run dev
 
 A aplicação sobe em **http://localhost:5174**. A porta 5173 é evitada porque outro projeto local costuma ocupá-la.
 
-Em desenvolvimento o Vite faz proxy de `/api` para `http://localhost:8080`; isso mantém o cookie HttpOnly de refresh na mesma origem e dispensa CORS no navegador. Para apontar para outra API:
+Em desenvolvimento o Vite faz proxy de `/api` e `/ws` para `http://localhost:8080`; isso mantém o cookie HttpOnly de refresh na mesma origem e dispensa CORS no navegador. Para apontar para outra API:
 
 ```powershell
 # .env.local
 VITE_API_BASE_URL=https://api.seu-dominio.com/api/v1
+# Opcional: o WebSocket precisa apontar direto para a API (sem rewrite do Vercel)
+VITE_WS_URL=wss://api.seu-dominio.com/ws
 ```
 
 ### API local
@@ -83,6 +86,8 @@ $env:APP_CORS_ALLOWED_ORIGINS='http://localhost:5173,http://localhost:5174'
 ```
 
 O backend precisa de `APP_FRONTEND_URL` apontando para a origem do frontend por causa dos redirects do OAuth do GitHub. Em produção, frontend e API devem estar no mesmo site (subdomínios do mesmo domínio ou proxy), pois o refresh cookie é `SameSite=Strict` e restrito a `/api/v1/auth`.
+
+**Produção atual:** frontend em `https://devrats.app` (Vercel) e API em `https://api.devrats.app`. O `vercel.json` faz rewrite de `/api` para a API, mantendo o cookie first-party; o WebSocket conecta direto em `wss://api.devrats.app/ws` via `VITE_WS_URL`. O passo a passo de DNS, Caddy e GitHub App está em [`../api-dev-rats/docs/DEPLOY-VPS.md`](../api-dev-rats/docs/DEPLOY-VPS.md).
 
 > O preview público de convite (`GET /api/v1/invites/{token}`) foi liberado no `SecurityConfig` da API. Sem essa regra, a página `/invites/:token` não abre para visitantes deslogados, embora o controller não exija autenticação.
 
@@ -126,6 +131,7 @@ src/
 │   ├── github/        integração e repositórios
 │   ├── invites/       página pública de convite
 │   ├── notifications/ central de alertas
+│   ├── chat/          conversas, thread, composer, voz, anexos e socket STOMP
 │   ├── profile/       perfil, preferências, exportação e exclusão
 │   ├── legal/         termos e privacidade
 │   └── errors/        404, 403 e error boundary
@@ -157,6 +163,8 @@ Cada feature usa `domain` (regras e tipos), `data` (API + hooks) e `ui` (apresen
 | `/app/groups/:id/settings` | Grupo, membros, convites e zona de risco |
 | `/app/notifications` | Alertas |
 | `/app/friends` | Amigos: busca, solicitações e presença |
+| `/app/chat` | Conversas: lista, busca e nova conversa |
+| `/app/chat/:conversationId` | Thread privado ou de grupo, com texto, imagem, voz e documento |
 | `/app/users/:username` | Perfil público e conexão de amizade |
 | `/app/profile` | Perfil, preferências e dados |
 | `/app/settings/integrations` | Integração GitHub e repositórios |
@@ -207,6 +215,8 @@ O CI roda em Node 22 e 24 com `npm ci`, lint, typecheck, testes e build. Pull Re
 - A API não reexibe o token de um convite já criado: o link completo deve ser copiado no momento da geração.
 - A API não possui caixa de convites recebidos; a entrada acontece exclusivamente por link.
 - O avatar é o do GitHub ou iniciais; não há upload no MVP.
+- O chat v1 aceita um anexo por mensagem e não tem edição, busca, reações, replies ou chamadas.
+- O tempo real depende de uma única instância da API enquanto o broker STOMP simples estiver em uso. Para múltiplas réplicas, é necessário RabbitMQ ou Redis Pub/Sub no backend.
 - O build emite aviso de tamanho do chunk principal (vendor). Rotas já são lazy; um split manual de vendor pode ser adicionado quando o app crescer.
 
 ---

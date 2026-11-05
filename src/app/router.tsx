@@ -103,6 +103,18 @@ export const router = createBrowserRouter([
                 }),
               },
               {
+                path: '/app/chat',
+                lazy: async () => ({
+                  Component: (await import('@/features/chat/ui/chat-page')).default,
+                }),
+              },
+              {
+                path: '/app/chat/:conversationId',
+                lazy: async () => ({
+                  Component: (await import('@/features/chat/ui/chat-page')).default,
+                }),
+              },
+              {
                 path: '/app/users/:username',
                 lazy: async () => ({
                   Component: (await import('@/features/users/ui/public-profile-page')).default,
