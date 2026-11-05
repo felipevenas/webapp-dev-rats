@@ -5,7 +5,7 @@ import path from 'node:path';
 
 const apiTarget = process.env.VITE_PROXY_API_TARGET || 'http://localhost:8080';
 const wsTarget = process.env.VITE_PROXY_WS_TARGET || 'ws://localhost:8080';
-const proxyOrigin = process.env.VITE_PROXY_ORIGIN || 'http://localhost:5173';
+const proxyOrigin = process.env.VITE_PROXY_ORIGIN || 'http://localhost:5174';
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],

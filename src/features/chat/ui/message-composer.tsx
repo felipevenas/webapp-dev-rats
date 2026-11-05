@@ -35,9 +35,25 @@ export function MessageComposer({
   useEffect(() => {
     const element = textareaRef.current;
     if (!element) return;
-    element.style.height = 'auto';
-    element.style.height = `${Math.min(element.scrollHeight, 128)}px`;
-  }, [text]);
+
+    const resize = () => {
+      element.style.height = 'auto';
+      element.style.height = `${Math.min(element.scrollHeight, 128)}px`;
+    };
+
+    resize();
+
+    //---- The width changes with the viewport; recalculate so the height stays accurate.
+    if (typeof ResizeObserver === 'undefined') return;
+    let lastWidth = element.clientWidth;
+    const observer = new ResizeObserver(() => {
+      if (element.clientWidth === lastWidth) return;
+      lastWidth = element.clientWidth;
+      resize();
+    });
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [text, recording]);
 
   const sendText = () => {
     const value = text.trim();
