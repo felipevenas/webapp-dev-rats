@@ -1,5 +1,9 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { resolveWsUrl } from './env';
+
+afterEach(() => {
+  vi.unstubAllEnvs();
+});
 
 describe('resolveWsUrl', () => {
   it('uses the current origin when the API is relative', () => {
@@ -24,6 +28,7 @@ describe('resolveWsUrl', () => {
   });
 
   it('keeps a configured websocket url', () => {
-    expect(resolveWsUrl('https://api.devrats.app/api/v1', null)).toContain('/ws');
+    vi.stubEnv('VITE_WS_URL', 'wss://custom.example/ws');
+    expect(resolveWsUrl('https://api.devrats.app/api/v1', null)).toBe('wss://custom.example/ws');
   });
 });

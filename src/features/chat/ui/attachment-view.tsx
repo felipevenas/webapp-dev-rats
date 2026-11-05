@@ -13,6 +13,7 @@ interface AttachmentViewProps {
 export function AttachmentView({ attachment, localUrl }: AttachmentViewProps) {
   const [src, setSrc] = useState<string | null>(localUrl ?? attachment.url ?? null);
   const [refreshing, setRefreshing] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const [lightbox, setLightbox] = useState(false);
 
   useEffect(() => {
@@ -29,6 +30,26 @@ export function AttachmentView({ attachment, localUrl }: AttachmentViewProps) {
       //---- Mantém o placeholder; a próxima abertura do thread tenta de novo.
     } finally {
       setRefreshing(false);
+    }
+  };
+
+  const downloadFile = async () => {
+    if (localUrl) {
+      window.open(localUrl, '_blank', 'noopener,noreferrer');
+      return;
+    }
+    setDownloading(true);
+    try {
+      //---- Sempre renova: o link assinado pode ter expirado enquanto a thread estava aberta.
+      const refreshed = await chatApi.refreshAttachmentUrl(attachment.id);
+      if (refreshed.url) {
+        setSrc(refreshed.url);
+        window.open(refreshed.url, '_blank', 'noopener,noreferrer');
+      }
+    } catch {
+      setSrc(null);
+    } finally {
+      setDownloading(false);
     }
   };
 
@@ -100,20 +121,19 @@ export function AttachmentView({ attachment, localUrl }: AttachmentViewProps) {
         <p className="truncate text-[12px] font-medium text-fg">{attachment.fileName ?? 'Documento'}</p>
         <p className="font-mono text-[10px] text-faint">{fileSizeLabel(attachment.sizeBytes)}</p>
       </div>
-      {src ? (
-        <a
-          href={src}
-          download={attachment.fileName ?? undefined}
-          target="_blank"
-          rel="noreferrer"
-          className="ds-focus-ring inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-muted transition-colors hover:bg-card hover:text-fg"
-          aria-label={`Baixar ${attachment.fileName ?? 'documento'}`}
-        >
+      <button
+        type="button"
+        onClick={() => void downloadFile()}
+        disabled={downloading}
+        className="ds-focus-ring inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-muted transition-colors hover:bg-card hover:text-fg disabled:opacity-60"
+        aria-label={`Baixar ${attachment.fileName ?? 'documento'}`}
+      >
+        {downloading ? (
+          <Loader2 className="size-4 animate-spin" aria-hidden />
+        ) : (
           <Download className="size-4" aria-hidden />
-        </a>
-      ) : (
-        <Loader2 className="size-4 animate-spin text-faint" aria-hidden />
-      )}
+        )}
+      </button>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { Mic, Square, Trash2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { audioExtension } from '@/features/chat/domain/attachment-rules';
 
@@ -10,7 +11,6 @@ interface VoiceRecorderProps {
 
 export function VoiceRecorder({ onRecorded, onCancel }: VoiceRecorderProps) {
   const [seconds, setSeconds] = useState(0);
-  const [error, setError] = useState<string | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -60,7 +60,7 @@ export function VoiceRecorder({ onRecorded, onCancel }: VoiceRecorderProps) {
         recorder.start();
         interval = window.setInterval(() => setSeconds((value) => value + 1), 1000);
       } catch {
-        setError('Não foi possível acessar o microfone. Verifique a permissão do navegador.');
+        toast.error('Não foi possível acessar o microfone. Verifique a permissão do navegador.');
         onCancelRef.current();
       }
     };
@@ -98,7 +98,6 @@ export function VoiceRecorder({ onRecorded, onCancel }: VoiceRecorderProps) {
         {formatSeconds(seconds)}
       </span>
       <span className="hidden flex-1 text-[11px] text-muted sm:inline">Gravando mensagem de voz…</span>
-      {error ? <span className="text-[11px] text-rose">{error}</span> : null}
       <div className="ml-auto flex items-center gap-1">
         <Button
           variant="ghost"

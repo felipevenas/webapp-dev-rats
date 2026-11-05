@@ -84,7 +84,7 @@ export default function ChatPage() {
             />
           </div>
         ) : conversation ? (
-          <MessageThread conversation={conversation} />
+          <MessageThread key={conversation.id} conversation={conversation} />
         ) : null}
       </main>
 

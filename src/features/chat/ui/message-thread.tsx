@@ -271,7 +271,7 @@ export function MessageThread({ conversation }: MessageThreadProps) {
                     showSender={conversation.type === 'GROUP'}
                     timezone={timezone}
                     onDelete={setDeleteTarget}
-                    onRetry={retry}
+                    onRetry={message.type === 'TEXT' ? retry : undefined}
                   />
                 ))}
               </section>

@@ -42,13 +42,32 @@ export function useChatConversation(conversationId?: string) {
 }
 
 export function useChatMessages(conversationId?: string) {
+  const queryClient = useQueryClient();
   return useInfiniteQuery({
     queryKey: queryKeys.chatMessages(conversationId ?? ''),
-    queryFn: ({ pageParam }) =>
-      chatApi.messages(conversationId as string, {
+    queryFn: async ({ pageParam }) => {
+      const page = await chatApi.messages(conversationId as string, {
         before: pageParam as string | null,
         limit: 30,
-      }),
+      });
+      if (pageParam) return page;
+      //---- Refetch não pode apagar bolhas otimistas/falhas que ainda não voltaram do servidor.
+      const cached = queryClient.getQueryData<MessageCache>(
+        queryKeys.chatMessages(conversationId ?? ''),
+      );
+      const local = (cached?.pages[0]?.items ?? []).filter(
+        (message) =>
+          message.id.startsWith('local-') ||
+          message.status === 'sending' ||
+          message.status === 'failed',
+      );
+      if (local.length === 0) return page;
+      const confirmed = new Set(page.items.map((message) => message.clientMessageId));
+      const pending = local.filter((message) => !confirmed.has(message.clientMessageId));
+      return pending.length === 0
+        ? page
+        : { ...page, items: sortNewestFirst([...pending, ...page.items]) };
+    },
     initialPageParam: null as string | null,
     getNextPageParam: (lastPage) => (lastPage.hasMore ? lastPage.nextCursor : undefined),
     enabled: Boolean(conversationId),
@@ -155,7 +174,7 @@ function useOptimisticCache(conversationId: string) {
       return {
         ...current,
         pages: current.pages.map((page, index) =>
-          index === 0 ? { ...page, items: sortNewestFirst([optimistic, ...page.items]) } : page,
+          index === 0 ? { ...page, items: mergeMessage(page.items, optimistic) } : page,
         ),
       };
     });

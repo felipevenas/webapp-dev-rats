@@ -25,6 +25,7 @@ export class ChatSocket {
   private attempt = 0;
   private active = false;
   private refreshing = false;
+  private lastRefreshAt = 0;
   private currentStatus: ChatSocketStatus = 'idle';
 
   connect(): void {
@@ -36,6 +37,7 @@ export class ChatSocket {
   disconnect(): void {
     this.active = false;
     this.refreshing = false;
+    this.lastRefreshAt = 0;
     this.clearReconnect();
     this.subscription?.unsubscribe();
     this.subscription = null;
@@ -77,6 +79,12 @@ export class ChatSocket {
       return;
     }
 
+    const previous = this.client;
+    if (previous) {
+      this.client = null;
+      void previous.deactivate().catch(() => undefined);
+    }
+
     const client = new Client({
       brokerURL: wsUrl,
       connectHeaders: { Authorization: `Bearer ${token}` },
@@ -88,6 +96,7 @@ export class ChatSocket {
     });
 
     client.onConnect = () => {
+      if (this.client !== client || !this.active) return;
       this.attempt = 0;
       this.setStatus('connected');
       this.subscription?.unsubscribe();
@@ -95,6 +104,7 @@ export class ChatSocket {
     };
 
     client.onWebSocketClose = (event) => {
+      if (this.client !== client) return;
       this.subscription = null;
       this.setStatus('offline');
       if (!this.active || this.refreshing) return;
@@ -106,11 +116,19 @@ export class ChatSocket {
     };
 
     client.onStompError = () => {
+      if (this.client !== client) return;
       this.setStatus('offline');
-      if (this.active && !this.refreshing) void this.refreshAndReconnect();
+      if (!this.active || this.refreshing) return;
+      //---- Um broker com erro persistente não pode disparar refresh em loop.
+      if (Date.now() - this.lastRefreshAt < 30_000) {
+        this.scheduleReconnect();
+      } else {
+        void this.refreshAndReconnect();
+      }
     };
 
     client.onWebSocketError = () => {
+      if (this.client !== client) return;
       this.setStatus('offline');
       if (this.active) this.scheduleReconnect();
     };
@@ -121,7 +139,12 @@ export class ChatSocket {
 
   private async refreshAndReconnect(): Promise<void> {
     if (this.refreshing) return;
+    if (Date.now() - this.lastRefreshAt < 30_000) {
+      this.scheduleReconnect();
+      return;
+    }
     this.refreshing = true;
+    this.lastRefreshAt = Date.now();
     this.clearReconnect();
     this.subscription?.unsubscribe();
     this.subscription = null;

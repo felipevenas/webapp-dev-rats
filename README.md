@@ -87,7 +87,7 @@ $env:APP_CORS_ALLOWED_ORIGINS='http://localhost:5173,http://localhost:5174'
 
 O backend precisa de `APP_FRONTEND_URL` apontando para a origem do frontend por causa dos redirects do OAuth do GitHub. Em produção, frontend e API devem estar no mesmo site (subdomínios do mesmo domínio ou proxy), pois o refresh cookie é `SameSite=Strict` e restrito a `/api/v1/auth`.
 
-**Produção atual:** frontend em `https://devrats.app` (Vercel) e API em `https://api.devrats.app`. O `vercel.json` faz rewrite de `/api` para a API, mantendo o cookie first-party; o WebSocket conecta direto em `wss://api.devrats.app/ws` via `VITE_WS_URL`. O passo a passo de DNS, Caddy e GitHub App está em [`../api-dev-rats/docs/DEPLOY-VPS.md`](../api-dev-rats/docs/DEPLOY-VPS.md).
+**Produção atual:** frontend em `https://devrats.app` (Vercel) e API em `https://api.devrats.app`. O `vercel.json` faz rewrite de `/api` para a API, mantendo o cookie first-party; o WebSocket conecta direto em `wss://api.devrats.app/ws` via `VITE_WS_URL`. O passo a passo de DNS, Caddy e GitHub App está em [`api-dev-rats/docs/DEPLOY-VPS.md`](https://github.com/felipevenas/api-dev-rats/blob/main/docs/DEPLOY-VPS.md).
 
 > O preview público de convite (`GET /api/v1/invites/{token}`) foi liberado no `SecurityConfig` da API. Sem essa regra, a página `/invites/:token` não abre para visitantes deslogados, embora o controller não exija autenticação.
 
