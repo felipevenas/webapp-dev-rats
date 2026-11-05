@@ -23,6 +23,8 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o 
 - **Não lidas**: badge no item Conversas da sidebar e da bottom nav, atualizado por evento e por refetch.
 - **Atalhos**: botão "Mensagem" no card de amigo, botão "Chat" na página do grupo e rota `/app/chat/:conversationId`.
 - **Mobile**: thread ocupa a viewport, esconde a bottom nav, composer com área segura e lista com busca.
+- **Acesso ao chat do grupo**: botão dedicado ao lado das abas do grupo, com largura total no mobile, resolve ou cria a conversa e abre a thread.
+- **Skeletons do chat**: lista, thread e composer têm estados de carregamento que espelham o layout real (avatar, bolhas alternadas e campo de mensagem), sem tela em branco.
 
 ### 🎨 Alterado
 

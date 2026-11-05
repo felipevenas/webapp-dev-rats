@@ -6,8 +6,8 @@ import { useAuth } from '@/core/auth/auth-provider';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
-import { Skeleton } from '@/components/ui/skeleton';
 import { useChatConversation, useChatConversations } from '@/features/chat/data/use-chat';
+import { ChatThreadSkeleton } from '@/features/chat/ui/chat-thread-skeleton';
 import { ConversationList } from '@/features/chat/ui/conversation-list';
 import { MessageThread } from '@/features/chat/ui/message-thread';
 import { NewConversationDialog } from '@/features/chat/ui/new-conversation-dialog';
@@ -64,12 +64,7 @@ export default function ChatPage() {
             />
           </div>
         ) : conversationQuery.isLoading && !conversation ? (
-          <div className="flex h-full w-full flex-col gap-3 p-5">
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-20 w-2/3" />
-            <Skeleton className="ml-auto h-16 w-1/2" />
-            <Skeleton className="h-20 w-2/3" />
-          </div>
+          <ChatThreadSkeleton />
         ) : conversationQuery.isError && !conversation ? (
           <div className="flex h-full w-full items-center justify-center p-6">
             <ErrorState

@@ -10,7 +10,6 @@ import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { ErrorState } from '@/components/ui/error-state';
 import { Modal } from '@/components/ui/modal';
-import { Skeleton } from '@/components/ui/skeleton';
 import { PresenceDot } from '@/features/friends/ui/presence-dot';
 import { useChatSocket } from '@/features/chat/data/chat-socket-provider';
 import {
@@ -23,6 +22,7 @@ import {
   groupMessagesByDay,
   type ChatMessageView,
 } from '@/features/chat/domain/chat-message';
+import { MessageListSkeleton } from '@/features/chat/ui/chat-thread-skeleton';
 import { MessageBubble } from '@/features/chat/ui/message-bubble';
 import { MessageComposer } from '@/features/chat/ui/message-composer';
 
@@ -220,11 +220,7 @@ export function MessageThread({ conversation }: MessageThreadProps) {
         aria-label="Mensagens da conversa"
       >
         {messagesQuery.isLoading ? (
-          <div className="mx-auto flex max-w-3xl flex-col gap-3">
-            {[0, 1, 2, 3].map((index) => (
-              <Skeleton key={index} className="h-14 w-2/3 rounded-2xl" />
-            ))}
-          </div>
+          <MessageListSkeleton />
         ) : messagesQuery.isError ? (
           <ErrorState error={messagesQuery.error} onRetry={() => void messagesQuery.refetch()} compact />
         ) : chronological.length === 0 ? (

@@ -58,6 +58,8 @@ Auditoria conduzida com o MCP do Playwright no frontend em execução (`http://l
 | Duas colunas do chat deixavam o thread com menos de 450px em 1024px | Chat | Breakpoint de `lg` para `xl`; abaixo disso a thread ocupa a tela com botão de voltar |
 | Composer espremido e placeholder cortado em 320px | Chat | Menu único de anexos abaixo de `sm`, placeholder “Mensagem…” e envio com `shrink-0` |
 | Texto longo ficava escondido no campo de uma linha | Chat | Auto-resize até 128px com rolagem interna |
+| Skeleton da thread era uma pilha de blocos sem header e sem composer | Chat | Skeleton com header, bolhas alternadas e composer; lista com avatar e duas linhas |
+| Chat do grupo só era acessível por um ícone no header, fácil de ignorar no mobile | Página do grupo | Botão “Chat do grupo” ao lado das abas, largura total abaixo de `sm` |
 
 ## Chat: medições após as correções
 
