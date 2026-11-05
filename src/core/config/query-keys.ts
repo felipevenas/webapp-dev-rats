@@ -27,4 +27,8 @@ export const queryKeys = {
   github: ['integrations', 'github'] as const,
   repositories: (search: string, page: number) => ['github', 'repositories', search, page] as const,
   invitePreview: (token: string) => ['invites', token] as const,
+  chatConversations: ['chat', 'conversation-list'] as const,
+  chatConversation: (conversationId: string) => ['chat', 'conversation', conversationId] as const,
+  chatMessages: (conversationId: string) => ['chat', 'conversation', conversationId, 'messages'] as const,
+  chatUnread: ['chat', 'unread'] as const,
 };

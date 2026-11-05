@@ -337,3 +337,92 @@ export interface AppNotification {
   readAt?: IsoInstant | null;
   createdAt: IsoInstant;
 }
+
+//---- Chat ---------------------------------------------------------------------------------------
+
+export type ConversationType = 'DIRECT' | 'GROUP';
+export type ChatMessageType = 'TEXT' | 'IMAGE' | 'VOICE' | 'FILE';
+export type AttachmentKind = 'IMAGE' | 'VOICE' | 'FILE';
+export type ChatEventType =
+  | 'MESSAGE_CREATED'
+  | 'MESSAGE_DELETED'
+  | 'CONVERSATION_REVOKED'
+  | 'TYPING';
+
+export interface ChatUserSummary {
+  id: UUID;
+  username: string;
+  displayName: string;
+  avatarUrl?: string | null;
+}
+
+export interface ChatAttachment {
+  id: UUID;
+  kind: AttachmentKind;
+  fileName?: string | null;
+  contentType: string;
+  sizeBytes: number;
+  width?: number | null;
+  height?: number | null;
+  durationSeconds?: number | null;
+  url?: string | null;
+  urlExpiresAt?: IsoInstant | null;
+}
+
+export interface ChatMessage {
+  id: UUID;
+  conversationId: UUID;
+  sender: ChatUserSummary;
+  type: ChatMessageType;
+  body?: string | null;
+  clientMessageId: UUID;
+  createdAt: IsoInstant;
+  deleted: boolean;
+  attachments: ChatAttachment[];
+}
+
+export interface MessagePreview {
+  id: UUID;
+  senderId: UUID;
+  type: ChatMessageType;
+  preview: string;
+  createdAt: IsoInstant;
+  deleted: boolean;
+}
+
+export interface Conversation {
+  id: UUID;
+  type: ConversationType;
+  title: string;
+  avatarUrl?: string | null;
+  groupId?: UUID | null;
+  peer?: ChatUserSummary | null;
+  presence?: PresenceStatus | null;
+  lastMessage?: MessagePreview | null;
+  unreadCount: number;
+  lastMessageAt: IsoInstant;
+  createdAt: IsoInstant;
+}
+
+export interface CursorPage<T> {
+  items: T[];
+  nextCursor: string | null;
+  hasMore: boolean;
+}
+
+export interface ChatTyping {
+  userId: UUID;
+  displayName: string;
+  expiresAt: IsoInstant;
+}
+
+export interface ChatEvent {
+  eventId: string;
+  type: ChatEventType;
+  conversationId: UUID;
+  message?: ChatMessage | null;
+  messageId?: UUID | null;
+  typing?: ChatTyping | null;
+  reason?: string | null;
+  occurredAt: IsoInstant;
+}

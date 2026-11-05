@@ -1,9 +1,12 @@
-import { UserMinus } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { MessageCircle, UserMinus } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import { toAppError } from '@/core/http/problem';
 import type { Friend } from '@/core/types/api';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Tooltip } from '@/components/ui/tooltip';
+import { useCreateConversation } from '@/features/chat/data/use-chat';
 import { friendsSinceLabel } from '@/features/friends/domain/friend-copy';
 import { FriendButton } from '@/features/friends/ui/friend-button';
 import { PresenceDot } from '@/features/friends/ui/presence-dot';
@@ -14,6 +17,21 @@ interface FriendCardProps {
 }
 
 export function FriendCard({ friend, onRemove }: FriendCardProps) {
+  const navigate = useNavigate();
+  const createConversation = useCreateConversation();
+
+  const openChat = async () => {
+    try {
+      const conversation = await createConversation.mutateAsync({
+        type: 'DIRECT',
+        userId: friend.userId,
+      });
+      navigate(`/app/chat/${conversation.id}`);
+    } catch (error) {
+      toast.error(toAppError(error).detail);
+    }
+  };
+
   return (
     <li className="ds-card flex min-w-0 items-center gap-3 p-3.5">
       <Link
@@ -56,6 +74,17 @@ export function FriendCard({ friend, onRemove }: FriendCardProps) {
           displayName={friend.displayName}
           status="FRIENDS"
         />
+        <Tooltip content="Enviar mensagem">
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => void openChat()}
+            loading={createConversation.isPending && createConversation.variables?.userId === friend.userId}
+            aria-label={`Enviar mensagem para ${friend.displayName}`}
+          >
+            <MessageCircle aria-hidden />
+          </Button>
+        </Tooltip>
         <Tooltip content="Remover amizade">
           <Button
             variant="danger-ghost"

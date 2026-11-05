@@ -3,6 +3,7 @@ import {
   Bell,
   Home,
   LogOut,
+  MessageCircle,
   Plus,
   Settings,
   Swords,
@@ -14,6 +15,7 @@ import { useAuth } from '@/core/auth/auth-provider';
 import { useUnreadNotifications } from '@/features/notifications/data/use-notifications';
 import { useFriendRequestsCount } from '@/features/friends/data/use-friends';
 import { usePresenceHeartbeat } from '@/features/friends/data/use-presence';
+import { useChatUnread } from '@/features/chat/data/use-chat';
 import { cn } from '@/core/lib/cn';
 import { Logo } from '@/components/brand/logo';
 import { Avatar } from '@/components/ui/avatar';
@@ -27,6 +29,7 @@ import type { IconComponent } from '@/core/types/ui';
 const primaryNav = [
   { to: '/app', label: 'Início', icon: Home, end: true },
   { to: '/app/challenges', label: 'Desafios', icon: Swords, end: false },
+  { to: '/app/chat', label: 'Conversas', icon: MessageCircle, end: false },
   { to: '/app/friends', label: 'Amigos', icon: Users, end: false },
   { to: '/app/notifications', label: 'Alertas', icon: Bell, end: false },
   { to: '/app/profile', label: 'Perfil', icon: UserIcon, end: false },
@@ -35,7 +38,7 @@ const primaryNav = [
 const mobileNav = [
   { to: '/app', label: 'Início', icon: Home, end: true },
   { to: '/app/challenges', label: 'Desafios', icon: Swords, end: false },
-  { to: '/app/notifications', label: 'Alertas', icon: Bell, end: false },
+  { to: '/app/chat', label: 'Conversas', icon: MessageCircle, end: false },
   { to: '/app/friends', label: 'Amigos', icon: Users, end: false },
 ];
 
@@ -51,6 +54,8 @@ export function AppShell() {
   const unread = useUnreadNotifications();
   const pendingRequests = useFriendRequestsCount();
   const pendingFriends = pendingRequests.data ?? 0;
+  const chatUnread = useChatUnread();
+  const unreadChat = chatUnread.data ?? 0;
   const location = useLocation();
 
   usePresenceHeartbeat();
@@ -81,6 +86,8 @@ export function AppShell() {
                 <NavCount value={unread} />
               ) : item.to === '/app/friends' && pendingFriends > 0 ? (
                 <NavCount value={pendingFriends} />
+              ) : item.to === '/app/chat' && unreadChat > 0 ? (
+                <NavCount value={unreadChat} />
               ) : null}
             </NavLink>
           ))}
@@ -159,12 +166,19 @@ export function AppShell() {
           </div>
         </header>
 
-        <main className="min-h-dvh pb-28 lg:pb-10">
+        <main
+          className={cn(
+            'min-h-dvh',
+            location.pathname.startsWith('/app/chat')
+              ? 'overflow-hidden'
+              : 'pb-28 lg:pb-10',
+          )}
+        >
           <Outlet />
         </main>
       </div>
 
-      <BottomNav unread={unread} pending={pendingFriends} />
+      <BottomNav pending={pendingFriends} chatUnread={unreadChat} />
     </div>
   );
 }
@@ -177,13 +191,17 @@ function NavCount({ value }: { value: number }) {
   );
 }
 
-function BottomNav({ unread, pending }: { unread: number; pending: number }) {
+function BottomNav({ pending, chatUnread }: { pending: number; chatUnread: number }) {
   const location = useLocation();
   const left = mobileNav.slice(0, 2);
   const right = mobileNav.slice(2);
 
-  //---- Editors take over the viewport on mobile; the page header has its own back link.
-  if (location.pathname === '/app/groups/new' || location.pathname.endsWith('/settings')) {
+  //---- Editors and the chat thread take over the viewport; the page header has its own back link.
+  if (
+    location.pathname === '/app/groups/new' ||
+    location.pathname.endsWith('/settings') ||
+    location.pathname.startsWith('/app/chat/')
+  ) {
     return null;
   }
 
@@ -214,7 +232,7 @@ function BottomNav({ unread, pending }: { unread: number; pending: number }) {
             key={item.to}
             {...item}
             active={isTabActive(item, location.pathname)}
-            badge={item.to === '/app/notifications' ? unread : item.to === '/app/friends' ? pending : 0}
+            badge={item.to === '/app/friends' ? pending : item.to === '/app/chat' ? chatUnread : 0}
           />
         ))}
       </div>
@@ -226,6 +244,9 @@ function isTabActive(item: (typeof mobileNav)[number], pathname: string) {
   if (item.end) return pathname === item.to;
   if (item.to === '/app/friends') {
     return pathname.startsWith('/app/friends') || pathname.startsWith('/app/users/');
+  }
+  if (item.to === '/app/chat') {
+    return pathname.startsWith('/app/chat');
   }
   return pathname.startsWith(item.to);
 }
