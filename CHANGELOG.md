@@ -28,6 +28,16 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o 
 
 - Navegação mobile troca o atalho de Alertas por Conversas; o sino de alertas permanece no header.
 - Cache de conversas e mensagens passa a ser reconciliado por `clientMessageId` e por evento do WebSocket, sem invalidar o thread inteiro a cada mensagem.
+- Chat: layout de duas colunas (lista + thread) passa a iniciar em `xl`; abaixo disso a thread ocupa a tela com botão de voltar, evitando thread apertado em 1024px.
+- Chat: anexos de imagem e documento ficam em um menu único no mobile, liberando espaço para o campo de mensagem em telas de 320px.
+
+### 🐛 Corrigido
+
+- Chat: lista de conversas usava largura de conteúdo e deixava uma faixa vazia no mobile; agora ocupa 100% da coluna.
+- Chat: thread estourava a viewport em 390px por causa do `min-width` intrínseco do textarea e dos botões do composer; containers receberam `min-w-0`.
+- Chat: rota do chat somava 56px além da viewport (`min-h-dvh` + header) e criava rolagem vertical com o composer deslocado; o shell agora fecha em `100dvh`.
+- Chat: campo de mensagem não crescia ao digitar; agora expande até 128px e rola internamente, sem esconder o texto.
+- Chat: placeholder do composer era cortado em 320px; texto reduzido para “Mensagem…” e botão de envio com `shrink-0`.
 
 ### 🧪 Testes
 

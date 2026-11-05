@@ -12,6 +12,7 @@ Auditoria conduzida com o MCP do Playwright no frontend em execução (`http://l
 - Convite público válido (deslogado), CTA de login com `next`.
 - Onboarding autenticado.
 - Dashboard, lista de desafios, wizard (etapas 1-4), grupo (visão geral, ranking, calendário, atividade), configurações, perfil, integrações, alertas.
+- Chat: lista de conversas, thread privado/grupo, menu de anexos, composer com texto curto e longo, estado vazio e estado de carregamento.
 - Modais: convite (bottom sheet), exclusão de conta (bottom sheet), início/cancelamento de desafio.
 - Temas escuro e claro.
 
@@ -51,6 +52,30 @@ Auditoria conduzida com o MCP do Playwright no frontend em execução (`http://l
 | Preview de convite retornava 401 para visitantes | API (SecurityConfig) | `GET /api/v1/invites/**` liberado; aceite continua autenticado |
 | Header do grupo ocupava a tela toda antes do calendário | Tabs do grupo | Header compacto no mobile nas abas que não são “Visão geral” |
 | Banner do perfil espremia foto, informações e estatísticas na horizontal | Perfil | Foto e dados empilhados; cards dos grupos no canto superior direito a partir de `xl` |
+| Lista de conversas não ocupava a largura da coluna no mobile | Chat | `w-full` no container da lista |
+| Thread do chat media 393px em viewport de 390px | Chat | `min-w-0` no thread, no header, no composer e no textarea |
+| Página do chat rolava 56px além da viewport e deslocava o composer | Chat | Shell fecha em `h-[calc(100dvh-3.5rem)]` (mobile) e `lg:h-dvh`; página usa `h-full` |
+| Duas colunas do chat deixavam o thread com menos de 450px em 1024px | Chat | Breakpoint de `lg` para `xl`; abaixo disso a thread ocupa a tela com botão de voltar |
+| Composer espremido e placeholder cortado em 320px | Chat | Menu único de anexos abaixo de `sm`, placeholder “Mensagem…” e envio com `shrink-0` |
+| Texto longo ficava escondido no campo de uma linha | Chat | Auto-resize até 128px com rolagem interna |
+
+## Chat: medições após as correções
+
+Medidas com o Playwright MCP no thread do grupo, tema escuro e claro:
+
+| Viewport | Thread | Composer (campo) | `scrollWidth` | `scrollHeight` |
+|---|---|---|---|---|
+| 320×568 | 320px | 166px | 320 | 568 |
+| 390×844 | 390px | 198px | 390 | 844 |
+| 768×1024 | 768px | 581px | 768 | 1024 |
+| 1024×768 | 784px (a partir de 240) | 581px | 1024 | 768 |
+| 1280×900 | 700px (lista de 340) | 500px | 1280 | 900 |
+
+- Em 320/390 o thread ocupa a viewport inteira, com botão de voltar e sem bottom nav.
+- Em 1024 a sidebar do app tem 240px e a thread usa o restante; a lista de conversas aparece na rota `/app/chat`.
+- Em 1280 lista (340px) e thread (700px) convivem; o botão “Abrir grupo” aparece no header.
+- O menu de anexos no mobile abre acima do botão e não cobre o campo de mensagem.
+- Texto longo expande o campo até 128px e mantém o botão de envio ancorado à direita.
 
 ## Resultado final
 

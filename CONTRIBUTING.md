@@ -26,6 +26,8 @@ npm run dev
 
 A aplicação sobe em **http://localhost:5174**. Em desenvolvimento, o Vite faz proxy de `/api` para `http://localhost:8080`.
 
+Para validar contra outro ambiente sem trocar as variáveis do build, defina `VITE_PROXY_API_TARGET`, `VITE_PROXY_WS_TARGET` e `VITE_PROXY_ORIGIN` (ex.: produção em `https://api.devrats.app`, `wss://api.devrats.app`, `https://devrats.app`). Os valores padrão continuam apontando para o backend local.
+
 > A porta 5173 é evitada porque outro projeto local costuma ocupá-la. Para o OAuth do GitHub, a API deve ter `APP_FRONTEND_URL=http://localhost:5174` e a origem correspondente em `APP_CORS_ALLOWED_ORIGINS`.
 
 Detalhes completos de setup, arquitetura e integração estão no [`README.md`](README.md).

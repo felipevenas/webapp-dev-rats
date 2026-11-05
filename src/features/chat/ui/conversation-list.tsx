@@ -37,7 +37,7 @@ export function ConversationList({
   }, [conversations, query]);
 
   return (
-    <div className="flex h-full min-h-0 flex-col">
+    <div className="flex h-full min-h-0 w-full flex-col">
       <header className="flex items-center justify-between gap-2 border-b border-line px-3 py-3 sm:px-4">
         <div className="min-w-0">
           <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-faint">DevRats</p>

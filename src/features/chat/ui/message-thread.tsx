@@ -161,11 +161,11 @@ export function MessageThread({ conversation }: MessageThreadProps) {
   const days = groupMessagesByDay(chronological, timezone);
 
   return (
-    <div className="flex h-full min-h-0 flex-1 flex-col bg-bg">
-      <header className="flex items-center gap-3 border-b border-line bg-surface/95 px-3 py-2.5 backdrop-blur-sm sm:px-4">
+    <div className="flex h-full min-h-0 min-w-0 w-full flex-1 flex-col bg-bg">
+      <header className="flex min-w-0 items-center gap-3 border-b border-line bg-surface/95 px-3 py-2.5 backdrop-blur-sm sm:px-4">
         <Link
           to="/app/chat"
-          className="ds-focus-ring inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-muted transition-colors hover:bg-card-2 hover:text-fg lg:hidden"
+          className="ds-focus-ring inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-muted transition-colors hover:bg-card-2 hover:text-fg xl:hidden"
           aria-label="Voltar para conversas"
         >
           <ArrowLeft aria-hidden />
@@ -215,7 +215,7 @@ export function MessageThread({ conversation }: MessageThreadProps) {
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-4 sm:px-4"
+        className="min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain px-3 py-4 sm:px-4"
         aria-live="polite"
         aria-label="Mensagens da conversa"
       >

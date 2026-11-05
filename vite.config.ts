@@ -3,6 +3,10 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import path from 'node:path';
 
+const apiTarget = process.env.VITE_PROXY_API_TARGET || 'http://localhost:8080';
+const wsTarget = process.env.VITE_PROXY_WS_TARGET || 'ws://localhost:8080';
+const proxyOrigin = process.env.VITE_PROXY_ORIGIN || 'http://localhost:5173';
+
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
@@ -16,19 +20,24 @@ export default defineConfig({
     proxy: {
       //---- Dev proxies to Spring Boot so the HttpOnly refresh cookie stays same-origin.
       '/api': {
-        target: 'http://localhost:8080',
-        changeOrigin: false,
+        target: apiTarget,
+        changeOrigin: true,
         configure: (proxy) => {
-          //---- The API only accepts its configured frontend origin (5173) for refresh/logout.
+          //---- The API only accepts its configured frontend origin for refresh/logout.
           proxy.on('proxyReq', (proxyReq) => {
-            proxyReq.setHeader('origin', 'http://localhost:5173');
+            proxyReq.setHeader('origin', proxyOrigin);
           });
         },
       },
       '/ws': {
-        target: 'ws://localhost:8080',
+        target: wsTarget,
         ws: true,
-        changeOrigin: false,
+        changeOrigin: true,
+        configure: (proxy) => {
+          proxy.on('proxyReqWs', (proxyReq) => {
+            proxyReq.setHeader('origin', proxyOrigin);
+          });
+        },
       },
     },
   },

@@ -24,11 +24,11 @@ export default function ChatPage() {
     conversationQuery.data;
 
   return (
-    <div className="flex h-[calc(100dvh-3.5rem)] min-h-0 bg-bg lg:h-dvh">
+    <div className="flex h-full min-h-0 bg-bg">
       <aside
         className={cn(
-          'w-full shrink-0 border-r border-line bg-surface lg:w-[340px]',
-          conversationId ? 'hidden lg:flex' : 'flex pb-20 lg:pb-0',
+          'w-full shrink-0 border-r border-line bg-surface xl:w-[340px]',
+          conversationId ? 'hidden xl:flex' : 'flex pb-20 lg:pb-0',
         )}
       >
         <ConversationList
@@ -42,7 +42,7 @@ export default function ChatPage() {
         />
       </aside>
 
-      <main className={cn('min-w-0 flex-1', conversationId ? 'flex' : 'hidden lg:flex')}>
+      <main className={cn('min-w-0 flex-1', conversationId ? 'flex' : 'hidden xl:flex')}>
         {!conversationId ? (
           <div className="flex h-full w-full items-center justify-center p-6">
             <EmptyState
