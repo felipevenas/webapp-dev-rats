@@ -202,6 +202,14 @@ function useOptimisticCache(conversationId: string) {
   const fail = (clientMessageId: string) => {
     queryClient.setQueryData<MessageCache>(queryKeys.chatMessages(conversationId), (current) => {
       if (!current) return current;
+      const alreadyConfirmed = current.pages.some((page) =>
+        page.items.some(
+          (message) =>
+            message.clientMessageId === clientMessageId && !message.id.startsWith('local-'),
+        ),
+      );
+      //---- O evento do WebSocket pode ter confirmado antes do HTTP falhar; não marcar como falha.
+      if (alreadyConfirmed) return current;
       return {
         ...current,
         pages: current.pages.map((page, index) =>

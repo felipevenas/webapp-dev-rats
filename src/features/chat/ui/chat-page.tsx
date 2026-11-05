@@ -16,7 +16,7 @@ export default function ChatPage() {
   const { conversationId } = useParams<{ conversationId: string }>();
   const { user } = useAuth();
   const [newOpen, setNewOpen] = useState(false);
-  const conversations = useChatConversations(0, 50);
+  const conversations = useChatConversations(0, 100);
   const conversationQuery = useChatConversation(conversationId);
 
   const conversation =
