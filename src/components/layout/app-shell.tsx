@@ -168,10 +168,9 @@ export function AppShell() {
 
         <main
           className={cn(
-            'min-h-dvh',
             location.pathname.startsWith('/app/chat')
-              ? 'overflow-hidden'
-              : 'pb-28 lg:pb-10',
+              ? 'h-[calc(100dvh-3.5rem)] overflow-hidden lg:h-dvh'
+              : 'min-h-dvh pb-28 lg:pb-10',
           )}
         >
           <Outlet />

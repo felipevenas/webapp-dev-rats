@@ -1,7 +1,8 @@
 import { ImagePlus, Mic, Paperclip, Send } from 'lucide-react';
-import { useRef, useState, type ChangeEvent, type KeyboardEvent } from 'react';
+import { useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { Dropdown, DropdownItem } from '@/components/ui/dropdown';
 import { acceptFor, validateAttachment } from '@/features/chat/domain/attachment-rules';
 import { VoiceRecorder } from '@/features/chat/ui/voice-recorder';
 
@@ -27,7 +28,32 @@ export function MessageComposer({
   const [recording, setRecording] = useState(false);
   const imageInput = useRef<HTMLInputElement>(null);
   const fileInput = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const lastTyping = useRef(0);
+
+  //---- Grow the composer with the message, up to the CSS max-height.
+  useEffect(() => {
+    const element = textareaRef.current;
+    if (!element) return;
+
+    const resize = () => {
+      element.style.height = 'auto';
+      element.style.height = `${Math.min(element.scrollHeight, 128)}px`;
+    };
+
+    resize();
+
+    //---- The width changes with the viewport; recalculate so the height stays accurate.
+    if (typeof ResizeObserver === 'undefined') return;
+    let lastWidth = element.clientWidth;
+    const observer = new ResizeObserver(() => {
+      if (element.clientWidth === lastWidth) return;
+      lastWidth = element.clientWidth;
+      resize();
+    });
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [text, recording]);
 
   const sendText = () => {
     const value = text.trim();
@@ -83,8 +109,8 @@ export function MessageComposer({
   }
 
   return (
-    <div className="ds-safe-bottom border-t border-line bg-surface/95 px-3 py-3 backdrop-blur-sm sm:px-4">
-      <div className="flex items-end gap-2">
+    <div className="ds-safe-bottom w-full min-w-0 border-t border-line bg-surface/95 px-3 py-3 backdrop-blur-sm sm:px-4">
+      <div className="flex min-w-0 items-end gap-2">
         <input
           ref={imageInput}
           type="file"
@@ -101,24 +127,50 @@ export function MessageComposer({
         />
 
         <div className="flex shrink-0 items-center gap-0.5">
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            onClick={() => imageInput.current?.click()}
-            disabled={disabled || sending}
-            aria-label="Enviar imagem"
-          >
-            <ImagePlus aria-hidden />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            onClick={() => fileInput.current?.click()}
-            disabled={disabled || sending}
-            aria-label="Enviar documento"
-          >
-            <Paperclip aria-hidden />
-          </Button>
+          <div className="hidden items-center gap-0.5 sm:flex">
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              onClick={() => imageInput.current?.click()}
+              disabled={disabled || sending}
+              aria-label="Enviar imagem"
+            >
+              <ImagePlus aria-hidden />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              onClick={() => fileInput.current?.click()}
+              disabled={disabled || sending}
+              aria-label="Enviar documento"
+            >
+              <Paperclip aria-hidden />
+            </Button>
+          </div>
+
+          <div className="sm:hidden">
+            <Dropdown
+              align="start"
+              trigger={
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  disabled={disabled || sending}
+                  aria-label="Anexar arquivo"
+                >
+                  <Paperclip aria-hidden />
+                </Button>
+              }
+            >
+              <DropdownItem icon={ImagePlus} onSelect={() => imageInput.current?.click()}>
+                Imagem
+              </DropdownItem>
+              <DropdownItem icon={Paperclip} onSelect={() => fileInput.current?.click()}>
+                Documento
+              </DropdownItem>
+            </Dropdown>
+          </div>
+
           <Button
             variant="ghost"
             size="icon-sm"
@@ -131,6 +183,7 @@ export function MessageComposer({
         </div>
 
         <textarea
+          ref={textareaRef}
           value={text}
           onChange={(event) => {
             setText(event.target.value.slice(0, MAX_TEXT));
@@ -138,10 +191,10 @@ export function MessageComposer({
           }}
           onKeyDown={handleKeyDown}
           rows={1}
-          placeholder="Escreva uma mensagem…"
+          placeholder="Mensagem…"
           aria-label="Mensagem"
           disabled={disabled}
-          className="ds-focus-ring max-h-32 min-h-11 flex-1 resize-none rounded-xl border border-line bg-card px-3 py-2.5 text-[13px] leading-relaxed text-fg placeholder:text-faint disabled:opacity-60"
+          className="ds-focus-ring max-h-32 min-h-11 min-w-0 flex-1 resize-none rounded-xl border border-line bg-card px-3 py-2.5 text-[13px] leading-relaxed text-fg placeholder:text-faint disabled:opacity-60"
         />
 
         <Button
@@ -149,6 +202,7 @@ export function MessageComposer({
           onClick={sendText}
           disabled={disabled || sending || !text.trim()}
           loading={sending}
+          className="shrink-0"
           aria-label="Enviar mensagem"
         >
           <Send aria-hidden />

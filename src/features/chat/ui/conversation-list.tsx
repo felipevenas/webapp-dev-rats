@@ -37,7 +37,7 @@ export function ConversationList({
   }, [conversations, query]);
 
   return (
-    <div className="flex h-full min-h-0 flex-col">
+    <div className="flex h-full min-h-0 w-full flex-col">
       <header className="flex items-center justify-between gap-2 border-b border-line px-3 py-3 sm:px-4">
         <div className="min-w-0">
           <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-faint">DevRats</p>
@@ -63,9 +63,16 @@ export function ConversationList({
 
       <div className="min-h-0 flex-1 overflow-y-auto px-2 py-2">
         {loading ? (
-          <div className="space-y-2" aria-hidden>
+          <div className="space-y-0.5" aria-hidden>
             {[0, 1, 2, 3, 4].map((index) => (
-              <Skeleton key={index} className="h-16 w-full rounded-xl" />
+              <div key={index} className="flex items-center gap-3 rounded-xl px-2 py-2.5">
+                <Skeleton className="size-10 shrink-0 rounded-full" />
+                <div className="min-w-0 flex-1 space-y-2">
+                  <Skeleton className="h-3 w-1/2 rounded-full" />
+                  <Skeleton className="h-2.5 w-3/4 rounded-full" />
+                </div>
+                <Skeleton className="h-2.5 w-8 shrink-0 rounded-full" />
+              </div>
             ))}
           </div>
         ) : error ? (

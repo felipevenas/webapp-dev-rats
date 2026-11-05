@@ -10,7 +10,6 @@ import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { ErrorState } from '@/components/ui/error-state';
 import { Modal } from '@/components/ui/modal';
-import { Skeleton } from '@/components/ui/skeleton';
 import { PresenceDot } from '@/features/friends/ui/presence-dot';
 import { useChatSocket } from '@/features/chat/data/chat-socket-provider';
 import {
@@ -23,6 +22,7 @@ import {
   groupMessagesByDay,
   type ChatMessageView,
 } from '@/features/chat/domain/chat-message';
+import { MessageListSkeleton } from '@/features/chat/ui/chat-thread-skeleton';
 import { MessageBubble } from '@/features/chat/ui/message-bubble';
 import { MessageComposer } from '@/features/chat/ui/message-composer';
 
@@ -161,11 +161,11 @@ export function MessageThread({ conversation }: MessageThreadProps) {
   const days = groupMessagesByDay(chronological, timezone);
 
   return (
-    <div className="flex h-full min-h-0 flex-1 flex-col bg-bg">
-      <header className="flex items-center gap-3 border-b border-line bg-surface/95 px-3 py-2.5 backdrop-blur-sm sm:px-4">
+    <div className="flex h-full min-h-0 min-w-0 w-full flex-1 flex-col bg-bg">
+      <header className="flex min-w-0 items-center gap-3 border-b border-line bg-surface/95 px-3 py-2.5 backdrop-blur-sm sm:px-4">
         <Link
           to="/app/chat"
-          className="ds-focus-ring inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-muted transition-colors hover:bg-card-2 hover:text-fg lg:hidden"
+          className="ds-focus-ring inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-muted transition-colors hover:bg-card-2 hover:text-fg xl:hidden"
           aria-label="Voltar para conversas"
         >
           <ArrowLeft aria-hidden />
@@ -215,16 +215,12 @@ export function MessageThread({ conversation }: MessageThreadProps) {
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-4 sm:px-4"
+        className="min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain px-3 py-4 sm:px-4"
         aria-live="polite"
         aria-label="Mensagens da conversa"
       >
         {messagesQuery.isLoading ? (
-          <div className="mx-auto flex max-w-3xl flex-col gap-3">
-            {[0, 1, 2, 3].map((index) => (
-              <Skeleton key={index} className="h-14 w-2/3 rounded-2xl" />
-            ))}
-          </div>
+          <MessageListSkeleton />
         ) : messagesQuery.isError ? (
           <ErrorState error={messagesQuery.error} onRetry={() => void messagesQuery.refetch()} compact />
         ) : chronological.length === 0 ? (

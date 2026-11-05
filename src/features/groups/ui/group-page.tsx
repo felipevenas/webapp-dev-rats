@@ -245,15 +245,6 @@ export default function GroupPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <Button
-              variant="secondary"
-              onClick={() => void openGroupChat()}
-              loading={createConversation.isPending}
-              aria-label="Abrir chat do grupo"
-            >
-              <MessageCircle aria-hidden />
-              <span className="hidden sm:inline">Chat</span>
-            </Button>
             {isOwner && (challenge?.status === 'DRAFT' || challenge?.status === 'ACTIVE') ? (
               <Button onClick={() => setInviteOpen(true)}>
                 <UserPlus aria-hidden />
@@ -376,34 +367,46 @@ export default function GroupPage() {
         <FinishedBanner challenge={challenge} />
       ) : null}
 
-      <nav
-        aria-label="Seções do desafio"
-        className="grid grid-cols-4 gap-1 rounded-xl border border-line bg-card-2 p-1 sm:inline-flex sm:w-auto"
-      >
-        {tabOptions.map((option) => {
-          const active = tab === option.id;
-          return (
-            <button
-              key={option.id}
-              type="button"
-              onClick={() => setTab(option.id)}
-              aria-current={active ? 'page' : undefined}
-              className={cn(
-                'ds-focus-ring flex min-w-0 items-center justify-center gap-1 rounded-lg px-1 py-2 text-[10px] font-medium transition-colors sm:px-3.5 sm:text-[12px]',
-                active ? 'bg-volt-soft text-accent' : 'text-muted hover:bg-card hover:text-fg',
-              )}
-            >
-              <span className="min-w-0 truncate">
-                <span className="sm:hidden">{option.shortLabel}</span>
-                <span className="hidden sm:inline">{option.label}</span>
-              </span>
-              {option.id === 'leaderboard' && entries.length > 0 ? (
-                <span className="shrink-0 font-mono text-[9px] text-faint sm:text-[10px]">{entries.length}</span>
-              ) : null}
-            </button>
-          );
-        })}
-      </nav>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <nav
+          aria-label="Seções do desafio"
+          className="grid grid-cols-4 gap-1 rounded-xl border border-line bg-card-2 p-1 sm:inline-flex sm:w-auto"
+        >
+          {tabOptions.map((option) => {
+            const active = tab === option.id;
+            return (
+              <button
+                key={option.id}
+                type="button"
+                onClick={() => setTab(option.id)}
+                aria-current={active ? 'page' : undefined}
+                className={cn(
+                  'ds-focus-ring flex min-w-0 items-center justify-center gap-1 rounded-lg px-1 py-2 text-[10px] font-medium transition-colors sm:px-3.5 sm:text-[12px]',
+                  active ? 'bg-volt-soft text-accent' : 'text-muted hover:bg-card hover:text-fg',
+                )}
+              >
+                <span className="min-w-0 truncate">
+                  <span className="sm:hidden">{option.shortLabel}</span>
+                  <span className="hidden sm:inline">{option.label}</span>
+                </span>
+                {option.id === 'leaderboard' && entries.length > 0 ? (
+                  <span className="shrink-0 font-mono text-[9px] text-faint sm:text-[10px]">{entries.length}</span>
+                ) : null}
+              </button>
+            );
+          })}
+        </nav>
+
+        <Button
+          variant="secondary"
+          onClick={() => void openGroupChat()}
+          loading={createConversation.isPending}
+          className="w-full justify-center sm:w-auto"
+        >
+          <MessageCircle aria-hidden />
+          Chat do grupo
+        </Button>
+      </div>
 
       {!challenge ? (
         <EmptyState
