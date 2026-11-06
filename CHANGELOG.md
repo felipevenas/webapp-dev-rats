@@ -25,6 +25,9 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o 
 - **Mobile**: thread ocupa a viewport, esconde a bottom nav, composer com área segura e lista com busca.
 - **Acesso ao chat do grupo**: botão dedicado ao lado das abas do grupo, com largura total no mobile, resolve ou cria a conversa e abre a thread.
 - **Skeletons do chat**: lista, thread e composer têm estados de carregamento que espelham o layout real (avatar, bolhas alternadas e campo de mensagem), sem tela em branco.
+- **Recuperação de senha**: confirmação com o destino informado, validade do link, orientação de spam e opção de enviar para outro e-mail.
+- **Link de redefinição**: token lido do fragmento (`#token=...`) com fallback para query, estado inline de link inválido/expirado e CTA para solicitar outro.
+- **Token local**: bloco de desenvolvimento exibido apenas quando `import.meta.env.DEV` e o backend devolvem `resetToken`.
 
 ### 🎨 Alterado
 
@@ -40,8 +43,11 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o 
 - Chat: rota do chat somava 56px além da viewport (`min-h-dvh` + header) e criava rolagem vertical com o composer deslocado; o shell agora fecha em `100dvh`.
 - Chat: campo de mensagem não crescia ao digitar; agora expande até 128px e rola internamente, sem esconder o texto.
 - Chat: placeholder do composer era cortado em 320px; texto reduzido para “Mensagem…” e botão de envio com `shrink-0`.
+- Scroll: hash do reset (`#token=...`) não é um seletor CSS válido e quebrava o `ScrollToTop`; a busca do elemento passou a usar `getElementById`.
 
 ### 🧪 Testes
+
+- Schemas de recuperação de senha cobrem e-mail inválido, senha fraca e confirmação divergente.
 
 - Testes de domínio para merge/idempotência de mensagens, agrupamento por dia, regras de anexo e derivação da URL do WebSocket.
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { loginSchema, registerSchema } from './auth-schemas';
+import { forgotPasswordSchema, loginSchema, registerSchema, resetPasswordSchema } from './auth-schemas';
 
 function identifierError(identifier: string) {
   const result = loginSchema.safeParse({ identifier, password: 'Senha@12345' });
@@ -85,5 +85,47 @@ describe('register schema', () => {
       expect(result.data).not.toHaveProperty('bio');
       expect(result.data).not.toHaveProperty('primaryStack');
     }
+  });
+});
+
+describe('forgot password schema', () => {
+  it('accepts a valid email', () => {
+    expect(forgotPasswordSchema.safeParse({ email: 'felipe@exemplo.com' }).success).toBe(true);
+  });
+
+  it('rejects an invalid email', () => {
+    expect(forgotPasswordSchema.safeParse({ email: 'felipe@' }).success).toBe(false);
+  });
+});
+
+describe('reset password schema', () => {
+  it('accepts a strong password with matching confirmation', () => {
+    const result = resetPasswordSchema.safeParse({
+      password: 'Senha@12345',
+      confirmPassword: 'Senha@12345',
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects mismatched passwords', () => {
+    const result = resetPasswordSchema.safeParse({
+      password: 'Senha@12345',
+      confirmPassword: 'Senha@12346',
+    });
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues.some((issue) => issue.path.includes('confirmPassword'))).toBe(true);
+    }
+  });
+
+  it('rejects a weak password', () => {
+    const result = resetPasswordSchema.safeParse({
+      password: 'senha',
+      confirmPassword: 'senha',
+    });
+
+    expect(result.success).toBe(false);
   });
 });

@@ -24,7 +24,8 @@ function ScrollToTop() {
 
   useEffect(() => {
     if (hash) {
-      const target = document.querySelector(hash);
+      //---- O hash do reset (#token=...) não é um seletor CSS válido; getElementById evita exceção.
+      const target = document.getElementById(decodeURIComponent(hash.slice(1)));
       if (target) {
         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
         return;
