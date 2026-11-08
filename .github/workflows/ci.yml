@@ -1,4 +1,4 @@
-name: Integração Contínua (CI)
+name: Continuous Integration (CI)
 
 on:
   push:
@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   quality:
-    name: Qualidade (Node ${{ matrix.node-version }})
+    name: Quality (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
@@ -24,26 +24,26 @@ jobs:
         node-version: ['22.x', '24.x']
 
     steps:
-      - name: Baixar Código do Repositório
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Configurar Ambiente Node.js
+      - name: Set Up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
-      - name: Instalar Dependências
+      - name: Install Dependencies
         run: npm ci
 
-      - name: Executar Lint (Oxlint)
+      - name: Run Lint (Oxlint)
         run: npm run lint
 
-      - name: Verificar Tipos
+      - name: Check Types
         run: npm run typecheck
 
-      - name: Executar Testes Unitários (Vitest)
+      - name: Run Unit Tests (Vitest)
         run: npm test
 
-      - name: Validar Build de Produção
+      - name: Validate Production Build
         run: npm run build

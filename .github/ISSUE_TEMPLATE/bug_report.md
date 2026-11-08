@@ -1,52 +1,52 @@
 ---
-name: Relatório de Bug (Bug Report)
-about: Crie um relatório para nos ajudar a identificar e corrigir um problema
+name: Bug Report
+about: Create a report to help us identify and fix a problem
 title: '[BUG] '
 labels: bug
 assignees: ''
 ---
 
-## Descrição do Problema
+## Problem Description
 
-Uma descrição clara e concisa do que é o bug.
+A clear and concise description of the bug.
 
-## Passos para Reproduzir
+## Steps to Reproduce
 
-1. Acesse `...` (rota, breakpoint ou dispositivo)
-2. Execute `npm run dev` (ou acesse o ambiente de preview)
-3. Faça login e execute a ação `...`
-4. Veja o erro ocorrido
+1. Open `...` (route, breakpoint, or device)
+2. Run `npm run dev` (or open the preview environment)
+3. Sign in and perform the action `...`
+4. Observe the error
 
-## Comportamento Esperado
+## Expected Behavior
 
-Uma descrição clara e concisa do que você esperava que acontecesse.
+A clear and concise description of what you expected to happen.
 
-## Comportamento Observado
+## Observed Behavior
 
-O que realmente aconteceu (inclua mensagens de erro, stack trace, `traceId` da API e o resultado dos gates).
+What actually happened (include error messages, stack trace, API `traceId`, and quality-gate results).
 
-## ⚠️ Impacto de Privacidade/Segurança (se aplicável)
+## ⚠️ Privacy/Security Impact (if applicable)
 
-- [ ] Houve exposição de token, cookie ou segredo no navegador/bundle.
-- [ ] Houve exibição de código-fonte, mensagem privada de commit ou dado de repositório de terceiros.
-- [ ] Há bypass de autorização ou ação destrutiva disponível sem permissão.
-- [ ] Há open redirect no parâmetro `next` de login/convite.
-- [ ] **Se marcou qualquer item acima, prefira [`SECURITY.md`](../SECURITY.md)** (divulgação responsável).
+- [ ] A token, cookie, or secret was exposed in the browser/bundle.
+- [ ] Source code, a private commit message, or third-party repository data was displayed.
+- [ ] There is an authorization bypass or a destructive action available without permission.
+- [ ] There is an open redirect in the login/invite `next` parameter.
+- [ ] **If you checked any item above, prefer [`SECURITY.md`](https://github.com/felipevenas/webapp-dev-rats/blob/main/SECURITY.md)** (responsible disclosure).
 
-## Ambiente
+## Environment
 
-- **Navegador**: [ex: Chrome 141 / Safari 18]
-- **Dispositivo**: [ex: Desktop / iPhone 14 / Pixel 7]
-- **Resolução**: [ex: 1440x900 / 390x844]
-- **Tema**: [claro / escuro]
-- **Node/npm**: [ex: Node 24.11 / npm 10]
-- **Rota**: [ex: `/app/groups/:id?tab=calendar`]
-- **Estado da integração GitHub**: [conectada / desconectada / não configurada]
+- **Browser**: [e.g. Chrome 141 / Safari 18]
+- **Device**: [e.g. Desktop / iPhone 14 / Pixel 7]
+- **Resolution**: [e.g. 1440x900 / 390x844]
+- **Theme**: [light / dark]
+- **Node/npm**: [e.g. Node 24.11 / npm 10]
+- **Route**: [e.g. `/app/groups/:id?tab=calendar`]
+- **GitHub integration state**: [connected / disconnected / not configured]
 
-## Logs / Evidências
+## Logs / Evidence
 
-Anexe a saída do terminal, capturas de tela ou o relatório do Playwright.
+Attach terminal output, screenshots, or the Playwright report.
 
-## Contexto Adicional
+## Additional Context
 
-Adicione qualquer outro contexto relevante sobre o problema aqui.
+Add any other relevant context about the problem here.

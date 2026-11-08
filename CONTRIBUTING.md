@@ -1,20 +1,20 @@
-# Guia de Contribuição 🤝
+# Contributing Guide 🤝
 
-Obrigado pelo interesse em contribuir com o **DevRats Web**! Este documento orienta o processo de desenvolvimento para manter a interface consistente, acessível e sustentável.
+Thank you for your interest in contributing to **DevRats Web**! This document explains the development process so the interface stays consistent, accessible, and sustainable.
 
-> **Regra de ouro:** o DevRats comprova atividade elegível, não aprendizado. Nenhuma contribuição pode expor código-fonte, mensagens privadas de commit, tokens ou dados de repositórios de terceiros. A API é a fonte de verdade para autorização e progresso.
+> **Golden rule:** DevRats verifies eligible activity, not learning. No contribution may expose source code, private commit messages, tokens, or data from third-party repositories. The API is the source of truth for authorization and progress.
 
 ---
 
-## 🛠️ Ambiente de Desenvolvimento
+## 🛠️ Development Environment
 
-### Pré-requisitos
+### Prerequisites
 
-- **Node.js >= 22** (validado com Node 24.11).
+- **Node.js >= 22.12** (validated with Node 24).
 - **npm >= 10**.
-- API Spring Boot (`../api-dev-rats`) e PostgreSQL em execução para os fluxos autenticados.
+- The Spring Boot API (`api-dev-rats`) and PostgreSQL running for authenticated flows.
 
-### Instalação
+### Installation
 
 ```bash
 git clone https://github.com/felipevenas/webapp-dev-rats.git
@@ -24,9 +24,9 @@ cp .env.example .env.local
 npm run dev
 ```
 
-A aplicação sobe em **http://localhost:5174**. Em desenvolvimento, o Vite faz proxy de `/api` para `http://localhost:8080`.
+The app starts at **http://localhost:5174**. In development, Vite proxies `/api` to `http://localhost:8080`.
 
-Para validar contra outro ambiente sem trocar as variáveis do build, defina no `.env.local`:
+To validate against another environment without changing build variables, set the following in `.env.local`:
 
 ```env
 VITE_PROXY_API_TARGET=https://api.devrats.app
@@ -34,123 +34,123 @@ VITE_PROXY_WS_TARGET=wss://api.devrats.app
 VITE_PROXY_ORIGIN=https://devrats.app
 ```
 
-Os valores padrão continuam apontando para o backend local. O proxy só é usado quando `VITE_API_BASE_URL` está vazio e `VITE_WS_URL` não está definido: se algum dos dois apontar para uma URL absoluta, o frontend conecta direto e ignora o alvo do proxy correspondente. Limpe ambos antes de usar as variáveis acima.
+The defaults still point to the local backend. The proxy is used only when `VITE_API_BASE_URL` is empty and `VITE_WS_URL` is unset: if either points to an absolute URL, the frontend connects directly and bypasses the corresponding proxy. Clear both before using the variables above.
 
-> A porta 5173 é evitada porque outro projeto local costuma ocupá-la. Para o OAuth do GitHub, a API deve ter `APP_FRONTEND_URL=http://localhost:5174` e a origem correspondente em `APP_CORS_ALLOWED_ORIGINS`.
+> Port `5173` is avoided because another local project commonly occupies it. For GitHub OAuth, the API must have `APP_FRONTEND_URL=http://localhost:5174` and the matching origin in `APP_CORS_ALLOWED_ORIGINS`.
 
-Detalhes completos de setup, arquitetura e integração estão no [`README.md`](README.md).
+Complete setup, architecture, and integration details are in [`README.md`](README.md).
 
 ---
 
-## 🌿 Branches e Commits
+## 🌿 Branches and Commits
 
-Adotamos **Trunk-Based Development** com branches curtas a partir de `main`, mescladas por Pull Request.
+We use **Trunk-Based Development** with short-lived branches created from `main` and merged through pull requests.
 
-### Nomes de branches
+### Branch names
 
-- `feat/nome-da-feature`
-- `bug/nome-do-bug`
-- `chore/nome-da-tarefa`
-- `docs/nome-do-documento`
-- `style/nome-do-ajuste-visual`
-- `refactor/nome-da-refatoracao`
-- `test/nome-do-teste`
+- `feat/feature-name`
+- `bug/bug-name`
+- `chore/task-name`
+- `docs/document-name`
+- `style/visual-adjustment`
+- `refactor/refactoring-name`
+- `test/test-name`
 
-Exemplos: `feat/calendario-por-membro`, `bug/refresh-na-reabertura`, `style/sombras-suaves`.
+Examples: `feat/calendar-by-member`, `bug/refresh-on-reopen`, `style/softer-shadows`.
 
 ### Commits
 
-Mensagens em português com prefixos convencionais:
+Commit messages are written in **English** with conventional prefixes:
 
-| Prefixo     | Uso                                                        |
-| ----------- | ---------------------------------------------------------- |
-| `feat:`     | Nova funcionalidade visível ao usuário                     |
-| `fix:`      | Correção de comportamento ou layout                        |
-| `refactor:` | Refatoração sem alteração funcional                        |
-| `docs:`     | Documentação, README ou comentários relevantes             |
-| `test:`     | Testes unitários ou de integração                          |
-| `style:`    | Ajuste puramente visual ou de formatação                   |
-| `chore:`    | Build, dependências, CI/CD ou configuração                 |
+| Prefix | Use |
+| --- | --- |
+| `feat:` | New user-visible functionality |
+| `fix:` | Behavior or layout fix |
+| `refactor:` | Refactoring with no functional change |
+| `docs:` | Documentation, README, or relevant comments |
+| `test:` | Unit or integration tests |
+| `style:` | Purely visual or formatting adjustment |
+| `chore:` | Build, dependencies, CI/CD, or configuration |
 
-Exemplo: `feat: adiciona filtro por status na lista de desafios`.
+Example: `feat: add status filter to the challenge list`.
 
 ---
 
-## 🏛️ Diretrizes Arquiteturais
+## 🏛️ Architectural Guidelines
 
-A organização é **feature-based**, com fronteiras simples e explícitas:
+The organization is **feature-based**, with simple and explicit boundaries:
 
 ```
 src/features/<feature>/
-├── domain/   # tipos e regras puras, sem React
-├── data/     # clients da API, hooks de servidor e query keys
-└── ui/       # páginas e componentes de apresentação
+├── domain/   # types and pure rules, no React
+├── data/     # API clients, server hooks, and query keys
+└── ui/       # pages and presentational components
 ```
 
-Regras:
+Rules:
 
-1. **Domínio puro.** `domain` não importa React, axios, hooks ou APIs do navegador.
-2. **Dados isolados.** Chamadas HTTP ficam em `data` (ou em `core/http`); componentes não devem espalhar URLs da API.
-3. **UI previsível.** Componentes pequenos, estados explícitos (loading, vazio, erro, sem permissão) e sem regra de negócio duplicada.
-4. **Design system.** Tokens semânticos ficam em `src/styles/globals.css`; evite cores mágicas no markup.
-5. **Contratos da API.** Tipos em `src/core/types/api.ts` espelham o backend; mudanças de contrato exigem atualização da UI e dos testes.
-6. **Sessão.** Access token somente em memória; refresh em cookie HttpOnly; nunca persistir tokens em `localStorage`.
-7. **Sem segredos no frontend.** Tudo em `VITE_*` é público. Credenciais da GitHub App ficam exclusivamente no backend.
-8. **Acessibilidade e responsividade fazem parte da definição de pronto**, não são polimento opcional.
+1. **Pure domain.** `domain` does not import React, axios, hooks, or browser APIs.
+2. **Isolated data.** HTTP calls live in `data` (or `core/http`); components must not scatter API URLs.
+3. **Predictable UI.** Small components, explicit states (loading, empty, error, no permission), and no duplicated business rules.
+4. **Design system.** Semantic tokens live in `src/styles`; avoid magic colors in markup.
+5. **API contracts.** Types in `src/core/types/api.ts` mirror the backend; contract changes require UI and test updates.
+6. **Session.** Access token in memory only; refresh in an HttpOnly cookie; never persist tokens in `localStorage`.
+7. **No secrets in the frontend.** Everything in `VITE_*` is public. GitHub App credentials stay exclusively in the backend.
+8. **Accessibility and responsiveness are part of the definition of done**, not optional polish.
 
 ---
 
-## 🧪 Gates de Qualidade
+## 🧪 Quality Gates
 
-Execute antes de abrir um Pull Request:
+Run these before opening a pull request:
 
 ```bash
 npm run lint        # oxlint
 npm run typecheck   # TypeScript
 npm test            # Vitest
-npm run build       # build de produção
+npm run build       # production build
 ```
 
-Para mudanças de UI, valide manualmente ou com Playwright em **320, 360, 390, 768, 1024, 1280 e 1440px**, nos temas claro e escuro. Consulte [`docs/RESPONSIVE-QA.md`](docs/RESPONSIVE-QA.md).
+For UI changes, validate manually or with Playwright at **320, 360, 390, 768, 1024, 1280, and 1440 px**, in both light and dark themes. See [`docs/RESPONSIVE-QA.md`](docs/RESPONSIVE-QA.md).
 
-Checklist mínimo de UI:
+Minimum UI checklist:
 
-- Sem rolagem horizontal.
-- Ações primárias visíveis e alcançáveis em mobile.
-- Foco visível, labels e contraste AA.
-- Estados de carregamento, vazio, erro e integração desconectada.
-- Nenhum erro novo no console.
-
----
-
-## 🔐 Segurança e Privacidade
-
-- Nunca exponha tokens, cookies, chaves ou dados de repositórios privados.
-- Não registre payloads de autenticação em logs ou analytics.
-- Não confie apenas em esconder botões: a API valida permissões.
-- Trate `next` de login/convite como caminho interno apenas.
-- Dependências novas exigem justificativa e revisão de licença/segurança.
-- Vulnerabilidades devem seguir [`SECURITY.md`](SECURITY.md), nunca uma issue pública.
+- No horizontal scrolling.
+- Primary actions are visible and reachable on mobile.
+- Visible focus, labels, and AA contrast.
+- Loading, empty, error, and disconnected-integration states.
+- No new console errors.
 
 ---
 
-## 📬 Submetendo um Pull Request
+## 🔐 Security and Privacy
 
-1. Crie uma branch curta a partir de `main`.
-2. Mantenha lint, tipos, testes e build verdes.
-3. Atualize o [`CHANGELOG.md`](CHANGELOG.md) quando a mudança for relevante ao usuário.
-4. Preencha o template de PR com evidências e passos de teste.
-5. Para mudanças visuais, anexe capturas em mobile e desktop.
-6. Aguarde a CI e a revisão antes do merge (squash).
-
-Alterações em autenticação, integração GitHub, permissões, convites ou privacidade exigem atenção explícita à segurança no PR.
+- Never expose tokens, cookies, keys, or private repository data.
+- Do not log authentication payloads in logs or analytics.
+- Do not rely on hiding buttons: the API validates permissions.
+- Treat the login/invite `next` parameter as an internal path only.
+- New dependencies require justification and a license/security review.
+- Vulnerabilities must follow [`SECURITY.md`](SECURITY.md), never a public issue.
 
 ---
 
-## ✅ Definição de Pronto
+## 📬 Submitting a Pull Request
 
-- Comportamento descrito e testado.
-- Sem regressões de responsividade ou acessibilidade.
-- Estados de erro e indisponibilidade tratados.
-- Documentação e changelog atualizados quando aplicável.
-- CI verde e PR aprovado.
+1. Create a short-lived branch from `main`.
+2. Keep lint, types, tests, and build green.
+3. Update [`CHANGELOG.md`](CHANGELOG.md) when the change is relevant to users.
+4. Fill in the PR template with evidence and test steps.
+5. For visual changes, attach mobile and desktop screenshots.
+6. Wait for CI and review before merging (squash).
+
+Changes to authentication, GitHub integration, permissions, invites, or privacy require explicit security attention in the PR.
+
+---
+
+## ✅ Definition of Done
+
+- Behavior is described and tested.
+- No responsiveness or accessibility regressions.
+- Error and unavailable states are handled.
+- Documentation and changelog are updated when applicable.
+- CI is green and the PR is approved.

@@ -1,48 +1,48 @@
 ---
-name: Solicitação de Funcionalidade (Feature Request)
-about: Sugira uma nova ideia, funcionalidade ou melhoria para o projeto
+name: Feature Request
+about: Suggest a new idea, feature, or improvement for the project
 title: '[FEATURE] '
 labels: feature, enhancement
 assignees: ''
 ---
 
-## A sua sugestão está relacionada a um problema?
+## Is Your Suggestion Related to a Problem?
 
-Uma descrição clara e concisa de qual é o problema ou necessidade (ex: _Eu sempre fico frustrado quando..._).
+A clear and concise description of the problem or need (e.g. _I always get frustrated when..._).
 
-## Solução Proposta
+## Proposed Solution
 
-Uma descrição clara e concisa do que você gostaria que acontecesse e como a nova funcionalidade deve se comportar.
+A clear and concise description of what you would like to happen and how the new feature should behave.
 
-## Categoria / Área
+## Category / Area
 
-- [ ] Autenticação e sessão
-- [ ] Dashboard e navegação
-- [ ] Grupos, desafios e convites
-- [ ] Ranking, calendário e feed
-- [ ] Integração GitHub e repositórios
-- [ ] Perfil, notificações e LGPD
-- [ ] Design, responsividade e acessibilidade
-- [ ] Build, CI e governança
+- [ ] Authentication and session
+- [ ] Dashboard and navigation
+- [ ] Groups, challenges, and invites
+- [ ] Ranking, calendar, and feed
+- [ ] GitHub integration and repositories
+- [ ] Profile, notifications, and LGPD
+- [ ] Design, responsiveness, and accessibility
+- [ ] Build, CI, and governance
 
-## Detalhes de UX/UI (se aplicável)
+## UX/UI Details (if applicable)
 
-- Telas afetadas:
-- Dispositivos/breakpoints relevantes:
-- Comportamento esperado em loading, vazio, erro e sem permissão:
-- Wireframe, esboço ou referência visual:
+- Affected screens:
+- Relevant devices/breakpoints:
+- Expected behavior in loading, empty, error, and no-permission states:
+- Wireframe, sketch, or visual reference:
 
-## Conformidade Esperada
+## Expected Compliance
 
-- [ ] A mudança não expõe código, mensagens de commit ou dados de repositórios de terceiros.
-- [ ] A mudança não persiste tokens no navegador nem adiciona segredos em `VITE_*`.
-- [ ] A mudança preserva as regras de progresso e autorização definidas no backend.
-- [ ] A mudança contempla acessibilidade e responsividade mobile-first.
+- [ ] The change does not expose code, commit messages, or third-party repository data.
+- [ ] The change does not persist tokens in the browser or add secrets to `VITE_*`.
+- [ ] The change preserves the progress and authorization rules defined in the backend.
+- [ ] The change covers accessibility and mobile-first responsiveness.
 
-## Alternativas Consideradas
+## Alternatives Considered
 
-Uma descrição de quaisquer soluções ou recursos alternativos que você considerou.
+A description of any alternative solutions or features you considered.
 
-## Contexto Adicional
+## Additional Context
 
-Adicione qualquer outro detalhe ou caso de uso que justifique essa melhoria.
+Add any other detail or use case that justifies this improvement.

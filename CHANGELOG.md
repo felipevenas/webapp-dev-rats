@@ -1,149 +1,138 @@
 # Changelog
 
-Todas as mudanças notáveis deste projeto são documentadas neste arquivo.
+All notable changes to this project are documented in this file.
 
-O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o versionamento segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
-## [Não publicado]
+## [Unreleased]
 
-### 🚀 Adicionado
+### 🚀 Added
 
-- Sistema de amizades: busca por @usuário, solicitações com aceite, recusa e cancelamento, além de remoção com confirmação.
-- Perfil público em `/app/users/:username` com bio, localização, site, nível, stack, contagem de amigos e status de amizade.
-- Presença online, ausente e offline com heartbeat a cada 60 segundos apenas com a aba visível.
-- Notificações sociais `FRIEND_REQUEST` e `FRIEND_REQUEST_ACCEPTED` com ações inline de aceitar e recusar na central de alertas.
-- Item Amigos na sidebar e na bottom nav mobile, com badge de solicitações pendentes.
-- Atalho para o perfil público e botão de amizade na lista de participantes do grupo.
-- Contagem e atalho da sua rede no perfil.
-- **Chat em tempo real**: lista de conversas, thread privado e chat de grupo com envio otimista, mensagens de texto, imagem, voz e documento.
-- **WebSocket/STOMP**: conexão autenticada por token, reconexão com backoff, renovação automática quando o token expira, indicador de conexão e indicador de "digitando".
-- **Anexos**: upload com progresso, preview de imagem com lightbox, player de áudio, cartão de documento e renovação transparente de URL assinada.
-- **Não lidas**: badge no item Conversas da sidebar e da bottom nav, atualizado por evento e por refetch.
-- **Atalhos**: botão "Mensagem" no card de amigo, botão "Chat" na página do grupo e rota `/app/chat/:conversationId`.
-- **Mobile**: thread ocupa a viewport, esconde a bottom nav, composer com área segura e lista com busca.
-- **Acesso ao chat do grupo**: botão dedicado ao lado das abas do grupo, com largura total no mobile, resolve ou cria a conversa e abre a thread.
-- **Skeletons do chat**: lista, thread e composer têm estados de carregamento que espelham o layout real (avatar, bolhas alternadas e campo de mensagem), sem tela em branco.
-- **Recuperação de senha**: confirmação com o destino informado, validade do link, orientação de spam e opção de enviar para outro e-mail.
-- **Link de redefinição**: token lido do fragmento (`#token=...`) com fallback para query, estado inline de link inválido/expirado e CTA para solicitar outro.
-- **Token local**: bloco de desenvolvimento exibido apenas quando `import.meta.env.DEV` e o backend devolvem `resetToken`.
+- Friendship system: search by @username, requests with accept, decline, and cancel, plus removal with confirmation.
+- Public profile at `/app/users/:username` with bio, location, website, level, stack, friend count, and friendship status.
+- Online, away, and offline presence with a heartbeat every 60 seconds only while the tab is visible.
+- `FRIEND_REQUEST` and `FRIEND_REQUEST_ACCEPTED` social notifications with inline accept/decline actions in the alert center.
+- Friends item in the sidebar and mobile bottom nav, with a pending-request badge.
+- Shortcut to the public profile and a friendship button in the group participant list.
+- Network count and shortcut on the profile.
+- **Real-time chat**: conversation list, private thread, and group chat with optimistic sending and text, image, voice, and document messages.
+- **WebSocket/STOMP**: token-authenticated connection, reconnect with backoff, automatic renewal when the token expires, connection indicator, and typing indicator.
+- **Attachments**: upload progress, image preview with lightbox, audio player, document card, and transparent renewal of presigned URLs.
+- **Unread state**: badge in the sidebar and bottom-nav Conversations item, updated by event and by refetch.
+- **Shortcuts**: “Message” button on the friend card, “Chat” button on the group page, and the `/app/chat/:conversationId` route.
+- **Mobile**: thread fills the viewport, hides the bottom nav, composer respects the safe area, and the list includes search.
+- **Group chat access**: dedicated button beside the group tabs, full-width on mobile, resolving or creating the conversation and opening the thread.
+- **Chat skeletons**: list, thread, and composer have loading states that mirror the real layout (avatar, alternating bubbles, and message field), with no blank screen.
+- **Password recovery**: confirmation with the submitted destination, link validity, spam guidance, and an option to send to another e-mail.
+- **Reset link**: token read from the fragment (`#token=...`) with query fallback, inline invalid/expired state, and a CTA to request another link.
+- **Local token**: development block shown only when `import.meta.env.DEV` is true and the backend returns `resetToken`.
+- Individual alert deletion in the notification center.
+- Group deletion by the creator, with name confirmation and participant notification.
+- Interactive post-registration onboarding with profile, GitHub, challenge, and invite.
+- Standardized pagination in repository and notification lists.
+- Fixed Brasilia timezone in new accounts and challenges.
+- Login with e-mail or username.
+- New profile fields: bio, location, website, level, and stack.
+- Display of the commits that validated each day.
+- Profile picture with upload and GitHub fallback.
 
-### 🎨 Alterado
+### 🎨 Changed
 
-- Navegação mobile troca o atalho de Alertas por Conversas; o sino de alertas permanece no header.
-- Cache de conversas e mensagens passa a ser reconciliado por `clientMessageId` e por evento do WebSocket, sem invalidar o thread inteiro a cada mensagem.
-- Chat: layout de duas colunas (lista + thread) passa a iniciar em `xl`; abaixo disso a thread ocupa a tela com botão de voltar, evitando thread apertado em 1024px.
-- Chat: anexos de imagem e documento ficam em um menu único no mobile, liberando espaço para o campo de mensagem em telas de 320px.
+- Mobile navigation replaces the Alerts shortcut with Conversations; the alert bell remains in the header.
+- Conversation and message caches are reconciled by `clientMessageId` and WebSocket events, without invalidating the whole thread on every message.
+- Chat: the two-column layout (list + thread) now starts at `xl`; below that, the thread fills the screen with a back button, avoiding a cramped thread at 1024 px.
+- Chat: image and document attachments share a single menu on mobile, freeing space for the message field at 320 px.
+- Alert center rewritten to support inline actions without nested buttons.
+- Profile banner with the photo at the top, information below, and group cards in the upper-right corner.
+- Authentication side panel with compact visual identity and no scrolling.
+- Simplified left side of authentication, with no graphic elements and no scrolling.
+- Standardized copy without em dashes and authentication centered in the viewport.
+- Softer shadows on cards, modals, and floating surfaces.
 
-### 🐛 Corrigido
+### 🐛 Fixed
 
-- Chat: lista de conversas usava largura de conteúdo e deixava uma faixa vazia no mobile; agora ocupa 100% da coluna.
-- Chat: thread estourava a viewport em 390px por causa do `min-width` intrínseco do textarea e dos botões do composer; containers receberam `min-w-0`.
-- Chat: rota do chat somava 56px além da viewport (`min-h-dvh` + header) e criava rolagem vertical com o composer deslocado; o shell agora fecha em `100dvh`.
-- Chat: campo de mensagem não crescia ao digitar; agora expande até 128px e rola internamente, sem esconder o texto.
-- Chat: placeholder do composer era cortado em 320px; texto reduzido para “Mensagem…” e botão de envio com `shrink-0`.
-- Scroll: hash do reset (`#token=...`) não é um seletor CSS válido e quebrava o `ScrollToTop`; a busca do elemento passou a usar `getElementById`.
+- Chat: conversation list used content width and left an empty strip on mobile; it now fills 100% of the column.
+- Chat: thread overflowed the viewport at 390 px because of the textarea and composer buttons' intrinsic `min-width`; containers received `min-w-0`.
+- Chat: the chat route exceeded the viewport by 56 px (`min-h-dvh` + header) and created vertical scroll with a displaced composer; the shell now closes at `100dvh`.
+- Chat: the message field did not grow while typing; it now expands up to 128 px and scrolls internally without hiding text.
+- Chat: composer placeholder was clipped at 320 px; text reduced to “Message…” and the send button received `shrink-0`.
+- Scroll: the reset hash (`#token=...`) is not a valid CSS selector and broke `ScrollToTop`; element lookup now uses `getElementById`.
+- Horizontal overflow in filters and two-column layouts on small screens.
+- Challenge tabs and bottom navigation overlapping content on mobile.
+- Oversized calendar cells on tablets.
+- Modal footers with the primary action out of the expected position.
+- Invite link pointing to another development port.
+- Invite expiration date displayed in UTC instead of the local timezone.
+- Public invite preview blocked by a backend security rule.
 
-### 🧪 Testes
+### 🧪 Tests
 
-- Schemas de recuperação de senha cobrem e-mail inválido, senha fraca e confirmação divergente.
+- Password-recovery schemas cover invalid e-mail, weak password, and mismatched confirmation.
+- Domain tests for message merge/idempotency, day grouping, attachment rules, and WebSocket URL derivation.
+- Unit tests for dates/timezone, password policy, and wizard validation (20 tests).
 
-- Testes de domínio para merge/idempotência de mensagens, agrupamento por dia, regras de anexo e derivação da URL do WebSocket.
+### 📝 Documentation
 
-### ⚠️ Limitações conhecidas
+- Standardized English README with architecture, session security, environment reference, routes, governance, and license.
+- English contribution guide, security policy, code of conduct, changelog, and GitHub collaboration templates.
+- Direct cross-links between the frontend and backend repositories.
+- README standardized with landing screenshot, badges, architecture, governance, and license.
+- Repository description and topics aligned with the DevRats ecosystem.
+- `devrats.app` domain configuration: `/api` rewrite to `https://api.devrats.app`, canonical/OG at `https://devrats.app`, and `VITE_WS_URL=wss://api.devrats.app/ws` for WebSocket.
+- `docs/PR-CHAT.md` documents deployment with a custom domain and the separation between same-origin REST and direct WebSocket.
 
-- A v1 aceita um anexo por mensagem e não tem edição, busca, reações ou chamadas.
-- Sem broker distribuído, o tempo real funciona em uma única instância da API.
-- Sem criptografia ponta a ponta e sem push notification.
+### ⚠️ Known Limitations
 
-### 🎨 Alterado
-
-- Central de alertas reescrita para suportar ações inline sem botões aninhados.
-- Banner do perfil com foto no topo, informações abaixo e cards dos grupos no canto superior direito.
-- Lateral da autenticação com identidade visual compacta, sem rolagem.
-- Lado esquerdo da autenticação simplificado, sem elementos gráficos e sem rolagem.
-- Copy padronizada sem travessões e autenticação centralizada no viewport.
-- Sombras mais suaves em cards, modais e superfícies flutuantes.
-
-### 🚀 Adicionado
-
-- Exclusão individual de alertas na central de notificações.
-- Exclusão de grupo pelo criador, com confirmação por nome e notificação aos participantes.
-- Onboarding interativo pós-cadastro com perfil, GitHub, desafio e convite.
-- Paginação padronizada nas listas de repositórios e notificações.
-- Fuso horário fixo em Brasília nos novos cadastros e desafios.
-- Login com e-mail ou nome de usuário.
-
-### 🚀 Adicionado
-
-- Novos campos de perfil: bio, localização, site, nível e stack.
-- Exibição dos commits que validaram cada dia.
-### 🚀 Adicionado
-
-- Foto de perfil com upload e fallback para o GitHub.
-
-### 📝 Documentação
-
-- README padronizado com print da landing, badges, arquitetura, governança e licença.
-- Descrição e topics do repositório alinhados ao ecossistema DevRats.
-- Configuração do domínio `devrats.app`: rewrite de `/api` para `https://api.devrats.app`, canonical/OG em `https://devrats.app` e `VITE_WS_URL=wss://api.devrats.app/ws` para o WebSocket.
-- `docs/PR-CHAT.md` documenta o deploy com domínio próprio e a separação entre REST same-origin e WebSocket direto.
+- v1 accepts one attachment per message and has no editing, search, reactions, replies, or calls.
+- Without a distributed broker, real-time works on a single API instance.
+- No end-to-end encryption and no push notification.
+- `SELECTED_REPOSITORIES` requires a GitHub App configured in the backend; without credentials the UI shows the integration as unavailable.
+- The API feed is aggregated by group and does not include the event author; the UI presents it as “Challenge activity”.
+- The API does not re-display an invite token after creation: the full link must be copied when generated.
+- The API has no received-invite inbox; entry happens exclusively through a link.
+- The avatar comes from GitHub or initials; there is no upload in this MVP client.
 
 ## [0.1.0] - 2026-10-29
 
-### 🚀 Adicionado
+### 🚀 Added
 
-- Landing page pública com direção visual “terminal arcade”, preview real do produto, modos de verificação e FAQ.
-- Autenticação completa: cadastro, login, recuperação e redefinição de senha, com política de senha espelhando o backend.
-- Sessão com access token em memória, refresh HttpOnly, renovação single-flight e restauração após reload.
-- Onboarding com conexão GitHub, criação do primeiro desafio e convite do grupo.
-- Dashboard com progresso por grupo, sequência, ranking, status da integração e atalhos.
-- Lista de desafios com filtros por estado e busca.
-- Wizard de criação em cinco etapas: grupo, regras, janela, repositórios e revisão.
-- Página do grupo com visão geral, ranking, calendário, feed de atividade e estado de desafio concluído/cancelado.
-- Calendário de atividade com status por dia, navegação por teclado, seleção de membro e adaptação por fuso.
-- Ranking com progresso, sequência, último dia válido, destaque do usuário e pódio de vencedor.
-- Resultado final com vencedor, dias válidos, dia decisivo e compartilhamento.
-- Perfil com edição de nome/fuso, preferências de notificação, exportação LGPD e exclusão de conta.
-- Integração GitHub com status, permissões, sincronização, desconexão e catálogo de repositórios.
-- Convites privados com validade, limite de usos, revogação e página pública de aceite.
-- Central de notificações com marcação individual e em lote.
-- Estados de carregamento, vazio, erro, sem permissão, offline, integração desconectada e processamento pendente.
-- Tema escuro (padrão) e claro, persistidos com troca na top bar, sidebar, landing e autenticação.
-- Design system com tokens semânticos, componentes acessíveis e suporte a `prefers-reduced-motion`.
-- QA responsivo com Playwright em 320, 360, 390, 768, 1024, 1280 e 1440px, documentado em `docs/RESPONSIVE-QA.md`.
-- Testes unitários para datas/fuso, política de senha e validação do wizard (20 testes).
-- Governança: CI, templates de PR/issues, código de conduta, política de segurança, licença, changelog, editorconfig e labels.
+- Public landing page with a “terminal arcade” visual direction, real product preview, verification modes, and FAQ.
+- Complete authentication: registration, login, password recovery, and reset, with a password policy mirroring the backend.
+- Session with access token in memory, HttpOnly refresh, single-flight renewal, and restoration after reload.
+- Onboarding with GitHub connection, first challenge creation, and group invite.
+- Dashboard with progress by group, streak, ranking, integration status, and shortcuts.
+- Challenge list with state filters and search.
+- Five-step creation wizard: group, rules, window, repositories, and review.
+- Group page with overview, ranking, calendar, activity feed, and completed/cancelled challenge state.
+- Activity calendar with per-day status, keyboard navigation, member selection, and timezone adaptation.
+- Ranking with progress, streak, last valid day, user highlight, and winner podium.
+- Final result with winner, valid days, decisive day, and sharing.
+- Profile with name/timezone editing, notification preferences, LGPD export, and account deletion.
+- GitHub integration with status, permissions, synchronization, disconnect, and repository catalog.
+- Private invites with validity, use limit, revocation, and a public acceptance page.
+- Notification center with individual and bulk marking.
+- Loading, empty, error, no-permission, offline, disconnected-integration, and pending-processing states.
+- Dark (default) and light themes, persisted with a toggle in the top bar, sidebar, landing page, and authentication.
+- Design system with semantic tokens, accessible components, and `prefers-reduced-motion` support.
+- Responsive QA with Playwright at 320, 360, 390, 768, 1024, 1280, and 1440 px, documented in `docs/RESPONSIVE-QA.md`.
+- Unit tests for dates/timezone, password policy, and wizard validation (20 tests).
+- Governance: CI, PR/issue templates, code of conduct, security policy, license, changelog, editorconfig, and labels.
 
-### 🐛 Corrigido
+### 🐛 Fixed
 
-- Overflow horizontal em filtros e layouts de duas colunas em telas pequenas.
-- Tabs do desafio e navegação inferior sobrepondo conteúdo em mobile.
-- Células do calendário em tamanho excessivo em tablet.
-- Rodapé de modais com ação primária fora da posição esperada.
-- Link de convite apontando para outra porta de desenvolvimento.
-- Data de expiração do convite exibida em UTC em vez do fuso local.
-- Preview público de convite bloqueado por regra de segurança no backend.
+- Horizontal overflow in filters and two-column layouts on small screens.
+- Challenge tabs and bottom navigation overlapping content on mobile.
+- Oversized calendar cells on tablets.
+- Modal footers with the primary action out of the expected position.
+- Invite link pointing to another development port.
+- Invite expiration date displayed in UTC instead of the local timezone.
+- Public invite preview blocked by a backend security rule.
 
-### 🔐 Segurança
+### 🔐 Security
 
-- Nenhum token é persistido no navegador.
-- Segredos permanecem exclusivamente no backend; variáveis `VITE_*` são tratadas como públicas.
-- Rotas protegidas com restauração de sessão e `next` restrito a caminhos internos.
-- Documentação de escopo de segurança e canal privado de divulgação.## [N?o publicado]
-
-### ?? Alterado
-
-- Sombras mais suaves em cards, modais e superf?cies flutuantes.
-
-### ?? Adicionado
-
-- Pagina??o padronizada nas listas de reposit?rios e notifica??es.
-- Fuso hor?rio fixo em Bras?lia nos novos cadastros e desafios.
-- Login com e-mail ou nome de usu?rio.
-- Novos campos de perfil: bio, localiza??o, site, n?vel e stack.
-- Exibi??o dos commits que validaram cada dia.
-- Foto de perfil com upload e fallback para o GitHub.
-
-
+- No token is persisted in the browser.
+- Secrets remain exclusively in the backend; `VITE_*` variables are treated as public.
+- Protected routes with session restoration and `next` restricted to internal paths.
+- Documented security scope and private disclosure channel.
