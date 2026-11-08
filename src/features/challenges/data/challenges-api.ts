@@ -2,7 +2,7 @@ import { api } from '@/core/http/api-client';
 import type { Challenge } from '@/core/types/api';
 
 export interface CreateChallengePayload {
-  verificationMode: 'SELECTED_REPOSITORIES' | 'OWN_REPOSITORIES';
+  verificationMode: 'SELECTED_REPOSITORIES' | 'OWN_REPOSITORIES' | 'STUDY_PHOTO';
   targetValidDays: number;
   startsAt: string;
   endsAt?: string;

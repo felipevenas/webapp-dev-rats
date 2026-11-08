@@ -18,7 +18,7 @@ export const createChallengeSchema = z
       .number({ message: 'Informe um número' })
       .min(2, 'O grupo precisa de pelo menos 2 vagas')
       .max(200, 'Use no máximo 200 vagas'),
-    verificationMode: z.enum(['SELECTED_REPOSITORIES', 'OWN_REPOSITORIES']),
+    verificationMode: z.enum(['SELECTED_REPOSITORIES', 'OWN_REPOSITORIES', 'STUDY_PHOTO']),
     targetValidDays: z
       .number({ message: 'Informe a meta' })
       .min(1, 'A meta mínima é 1 dia')

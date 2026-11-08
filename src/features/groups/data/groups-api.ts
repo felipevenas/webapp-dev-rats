@@ -7,7 +7,7 @@ export interface CreateGroupPayload {
   timezone: string;
   maxMembers?: number;
   challenge: {
-    verificationMode: 'SELECTED_REPOSITORIES' | 'OWN_REPOSITORIES';
+    verificationMode: 'SELECTED_REPOSITORIES' | 'OWN_REPOSITORIES' | 'STUDY_PHOTO';
     targetValidDays: number;
     startsAt: string;
     endsAt?: string;

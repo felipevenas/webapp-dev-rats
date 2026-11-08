@@ -5,6 +5,7 @@ import {
   ArrowLeft,
   ArrowRight,
   CalendarDays,
+  Camera,
   Check,
   Clock,
   Flame,
@@ -46,6 +47,7 @@ import { Segmented } from '@/components/ui/segmented';
 import { useCreateGroup } from '@/features/groups/data/use-groups';
 import { challengesApi } from '@/features/challenges/data/challenges-api';
 import { useGitHubStatus } from '@/features/github/data/use-github';
+import { useFeatures } from '@/features/studies/data/use-studies';
 import { verificationModeCopy } from '@/features/challenges/domain/challenge-status';
 import { RepositoryPicker } from '@/features/challenges/ui/repository-picker';
 import {
@@ -77,6 +79,8 @@ export default function CreateChallengePage() {
   const navigate = useNavigate();
   const createGroup = useCreateGroup();
   const github = useGitHubStatus();
+  const features = useFeatures();
+  const photoModeAvailable = features.data?.studyPhotos ?? false;
   const [selectedRepositories, setSelectedRepositories] = useState<GitHubRepository[]>([]);
   const [stepId, setStepId] = useState<StepId>('group');
   const [serverError, setServerError] = useState<string | null>(null);
@@ -311,7 +315,11 @@ export default function CreateChallengePage() {
           <div className="space-y-5 p-5">
             {stepId === 'group' ? <GroupStep form={form} /> : null}
             {stepId === 'rules' ? (
-              <RulesStep form={form} githubConnected={Boolean(github.data?.connected)} />
+              <RulesStep
+                form={form}
+                githubConnected={Boolean(github.data?.connected)}
+                photoModeAvailable={photoModeAvailable}
+              />
             ) : null}
             {stepId === 'window' ? <WindowStep form={form} /> : null}
             {stepId === 'repos' ? (
@@ -519,7 +527,15 @@ function GroupStep({ form }: { form: StepForm }) {
   );
 }
 
-function RulesStep({ form, githubConnected }: { form: StepForm; githubConnected: boolean }) {
+function RulesStep({
+  form,
+  githubConnected,
+  photoModeAvailable,
+}: {
+  form: StepForm;
+  githubConnected: boolean;
+  photoModeAvailable: boolean;
+}) {
   const mode = form.watch('verificationMode');
   const target = form.watch('targetValidDays');
 
@@ -531,7 +547,7 @@ function RulesStep({ form, githubConnected }: { form: StepForm; githubConnected:
         description="Escolha de onde vêm os commits válidos e quantos dias válidos levam à vitória."
       />
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         <ModeCard
           active={mode === 'OWN_REPOSITORIES'}
           onClick={() => form.setValue('verificationMode', 'OWN_REPOSITORIES')}
@@ -549,6 +565,16 @@ function RulesStep({ form, githubConnected }: { form: StepForm; githubConnected:
           description="O grupo define até três repositórios. Vale para todos, sem exceção."
           bullets={['Ideal para projeto coletivo', 'Lista trava após o início']}
         />
+        {photoModeAvailable ? (
+          <ModeCard
+            active={mode === 'STUDY_PHOTO'}
+            onClick={() => form.setValue('verificationMode', 'STUDY_PHOTO')}
+            icon={Camera}
+            title="Foto de estudo"
+            description="Cada membro publica uma foto estudando por dia. Não exige GitHub."
+            bullets={['Uma foto por dia', 'Privada do grupo']}
+          />
+        ) : null}
       </div>
 
       {mode === 'SELECTED_REPOSITORIES' && !githubConnected ? (
@@ -557,6 +583,16 @@ function RulesStep({ form, githubConnected }: { form: StepForm; githubConnected:
           <p className="text-[11px] leading-relaxed text-muted">
             O modo de lista exige GitHub conectado para importar e validar os repositórios. Você pode conectar na
             próxima etapa ou voltar para repositórios próprios.
+          </p>
+        </div>
+      ) : null}
+
+      {mode === 'STUDY_PHOTO' ? (
+        <div className="flex items-start gap-2.5 rounded-xl border border-cyan/30 bg-cyan-soft p-3">
+          <Camera className="mt-0.5 size-4 shrink-0 text-cyan" aria-hidden />
+          <p className="text-[11px] leading-relaxed text-muted">
+            No modo foto, cada participante publica uma foto de estudo por dia. A imagem fica privada no grupo e o
+            dia vale 1 dia válido. O GitHub não é necessário.
           </p>
         </div>
       ) : null}
@@ -878,6 +914,13 @@ function ReviewStep({
               ))}
             </ul>
           )}
+        </SummaryBlock>
+      ) : values.verificationMode === 'STUDY_PHOTO' ? (
+        <SummaryBlock title="Fotos de estudo" onEdit={() => onEdit('rules')}>
+          <p className="text-[12px] leading-relaxed text-muted">
+            Cada participante publica uma foto por dia. A imagem fica privada no grupo e vale 1 dia válido. O GitHub
+            não é necessário.
+          </p>
         </SummaryBlock>
       ) : (
         <SummaryBlock title="Repositórios" onEdit={() => onEdit('rules')}>

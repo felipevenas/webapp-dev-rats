@@ -31,4 +31,7 @@ export const queryKeys = {
   chatConversation: (conversationId: string) => ['chat', 'conversation', conversationId] as const,
   chatMessages: (conversationId: string) => ['chat', 'conversation', conversationId, 'messages'] as const,
   chatUnread: ['chat', 'unread'] as const,
+  studyPhotos: (challengeId: string, params: string) =>
+    ['challenges', challengeId, 'photos', params] as const,
+  features: ['features'] as const,
 };
