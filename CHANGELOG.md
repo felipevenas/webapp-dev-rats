@@ -36,6 +36,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Interactive post-registration onboarding with profile, GitHub, challenge, and invite.
 - Standardized pagination in repository and notification lists.
 - Fixed Brasilia timezone in new accounts and challenges.
+
+- **Study photo mode**: creation and calendar copy now use photo-specific language instead of commit-only text.
 - Login with e-mail or username.
 - New profile fields: bio, location, website, level, and stack.
 - Display of the commits that validated each day.
