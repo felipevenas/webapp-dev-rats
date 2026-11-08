@@ -6,8 +6,12 @@ export interface PasswordResetResponse {
 }
 
 export const authApi = {
-  async requestPasswordReset(email: string) {
-    const response = await api.post<PasswordResetResponse>('/auth/password-reset/request', { email });
+  async requestPasswordReset(email: string, turnstileToken?: string) {
+    const response = await api.post<PasswordResetResponse>(
+      '/auth/password-reset/request',
+      { email },
+      { headers: turnstileToken ? { 'X-Turnstile-Token': turnstileToken } : undefined },
+    );
     return response.data;
   },
   async confirmPasswordReset(token: string, newPassword: string) {

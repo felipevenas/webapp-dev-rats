@@ -7,13 +7,14 @@ import { toast } from 'sonner';
 import { useAuth } from '@/core/auth/auth-provider';
 import { toAppError } from '@/core/http/problem';
 import { DEFAULT_TIME_ZONE } from '@/core/lib/date';
-import { termsVersion } from '@/core/config/env';
+import { termsVersion, turnstileSiteKey } from '@/core/config/env';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/controls';
 import { Field, Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
 import { AuthLayout } from '@/features/auth/ui/auth-layout';
 import { PasswordStrength } from '@/features/auth/ui/password-strength';
+import { TurnstileWidget } from '@/features/auth/ui/turnstile-widget';
 import { registerSchema, type RegisterValues } from '@/features/auth/schemas/auth-schemas';
 
 export default function RegisterPage() {
@@ -21,6 +22,8 @@ export default function RegisterPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [submitting, setSubmitting] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileKey, setTurnstileKey] = useState(0);
 
   const form = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
@@ -38,21 +41,30 @@ export default function RegisterPage() {
   const next = nextParam && nextParam.startsWith('/') && !nextParam.startsWith('//') ? nextParam : '/onboarding';
 
   const onSubmit = async (values: RegisterValues) => {
+    if (turnstileSiteKey && !turnstileToken) {
+      toast.error('Confirme que você não é um robô para continuar.');
+      return;
+    }
     setSubmitting(true);
     try {
-      await registerUser({
-        email: values.email,
-        password: values.password,
-        displayName: values.displayName,
-        username: values.username,
-        //---- The backend still expects the field; every account is fixed to Brasília time.
-        timezone: DEFAULT_TIME_ZONE,
-        acceptedTermsVersion: termsVersion,
-      });
+      await registerUser(
+        {
+          email: values.email,
+          password: values.password,
+          displayName: values.displayName,
+          username: values.username,
+          //---- The backend still expects the field; every account is fixed to Brasília time.
+          timezone: DEFAULT_TIME_ZONE,
+          acceptedTermsVersion: termsVersion,
+        },
+        turnstileToken ?? undefined,
+      );
       toast.success('Conta criada. Vamos conectar seu GitHub?');
       navigate(next, { replace: true });
     } catch (error) {
       const appError = toAppError(error);
+      setTurnstileToken(null);
+      setTurnstileKey((value) => value + 1);
       if (appError.code === 'DATA_CONFLICT' || appError.status === 409) {
         form.setError('email', { message: appError.detail });
         form.setError('username', { message: appError.detail });
@@ -176,7 +188,19 @@ export default function RegisterPage() {
           ) : null}
         </div>
 
-        <Button type="submit" full size="lg" loading={submitting}>
+        <TurnstileWidget
+          key={turnstileKey}
+          onToken={setTurnstileToken}
+          className="flex min-h-[65px] justify-center"
+        />
+
+        <Button
+          type="submit"
+          full
+          size="lg"
+          loading={submitting}
+          disabled={Boolean(turnstileSiteKey) && !turnstileToken}
+        >
           Criar conta
           <ArrowRight aria-hidden />
         </Button>

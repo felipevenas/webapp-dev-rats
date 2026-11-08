@@ -4,17 +4,21 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
+import { turnstileSiteKey } from '@/core/config/env';
 import { toAppError } from '@/core/http/problem';
 import { authApi, type PasswordResetResponse } from '@/features/auth/data/auth-api';
 import { Button } from '@/components/ui/button';
 import { Field, Input } from '@/components/ui/input';
 import { AuthLayout } from '@/features/auth/ui/auth-layout';
+import { TurnstileWidget } from '@/features/auth/ui/turnstile-widget';
 import { forgotPasswordSchema, type ForgotPasswordValues } from '@/features/auth/schemas/auth-schemas';
 
 export default function ForgotPasswordPage() {
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<PasswordResetResponse | null>(null);
   const [submittedEmail, setSubmittedEmail] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileKey, setTurnstileKey] = useState(0);
 
   const form = useForm<ForgotPasswordValues>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -22,12 +26,18 @@ export default function ForgotPasswordPage() {
   });
 
   const onSubmit = async (values: ForgotPasswordValues) => {
+    if (turnstileSiteKey && !turnstileToken) {
+      toast.error('Confirme que você não é um robô para continuar.');
+      return;
+    }
     setSubmitting(true);
     try {
-      const response = await authApi.requestPasswordReset(values.email);
+      const response = await authApi.requestPasswordReset(values.email, turnstileToken ?? undefined);
       setSubmittedEmail(values.email);
       setResult(response);
     } catch (error) {
+      setTurnstileToken(null);
+      setTurnstileKey((value) => value + 1);
       toast.error(toAppError(error).detail);
     } finally {
       setSubmitting(false);
@@ -103,7 +113,19 @@ export default function ForgotPasswordPage() {
               {...form.register('email')}
             />
           </Field>
-          <Button type="submit" full size="lg" loading={submitting}>
+          <TurnstileWidget
+            key={turnstileKey}
+            onToken={setTurnstileToken}
+            className="flex min-h-[65px] justify-center"
+          />
+
+          <Button
+            type="submit"
+            full
+            size="lg"
+            loading={submitting}
+            disabled={Boolean(turnstileSiteKey) && !turnstileToken}
+          >
             Enviar instruções
           </Button>
           <Button asChild variant="ghost" full>

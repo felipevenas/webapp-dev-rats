@@ -6,11 +6,13 @@ import { useForm } from 'react-hook-form';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useAuth } from '@/core/auth/auth-provider';
+import { turnstileSiteKey } from '@/core/config/env';
 import { toAppError } from '@/core/http/problem';
 import { Button } from '@/components/ui/button';
 import { Field, Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
 import { AuthLayout } from '@/features/auth/ui/auth-layout';
+import { TurnstileWidget } from '@/features/auth/ui/turnstile-widget';
 import { loginSchema, type LoginValues } from '@/features/auth/schemas/auth-schemas';
 
 export default function LoginPage() {
@@ -18,6 +20,8 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [submitting, setSubmitting] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileKey, setTurnstileKey] = useState(0);
 
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
@@ -28,13 +32,19 @@ export default function LoginPage() {
   const next = nextParam && nextParam.startsWith('/') && !nextParam.startsWith('//') ? nextParam : '/app';
 
   const onSubmit = async (values: LoginValues) => {
+    if (turnstileSiteKey && !turnstileToken) {
+      toast.error('Confirme que você não é um robô para continuar.');
+      return;
+    }
     setSubmitting(true);
     try {
-      const user = await login(values.identifier, values.password);
+      const user = await login(values.identifier, values.password, turnstileToken ?? undefined);
       toast.success(`Bem-vindo de volta, ${user.displayName.split(' ')[0]}`);
       navigate(next, { replace: true });
     } catch (error) {
       const appError = toAppError(error);
+      setTurnstileToken(null);
+      setTurnstileKey((value) => value + 1);
       if (appError.fieldErrors.length > 0) {
         appError.fieldErrors.forEach((field) => {
           if (field.field === 'identifier' || field.field === 'password') {
@@ -90,7 +100,19 @@ export default function LoginPage() {
           </Link>
         </div>
 
-        <Button type="submit" full size="lg" loading={submitting}>
+        <TurnstileWidget
+          key={turnstileKey}
+          onToken={setTurnstileToken}
+          className="flex min-h-[65px] justify-center"
+        />
+
+        <Button
+          type="submit"
+          full
+          size="lg"
+          loading={submitting}
+          disabled={Boolean(turnstileSiteKey) && !turnstileToken}
+        >
           Entrar
           <ArrowRight aria-hidden />
         </Button>
