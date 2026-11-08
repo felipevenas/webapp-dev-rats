@@ -544,7 +544,7 @@ function RulesStep({
       <StepIntro
         icon={Layers}
         title="Modalidade e meta"
-        description="Escolha de onde vêm os commits válidos e quantos dias válidos levam à vitória."
+        description="Escolha como os dias válidos são comprovados e quantos dias levam à vitória."
       />
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -649,7 +649,10 @@ function RulesStep({
         </p>
         <p className="mt-1 text-[11px] leading-relaxed text-muted">
           A vitória é decidida pelos <strong className="text-fg">dias válidos acumulados</strong>. Perder um dia
-          zera a sequência, mas não apaga o progresso. Vários commits no mesmo dia contam uma única vez.
+          zera a sequência, mas não apaga o progresso.{' '}
+          {mode === 'STUDY_PHOTO'
+            ? 'Uma foto por dia conta uma única vez.'
+            : 'Vários commits no mesmo dia contam uma única vez.'}
         </p>
       </div>
     </div>
@@ -937,13 +940,16 @@ function ReviewStep({
           {values.startMode === 'now' ? (
             <>
               O desafio começa <strong className="text-fg">assim que você criar o grupo</strong>. Modalidade, meta, fuso
-              fixo (Brasília) e lista de repositórios ficam travados imediatamente. Para mudar depois, será necessário
-              cancelar e criar outro.
+              fixo (Brasília)
+              {values.verificationMode === 'SELECTED_REPOSITORIES' ? ' e lista de repositórios' : ''} ficam travados
+              imediatamente. Para mudar depois, será necessário cancelar e criar outro.
             </>
           ) : (
             <>
               O desafio será criado como <strong className="text-fg">rascunho</strong> e inicia automaticamente na data
-              agendada. Modalidade, meta, fuso fixo (Brasília) e lista de repositórios ficam travados depois do início.
+              agendada. Modalidade, meta, fuso fixo (Brasília)
+              {values.verificationMode === 'SELECTED_REPOSITORIES' ? ' e lista de repositórios' : ''} ficam travados
+              depois do início.
             </>
           )}
         </p>

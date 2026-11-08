@@ -491,8 +491,9 @@ export default function GroupPage() {
               Calendário de atividade
             </CardTitle>
             <p className="text-[12px] leading-relaxed text-muted">
-              Um dia com pelo menos um commit elegível conta uma vez. Dias sem atividade são diferentes de
-              verificação indisponível - o status da integração aparece no topo.
+              {challenge.verificationMode === 'STUDY_PHOTO'
+                ? 'Uma foto publicada conta uma vez. Ao excluir a foto, o dia é recalculado.'
+                : 'Um dia com pelo menos um commit elegível conta uma vez. Dias sem atividade são diferentes de verificação indisponível - o status da integração aparece no topo.'}
             </p>
           </CardHeader>
           <CardContent>
