@@ -18,8 +18,8 @@ interface RegisterPayload {
 interface AuthContextValue {
   user: User | null;
   status: AuthStatus;
-  login: (identifier: string, password: string) => Promise<User>;
-  register: (payload: RegisterPayload) => Promise<User>;
+  login: (identifier: string, password: string, turnstileToken?: string) => Promise<User>;
+  register: (payload: RegisterPayload, turnstileToken?: string) => Promise<User>;
   logout: () => Promise<void>;
   setUser: (user: User) => void;
   refreshUser: () => Promise<User | null>;
@@ -86,18 +86,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const login = useCallback(
-    async (identifier: string, password: string) => {
+    async (identifier: string, password: string, turnstileToken?: string) => {
       //---- Deploy transitório: a API antiga só aceita e-mail. O helper mantém os dois contratos.
       const payload = buildLoginPayload(identifier, password);
-      const response = await api.post<AuthResponse>('/auth/login', payload);
+      const response = await api.post<AuthResponse>('/auth/login', payload, {
+        headers: turnstileToken ? { 'X-Turnstile-Token': turnstileToken } : undefined,
+      });
       return applySession(response.data);
     },
     [applySession],
   );
 
   const register = useCallback(
-    async (payload: RegisterPayload) => {
-      const response = await api.post<AuthResponse>('/auth/register', payload);
+    async (payload: RegisterPayload, turnstileToken?: string) => {
+      const response = await api.post<AuthResponse>('/auth/register', payload, {
+        headers: turnstileToken ? { 'X-Turnstile-Token': turnstileToken } : undefined,
+      });
       return applySession(response.data);
     },
     [applySession],

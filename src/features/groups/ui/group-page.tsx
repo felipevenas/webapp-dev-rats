@@ -1,6 +1,7 @@
 import {
   ArrowLeft,
   CalendarDays,
+  Camera,
   Check,
   Copy,
   Lock,
@@ -37,6 +38,7 @@ import { useCreateConversation } from '@/features/chat/data/use-chat';
 import { DeleteGroupModal } from '@/features/groups/ui/delete-group-modal';
 import { InviteDialog } from '@/features/groups/ui/invite-dialog';
 import { OverviewTab } from '@/features/groups/ui/group-overview';
+import { StudyPhotosTab } from '@/features/studies/ui/study-photos-tab';
 import { useCancelChallenge, useStartChallenge } from '@/features/challenges/data/use-challenges';
 import { verificationModeCopy } from '@/features/challenges/domain/challenge-status';
 import { ChallengeStatusBadge } from '@/features/challenges/ui/challenge-status-badge';
@@ -46,12 +48,13 @@ import { LeaderboardList, YourPositionCard } from '@/features/progress/ui/leader
 import { ActivityCalendar } from '@/features/progress/ui/activity-calendar';
 import { FinishedBanner } from '@/features/progress/ui/result-hero';
 
-type Tab = 'overview' | 'leaderboard' | 'calendar' | 'activity';
+type Tab = 'overview' | 'leaderboard' | 'calendar' | 'photos' | 'activity';
 
 const tabOptions: Array<{ id: Tab; label: string; shortLabel: string }> = [
   { id: 'overview', label: 'Visão geral', shortLabel: 'Geral' },
   { id: 'leaderboard', label: 'Ranking', shortLabel: 'Ranking' },
   { id: 'calendar', label: 'Calendário', shortLabel: 'Calendário' },
+  { id: 'photos', label: 'Fotos', shortLabel: 'Fotos' },
   { id: 'activity', label: 'Atividade', shortLabel: 'Atividade' },
 ];
 
@@ -112,10 +115,12 @@ export default function GroupPage() {
   const feed = feedQuery.data ?? [];
   const result = resultQuery.data ?? null;
   const mode = challenge ? verificationModeCopy(challenge.verificationMode) : null;
+  const requiresRepositories = challenge?.verificationMode === 'SELECTED_REPOSITORIES';
+  const requiresGithub = challenge?.verificationMode !== 'STUDY_PHOTO';
   const canStart =
     isOwner &&
     challenge?.status === 'DRAFT' &&
-    (challenge.verificationMode === 'OWN_REPOSITORIES' || challenge.repositories.length > 0);
+    (!requiresRepositories || challenge.repositories.length > 0);
   const canCancel = isOwner && (challenge?.status === 'DRAFT' || challenge?.status === 'ACTIVE');
   const startLabel = challenge
     ? challenge.startsAt && new Date(challenge.startsAt).getTime() <= Date.now()
@@ -212,6 +217,8 @@ export default function GroupPage() {
                 <Badge variant="outline">
                   {challenge?.verificationMode === 'SELECTED_REPOSITORIES' ? (
                     <Lock className="size-3" aria-hidden />
+                  ) : challenge?.verificationMode === 'STUDY_PHOTO' ? (
+                    <Camera className="size-3" aria-hidden />
                   ) : (
                     <Target className="size-3" aria-hidden />
                   )}
@@ -370,7 +377,7 @@ export default function GroupPage() {
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <nav
           aria-label="Seções do desafio"
-          className="grid grid-cols-4 gap-1 rounded-xl border border-line bg-card-2 p-1 sm:inline-flex sm:w-auto"
+          className="grid grid-cols-5 gap-1 rounded-xl border border-line bg-card-2 p-1 sm:inline-flex sm:w-auto"
         >
           {tabOptions.map((option) => {
             const active = tab === option.id;
@@ -430,7 +437,7 @@ export default function GroupPage() {
           feed={feed}
           user={user}
           result={result}
-          githubConnected={user.githubConnected}
+          githubConnected={requiresGithub ? user.githubConnected : true}
           isOwner={isOwner}
           loading={progressQuery.isLoading}
           onInvite={() => setInviteOpen(true)}
@@ -495,10 +502,13 @@ export default function GroupPage() {
               members={entries}
               currentUserId={user.id}
               manageUrlState
-              githubConnected={user.githubConnected}
+              githubConnected={requiresGithub ? user.githubConnected : true}
+              verificationMode={challenge.verificationMode}
             />
           </CardContent>
         </Card>
+      ) : tab === 'photos' ? (
+        <StudyPhotosTab challenge={challenge} members={members} currentUserId={user.id} />
       ) : (
         <Card>
           <CardHeader className="gap-2 pb-3">

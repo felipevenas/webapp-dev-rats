@@ -2,7 +2,7 @@ export type UUID = string;
 export type IsoInstant = string;
 export type IsoDate = string;
 
-export type VerificationMode = 'SELECTED_REPOSITORIES' | 'OWN_REPOSITORIES';
+export type VerificationMode = 'SELECTED_REPOSITORIES' | 'OWN_REPOSITORIES' | 'STUDY_PHOTO';
 export type ChallengeStatus = 'DRAFT' | 'ACTIVE' | 'COMPLETED' | 'CANCELLED' | 'EXPIRED';
 export type GroupStatus = 'ACTIVE' | 'ARCHIVED';
 export type GroupRole = 'OWNER' | 'MEMBER';
@@ -191,6 +191,30 @@ export interface ActivityCommit {
   commitUrl: string;
   committedAt: IsoInstant;
   authorLogin?: string | null;
+}
+
+export interface StudyPhoto {
+  id: UUID;
+  challengeId: UUID;
+  userId: UUID;
+  displayName: string;
+  username: string;
+  avatarUrl?: string | null;
+  activityDate: IsoDate;
+  title?: string | null;
+  description?: string | null;
+  imageUrl?: string | null;
+  imageUrlExpiresAt?: IsoInstant | null;
+  width?: number | null;
+  height?: number | null;
+  repositoryFullName?: string | null;
+  commitUrl?: string | null;
+  createdAt: IsoInstant;
+  canDelete: boolean;
+}
+
+export interface FeatureFlags {
+  studyPhotos: boolean;
 }
 
 export interface FeedItem {

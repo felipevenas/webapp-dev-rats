@@ -41,11 +41,28 @@ export function verificationModeCopy(mode: VerificationMode): { label: string; s
       description: 'Valem apenas os repositórios escolhidos pelo criador.',
     };
   }
+  if (mode === 'STUDY_PHOTO') {
+    return {
+      label: 'Foto de estudo',
+      short: 'Foto',
+      description: 'Cada dia válido vem de uma foto de estudo publicada no grupo.',
+    };
+  }
   return {
     label: 'Repositórios próprios',
     short: 'Projetos pessoais',
     description: 'Cada participante conta commits nos próprios repositórios.',
   };
+}
+
+export function verificationModeTone(mode: VerificationMode): 'volt' | 'cyan' | 'amber' | 'violet' {
+  if (mode === 'SELECTED_REPOSITORIES') return 'violet';
+  if (mode === 'STUDY_PHOTO') return 'amber';
+  return 'cyan';
+}
+
+export function verificationModeRequiresGitHub(mode: VerificationMode): boolean {
+  return mode !== 'STUDY_PHOTO';
 }
 
 export function isChallengeOpen(status: ChallengeStatus): boolean {
