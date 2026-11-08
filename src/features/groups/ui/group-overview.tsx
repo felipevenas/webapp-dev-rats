@@ -2,6 +2,7 @@ import { Github } from '@/components/brand/github-icon';
 import {
   ArrowRight,
   CalendarDays,
+  Camera,
   Clock,
   Flame,
   GitBranch,
@@ -43,11 +44,15 @@ import { ActivityCalendar } from '@/features/progress/ui/activity-calendar';
 import { FeedList } from '@/features/progress/ui/feed-list';
 import { LeaderboardList } from '@/features/progress/ui/leaderboard';
 import { WinnerHero } from '@/features/progress/ui/result-hero';
-import { verificationModeCopy } from '@/features/challenges/domain/challenge-status';
+import {
+  verificationModeCopy,
+  verificationModeRequiresGitHub,
+  verificationModeTone,
+} from '@/features/challenges/domain/challenge-status';
 import { useFriendshipStatuses } from '@/features/friends/data/use-friends';
 import { FriendButton } from '@/features/friends/ui/friend-button';
 
-type Tab = 'overview' | 'leaderboard' | 'calendar' | 'activity';
+type Tab = 'overview' | 'leaderboard' | 'calendar' | 'photos' | 'activity';
 
 interface OverviewProps {
   group: Group;
@@ -105,6 +110,7 @@ export function OverviewTab({
             loading={loading}
             githubConnected={githubConnected}
             onOpenCalendar={() => onTab('calendar')}
+            onOpenPhotos={() => onTab('photos')}
           />
 
           <Card>
@@ -163,6 +169,7 @@ export function OverviewTab({
                 timezone={challenge.timezone}
                 members={entries}
                 currentUserId={user.id}
+                verificationMode={challenge.verificationMode}
                 compact
               />
             </CardContent>
@@ -285,18 +292,22 @@ function YourProgressCard({
   loading,
   githubConnected,
   onOpenCalendar,
+  onOpenPhotos,
 }: {
   challenge: Challenge;
   me: ProgressEntry | null;
   loading: boolean;
   githubConnected: boolean;
   onOpenCalendar: () => void;
+  onOpenPhotos: () => void;
 }) {
   const today = todayInZone(challenge.timezone);
   const last = me?.lastValidDate ?? null;
   const daysSince = last ? diffInDays(last, today) : null;
   const todayValid = last === today;
   const atRisk = challenge.status === 'ACTIVE' && daysSince !== null && daysSince >= 2;
+  const photoMode = challenge.verificationMode === 'STUDY_PHOTO';
+  const requiresGithub = verificationModeRequiresGitHub(challenge.verificationMode);
 
   if (loading || !me) {
     return (
@@ -378,13 +389,19 @@ function YourProgressCard({
               aria-hidden
             />
             {last ? `Último dia válido: ${formatShortDate(last)}` : 'Nenhum dia válido registrado ainda'}
-            {!githubConnected ? ' · verificação pausada' : ''}
+            {requiresGithub && !githubConnected ? ' · verificação pausada' : ''}
           </p>
-          <div className="flex items-center gap-2">
-            {!githubConnected ? (
+          <div className="flex flex-wrap items-center gap-2">
+            {requiresGithub && !githubConnected ? (
               <Link to="/app/settings/integrations" className="text-[11px] text-amber hover:underline">
                 Reconectar GitHub
               </Link>
+            ) : null}
+            {photoMode && challenge.status === 'ACTIVE' ? (
+              <Button variant={todayValid ? 'secondary' : 'primary'} size="sm" onClick={onOpenPhotos}>
+                <Camera aria-hidden />
+                {todayValid ? 'Ver foto de hoje' : 'Enviar foto de hoje'}
+              </Button>
             ) : null}
             <Button variant="secondary" size="sm" onClick={onOpenCalendar}>
               <CalendarDays aria-hidden />
@@ -443,7 +460,7 @@ export function ChallengeRulesCard({
           <Lock className="size-4 text-muted" aria-hidden />
           Regras do desafio
         </CardTitle>
-        <Badge variant={challenge.verificationMode === 'OWN_REPOSITORIES' ? 'cyan' : 'violet'} size="sm">
+        <Badge variant={verificationModeTone(challenge.verificationMode)} size="sm">
           {mode.short}
         </Badge>
       </CardHeader>
@@ -501,6 +518,11 @@ export function ChallengeRulesCard({
               )}
             </ul>
           </div>
+        ) : challenge.verificationMode === 'STUDY_PHOTO' ? (
+          <p className="flex items-start gap-1.5 border-t border-line pt-3 text-[11px] leading-relaxed text-muted">
+            <Camera className="mt-0.5 size-3.5 shrink-0" aria-hidden />
+            Uma foto de estudo por dia vale 1 dia válido. Não é necessário conectar o GitHub.
+          </p>
         ) : (
           <p className="flex items-start gap-1.5 border-t border-line pt-3 text-[11px] leading-relaxed text-muted">
             <Github className="mt-0.5 size-3.5 shrink-0" aria-hidden />

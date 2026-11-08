@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, CircleHelp, ExternalLink, WifiOff } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
-import type { ActivityCommit, ActivityDayStatus, ProgressEntry } from '@/core/types/api';
+import type { ActivityCommit, ActivityDayStatus, ProgressEntry, VerificationMode } from '@/core/types/api';
 import {
   addDays,
   currentMonthKey,
@@ -24,6 +24,8 @@ import { Select } from '@/components/ui/controls';
 import { ErrorState } from '@/components/ui/error-state';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useActivity, useActivityCommits } from '@/features/progress/data/use-progress';
+import { verificationModeRequiresGitHub } from '@/features/challenges/domain/challenge-status';
+import { StudyPhotoDay } from '@/features/studies/ui/study-photo-day';
 
 const statusCopy: Record<ActivityDayStatus, { label: string; description: string }> = {
   VALID: { label: 'Dia válido', description: 'Pelo menos um commit elegível foi verificado neste dia.' },
@@ -41,6 +43,7 @@ interface ActivityCalendarProps {
   manageUrlState?: boolean;
   githubConnected?: boolean;
   compact?: boolean;
+  verificationMode?: VerificationMode;
 }
 
 export function ActivityCalendar({
@@ -51,7 +54,9 @@ export function ActivityCalendar({
   manageUrlState = false,
   githubConnected = true,
   compact = false,
+  verificationMode,
 }: ActivityCalendarProps) {
+  const requiresGithub = verificationMode ? verificationModeRequiresGitHub(verificationMode) : true;
   const [searchParams, setSearchParams] = useSearchParams();
   const [localMonth, setLocalMonth] = useState(() => currentMonthKey(timezone));
   const [localMember, setLocalMember] = useState(currentUserId);
@@ -118,7 +123,7 @@ export function ActivityCalendar({
   const commitsQuery = useActivityCommits(
     challengeId,
     { userId: memberId, date: selectedDate },
-    !compact && selectedStatus === 'VALID',
+    !compact && selectedStatus === 'VALID' && verificationMode !== 'STUDY_PHOTO',
   );
   const commits = commitsQuery.data ?? [];
 
@@ -227,7 +232,7 @@ export function ActivityCalendar({
         </div>
       </div>
 
-      {!githubConnected ? (
+      {requiresGithub && !githubConnected ? (
         <div className="flex items-start gap-2.5 rounded-xl border border-amber/30 bg-amber-soft p-3">
           <WifiOff className="mt-0.5 size-4 shrink-0 text-amber" aria-hidden />
           <p className="text-[11px] leading-relaxed text-muted">
@@ -355,17 +360,23 @@ export function ActivityCalendar({
                   >
                     {statusCopy[selectedStatus].label}
                   </Badge>
-                  <p className="text-[11px] leading-relaxed text-muted">{statusCopy[selectedStatus].description}</p>
+                  <p className="text-[11px] leading-relaxed text-muted">
+                    {statusDescription(selectedStatus, verificationMode)}
+                  </p>
                   <p className="font-mono text-[10px] text-faint">{formatWeekdayLong(selectedDate)}</p>
                 </div>
                 {selectedStatus === 'VALID' ? (
-                  <ActivityCommitList
-                    commits={commits}
-                    timezone={timezone}
-                    isLoading={commitsQuery.isLoading}
-                    error={commitsQuery.isError ? commitsQuery.error : null}
-                    onRetry={() => void commitsQuery.refetch()}
-                  />
+                  verificationMode === 'STUDY_PHOTO' ? (
+                    <StudyPhotoDay challengeId={challengeId} userId={memberId} date={selectedDate} />
+                  ) : (
+                    <ActivityCommitList
+                      commits={commits}
+                      timezone={timezone}
+                      isLoading={commitsQuery.isLoading}
+                      error={commitsQuery.isError ? commitsQuery.error : null}
+                      onRetry={() => void commitsQuery.refetch()}
+                    />
+                  )
                 ) : null}
               </div>
             ) : (
@@ -378,6 +389,16 @@ export function ActivityCalendar({
       </div>
     </div>
   );
+}
+
+function statusDescription(status: ActivityDayStatus, mode?: VerificationMode) {
+  if (mode === 'STUDY_PHOTO' && status === 'VALID') {
+    return 'Uma foto de estudo foi publicada neste dia.';
+  }
+  if (mode === 'STUDY_PHOTO' && status === 'EMPTY') {
+    return 'Nenhuma foto de estudo foi publicada neste dia.';
+  }
+  return statusCopy[status].description;
 }
 
 function Legend({ className, label }: { className: string; label: string }) {
