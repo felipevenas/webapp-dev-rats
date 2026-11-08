@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ### 🚀 Added
 
+- **Vercel Web Analytics**: `@vercel/analytics` with an SPA-aware `RouteAnalytics` component that reports a page view on the initial load and on every React Router navigation, while keeping local development out of production metrics.
 - **Study photo mode**: new challenge mode with camera-first upload, one photo per participant per day, optional title/description and repository/commit context, group gallery with member filter, lightbox, delete-and-republish, and photos in the activity calendar.
 - **Cloudflare Turnstile**: widget on login, registration, and password recovery, with token reset after failures and the `X-Turnstile-Token` header sent to the API.
 - **Photo-aware progress**: "Enviar foto de hoje" CTA on the group overview, photo-specific calendar copy, and no GitHub requirement in the study photo mode.

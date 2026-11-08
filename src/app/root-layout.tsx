@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { NavigationProgress } from '@/components/feedback/navigation-progress';
+import { RouteAnalytics } from '@/app/route-analytics';
 import {
   GITHUB_RETURN_STORAGE_KEY,
   readGitHubCallback,
@@ -11,6 +12,7 @@ import {
 export function RootLayout() {
   return (
     <>
+      <RouteAnalytics />
       <NavigationProgress />
       <ScrollToTop />
       <GitHubCallbackCatcher />
